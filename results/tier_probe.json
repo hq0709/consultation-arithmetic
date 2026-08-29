@@ -1,0 +1,44 @@
+[
+ {
+  "model": "gpt-4.1-nano",
+  "effort": null,
+  "medxpertqa": 0.25,
+  "medqa": 0.75,
+  "usd_per_1k": 0.0855375
+ },
+ {
+  "model": "gpt-4o-mini",
+  "effort": null,
+  "medxpertqa": 0.2,
+  "medqa": 0.875,
+  "usd_per_1k": 0.13338750000000002
+ },
+ {
+  "model": "gpt-4.1-mini",
+  "effort": null,
+  "medxpertqa": 0.325,
+  "medqa": 0.85,
+  "usd_per_1k": 0.40645000000000003
+ },
+ {
+  "model": "gpt-5-nano",
+  "effort": "low",
+  "medxpertqa": 0.375,
+  "medqa": 0.95,
+  "usd_per_1k": 0.17065
+ },
+ {
+  "model": "gpt-5-mini",
+  "effort": "low",
+  "medxpertqa": 0.55,
+  "medqa": 0.975,
+  "usd_per_1k": 0.635225
+ },
+ {
+  "model": "gpt-5.4-nano",
+  "effort": "low",
+  "medxpertqa": 0.475,
+  "medqa": 0.95,
+  "usd_per_1k": 0.13608750000000003
+ }
+]

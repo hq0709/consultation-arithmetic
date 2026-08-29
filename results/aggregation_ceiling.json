@@ -1,0 +1,111 @@
+{
+ "pair_decomposition": {
+  "medagentsbench": {
+   "agree_wrong": 86730,
+   "split_both_wrong": 12237,
+   "agree_right": 39981,
+   "split_one_right": 18084
+  },
+  "medqa": {
+   "agree_right": 123771,
+   "split_one_right": 9783,
+   "agree_wrong": 21753,
+   "split_both_wrong": 1881
+  },
+  "medxpertqa": {
+   "agree_wrong": 90244,
+   "split_both_wrong": 23764,
+   "split_one_right": 19365,
+   "agree_right": 45483
+  }
+ },
+ "pair_total": {
+  "agree_wrong": 198727,
+  "split_both_wrong": 37882,
+  "agree_right": 209235,
+  "split_one_right": 47232
+ },
+ "oracle": [
+  {
+   "model": "gpt-4.1-nano",
+   "bench": "medagentsbench",
+   "psa": 20.4,
+   "best": 21.6,
+   "oracle": 28.000000000000004,
+   "headroom": 7.600000000000005,
+   "captured": 15.789473684210552
+  },
+  {
+   "model": "gpt-4.1-nano",
+   "bench": "medqa",
+   "psa": 66.0,
+   "best": 67.60000000000001,
+   "oracle": 74.4,
+   "headroom": 8.400000000000006,
+   "captured": 19.047619047619136
+  },
+  {
+   "model": "gpt-4.1-nano",
+   "bench": "medxpertqa",
+   "psa": 15.6,
+   "best": 19.2,
+   "oracle": 26.0,
+   "headroom": 10.4,
+   "captured": 34.615384615384606
+  },
+  {
+   "model": "gpt-5-mini",
+   "bench": "medagentsbench",
+   "psa": 44.4,
+   "best": 46.800000000000004,
+   "oracle": 62.0,
+   "headroom": 17.6,
+   "captured": 13.636363636363669
+  },
+  {
+   "model": "gpt-5-mini",
+   "bench": "medqa",
+   "psa": 91.60000000000001,
+   "best": 93.60000000000001,
+   "oracle": 98.0,
+   "headroom": 6.3999999999999915,
+   "captured": 31.250000000000043
+  },
+  {
+   "model": "gpt-5-mini",
+   "bench": "medxpertqa",
+   "psa": 41.6,
+   "best": 49.2,
+   "oracle": 59.199999999999996,
+   "headroom": 17.599999999999994,
+   "captured": 43.1818181818182
+  },
+  {
+   "model": "gpt-5-nano",
+   "bench": "medagentsbench",
+   "psa": 32.4,
+   "best": 34.8,
+   "oracle": 53.6,
+   "headroom": 21.200000000000003,
+   "captured": 11.320754716981124
+  },
+  {
+   "model": "gpt-5-nano",
+   "bench": "medqa",
+   "psa": 88.0,
+   "best": 89.60000000000001,
+   "oracle": 94.8,
+   "headroom": 6.799999999999997,
+   "captured": 23.52941176470602
+  },
+  {
+   "model": "gpt-5-nano",
+   "bench": "medxpertqa",
+   "psa": 32.0,
+   "best": 38.0,
+   "oracle": 50.4,
+   "headroom": 18.4,
+   "captured": 32.608695652173914
+  }
+ ]
+}

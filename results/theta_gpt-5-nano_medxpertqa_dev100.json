@@ -1,0 +1,513 @@
+{
+ "model": "gpt-5-nano",
+ "effort": "low",
+ "items": "data/medxpertqa_dev100.jsonl",
+ "theta": 70.0,
+ "youden_j": 0.07142857142857142,
+ "referral_rate": 0.15,
+ "tpr": 0.17142857142857143,
+ "fpr": 0.1,
+ "generalist_acc": 0.3,
+ "rows": [
+  {
+   "qid": "mxq/Text-2270",
+   "conf": 70.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-1532",
+   "conf": 70.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-2303",
+   "conf": 90.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-430",
+   "conf": 85.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-1139",
+   "conf": 86.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-2168",
+   "conf": 62.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-1122",
+   "conf": 85.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-2038",
+   "conf": 72.0,
+   "correct": 1
+  },
+  {
+   "qid": "mxq/Text-1732",
+   "conf": 85.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-145",
+   "conf": 85.0,
+   "correct": 1
+  },
+  {
+   "qid": "mxq/Text-1210",
+   "conf": 70.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-1319",
+   "conf": 75.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-307",
+   "conf": 85.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-1400",
+   "conf": 85.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-1543",
+   "conf": 85.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-117",
+   "conf": 85.0,
+   "correct": 1
+  },
+  {
+   "qid": "mxq/Text-1257",
+   "conf": 85.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-2005",
+   "conf": 85.0,
+   "correct": 1
+  },
+  {
+   "qid": "mxq/Text-738",
+   "conf": 85.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-1901",
+   "conf": 28.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-1570",
+   "conf": 85.0,
+   "correct": 1
+  },
+  {
+   "qid": "mxq/Text-1891",
+   "conf": 72.0,
+   "correct": 1
+  },
+  {
+   "qid": "mxq/Text-323",
+   "conf": 70.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-1673",
+   "conf": 70.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-725",
+   "conf": 72.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-705",
+   "conf": 68.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-1587",
+   "conf": 70.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-1596",
+   "conf": 85.0,
+   "correct": 1
+  },
+  {
+   "qid": "mxq/Text-459",
+   "conf": 85.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-1476",
+   "conf": 85.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-1815",
+   "conf": 85.0,
+   "correct": 1
+  },
+  {
+   "qid": "mxq/Text-908",
+   "conf": 70.0,
+   "correct": 1
+  },
+  {
+   "qid": "mxq/Text-1550",
+   "conf": 85.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-1321",
+   "conf": 70.0,
+   "correct": 1
+  },
+  {
+   "qid": "mxq/Text-873",
+   "conf": 70.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-751",
+   "conf": 74.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-726",
+   "conf": 70.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-835",
+   "conf": 86.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-747",
+   "conf": 72.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-943",
+   "conf": 78.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-1525",
+   "conf": 65.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-1374",
+   "conf": 62.0,
+   "correct": 1
+  },
+  {
+   "qid": "mxq/Text-2215",
+   "conf": 70.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-1547",
+   "conf": 70.0,
+   "correct": 1
+  },
+  {
+   "qid": "mxq/Text-2169",
+   "conf": 65.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-613",
+   "conf": 80.0,
+   "correct": 1
+  },
+  {
+   "qid": "mxq/Text-2349",
+   "conf": 42.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-710",
+   "conf": 85.0,
+   "correct": 1
+  },
+  {
+   "qid": "mxq/Text-659",
+   "conf": 70.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-1028",
+   "conf": 72.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-175",
+   "conf": 70.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-2069",
+   "conf": 85.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-1278",
+   "conf": 90.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-2071",
+   "conf": 85.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-2023",
+   "conf": 85.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-1569",
+   "conf": 85.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-564",
+   "conf": 90.0,
+   "correct": 1
+  },
+  {
+   "qid": "mxq/Text-730",
+   "conf": 70.0,
+   "correct": 1
+  },
+  {
+   "qid": "mxq/Text-2131",
+   "conf": 25.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-1913",
+   "conf": 85.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-1725",
+   "conf": 88.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-1056",
+   "conf": 60.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-1492",
+   "conf": 70.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-1779",
+   "conf": 85.0,
+   "correct": 1
+  },
+  {
+   "qid": "mxq/Text-370",
+   "conf": 85.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-996",
+   "conf": 85.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-120",
+   "conf": 85.0,
+   "correct": 1
+  },
+  {
+   "qid": "mxq/Text-1417",
+   "conf": 85.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-1887",
+   "conf": 60.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-137",
+   "conf": 85.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-2333",
+   "conf": 85.0,
+   "correct": 1
+  },
+  {
+   "qid": "mxq/Text-1792",
+   "conf": 85.0,
+   "correct": 1
+  },
+  {
+   "qid": "mxq/Text-29",
+   "conf": 90.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-2100",
+   "conf": 65.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-600",
+   "conf": 75.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-282",
+   "conf": 60.0,
+   "correct": 1
+  },
+  {
+   "qid": "mxq/Text-177",
+   "conf": 70.0,
+   "correct": 1
+  },
+  {
+   "qid": "mxq/Text-1824",
+   "conf": 85.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-1346",
+   "conf": 65.0,
+   "correct": 1
+  },
+  {
+   "qid": "mxq/Text-1854",
+   "conf": 85.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-577",
+   "conf": 70.0,
+   "correct": 1
+  },
+  {
+   "qid": "mxq/Text-270",
+   "conf": 85.0,
+   "correct": 1
+  },
+  {
+   "qid": "mxq/Text-1567",
+   "conf": 85.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-447",
+   "conf": 85.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-1994",
+   "conf": 72.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-343",
+   "conf": 70.0,
+   "correct": 1
+  },
+  {
+   "qid": "mxq/Text-488",
+   "conf": 85.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-2377",
+   "conf": 85.0,
+   "correct": 1
+  },
+  {
+   "qid": "mxq/Text-827",
+   "conf": 70.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-1671",
+   "conf": 60.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-692",
+   "conf": 85.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-2226",
+   "conf": 85.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-1248",
+   "conf": 85.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-2002",
+   "conf": 85.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-701",
+   "conf": 85.0,
+   "correct": 1
+  },
+  {
+   "qid": "mxq/Text-2062",
+   "conf": 60.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-903",
+   "conf": 85.0,
+   "correct": 1
+  },
+  {
+   "qid": "mxq/Text-1013",
+   "conf": 70.0,
+   "correct": 1
+  },
+  {
+   "qid": "mxq/Text-192",
+   "conf": 85.0,
+   "correct": 0
+  },
+  {
+   "qid": "mxq/Text-1421",
+   "conf": 70.0,
+   "correct": 0
+  }
+ ]
+}

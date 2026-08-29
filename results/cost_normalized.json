@@ -1,0 +1,92 @@
+[
+ {
+  "bench": "medxpertqa",
+  "model": "gpt-4.1-nano",
+  "gain": 3.5999999999999996,
+  "extra_usd_per_1k": 0.080896,
+  "pp_per_dollar": 44.50158227848101,
+  "mult": 1.9494389934744847,
+  "arch": "centralized",
+  "N": 1
+ },
+ {
+  "bench": "medxpertqa",
+  "model": "gpt-5-nano",
+  "gain": 6.0,
+  "extra_usd_per_1k": 0.7025800000000001,
+  "pp_per_dollar": 8.539952745594807,
+  "mult": 4.429293816747692,
+  "arch": "discussion",
+  "N": 3
+ },
+ {
+  "bench": "medxpertqa",
+  "model": "gpt-5-mini",
+  "gain": 7.600000000000001,
+  "extra_usd_per_1k": 1.761884,
+  "pp_per_dollar": 4.313564343623077,
+  "mult": 3.4554916323822904,
+  "arch": "centralized",
+  "N": 3
+ },
+ {
+  "bench": "medagentsbench",
+  "model": "gpt-4.1-nano",
+  "gain": 1.2000000000000028,
+  "extra_usd_per_1k": 0.391368,
+  "pp_per_dollar": 3.066167903354395,
+  "mult": 6.211569191434964,
+  "arch": "centralized",
+  "N": 7
+ },
+ {
+  "bench": "medagentsbench",
+  "model": "gpt-5-nano",
+  "gain": 2.3999999999999986,
+  "extra_usd_per_1k": 0.28301999999999994,
+  "pp_per_dollar": 8.479966080135677,
+  "mult": 2.45457722591123,
+  "arch": "independent",
+  "N": 3
+ },
+ {
+  "bench": "medagentsbench",
+  "model": "gpt-5-mini",
+  "gain": 2.4000000000000057,
+  "extra_usd_per_1k": 7.1217120000000005,
+  "pp_per_dollar": 0.33699762079679796,
+  "mult": 11.503318368719434,
+  "arch": "discussion",
+  "N": 9
+ },
+ {
+  "bench": "medqa",
+  "model": "gpt-4.1-nano",
+  "gain": 1.6000000000000085,
+  "extra_usd_per_1k": 0.26742,
+  "pp_per_dollar": 5.983097748859504,
+  "mult": 4.246806857364868,
+  "arch": "discussion",
+  "N": 5
+ },
+ {
+  "bench": "medqa",
+  "model": "gpt-5-nano",
+  "gain": 1.6000000000000085,
+  "extra_usd_per_1k": 0.49136000000000013,
+  "pp_per_dollar": 3.256268316509297,
+  "mult": 4.09008125172943,
+  "arch": "independent",
+  "N": 5
+ },
+ {
+  "bench": "medqa",
+  "model": "gpt-5-mini",
+  "gain": 2.0,
+  "extra_usd_per_1k": -0.13981599999999997,
+  "pp_per_dollar": NaN,
+  "mult": 0.7565199219838395,
+  "arch": "tiered",
+  "N": 1
+ }
+]

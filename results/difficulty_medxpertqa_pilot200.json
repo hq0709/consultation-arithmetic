@@ -1,0 +1,1002 @@
+{
+ "mxq/Text-1458": {
+  "qid": "mxq/Text-1458",
+  "pass_rate": 0.26666666666666666,
+  "difficulty": "medium"
+ },
+ "mxq/Text-534": {
+  "qid": "mxq/Text-534",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1577": {
+  "qid": "mxq/Text-1577",
+  "pass_rate": 0.3333333333333333,
+  "difficulty": "medium"
+ },
+ "mxq/Text-1485": {
+  "qid": "mxq/Text-1485",
+  "pass_rate": 0.13333333333333333,
+  "difficulty": "hard"
+ },
+ "mxq/Text-271": {
+  "qid": "mxq/Text-271",
+  "pass_rate": 0.06666666666666667,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1135": {
+  "qid": "mxq/Text-1135",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-266": {
+  "qid": "mxq/Text-266",
+  "pass_rate": 0.4666666666666667,
+  "difficulty": "medium"
+ },
+ "mxq/Text-1856": {
+  "qid": "mxq/Text-1856",
+  "pass_rate": 0.26666666666666666,
+  "difficulty": "medium"
+ },
+ "mxq/Text-1207": {
+  "qid": "mxq/Text-1207",
+  "pass_rate": 0.5333333333333333,
+  "difficulty": "medium"
+ },
+ "mxq/Text-1438": {
+  "qid": "mxq/Text-1438",
+  "pass_rate": 0.6,
+  "difficulty": "medium"
+ },
+ "mxq/Text-168": {
+  "qid": "mxq/Text-168",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1785": {
+  "qid": "mxq/Text-1785",
+  "pass_rate": 0.8666666666666667,
+  "difficulty": "easy"
+ },
+ "mxq/Text-2293": {
+  "qid": "mxq/Text-2293",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-864": {
+  "qid": "mxq/Text-864",
+  "pass_rate": 0.4666666666666667,
+  "difficulty": "medium"
+ },
+ "mxq/Text-1745": {
+  "qid": "mxq/Text-1745",
+  "pass_rate": 0.3333333333333333,
+  "difficulty": "medium"
+ },
+ "mxq/Text-957": {
+  "qid": "mxq/Text-957",
+  "pass_rate": 0.3333333333333333,
+  "difficulty": "medium"
+ },
+ "mxq/Text-1594": {
+  "qid": "mxq/Text-1594",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-849": {
+  "qid": "mxq/Text-849",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-839": {
+  "qid": "mxq/Text-839",
+  "pass_rate": 0.26666666666666666,
+  "difficulty": "medium"
+ },
+ "mxq/Text-121": {
+  "qid": "mxq/Text-121",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-641": {
+  "qid": "mxq/Text-641",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-463": {
+  "qid": "mxq/Text-463",
+  "pass_rate": 0.7333333333333333,
+  "difficulty": "medium"
+ },
+ "mxq/Text-1770": {
+  "qid": "mxq/Text-1770",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1961": {
+  "qid": "mxq/Text-1961",
+  "pass_rate": 0.3333333333333333,
+  "difficulty": "medium"
+ },
+ "mxq/Text-2262": {
+  "qid": "mxq/Text-2262",
+  "pass_rate": 0.06666666666666667,
+  "difficulty": "hard"
+ },
+ "mxq/Text-2098": {
+  "qid": "mxq/Text-2098",
+  "pass_rate": 0.3333333333333333,
+  "difficulty": "medium"
+ },
+ "mxq/Text-1057": {
+  "qid": "mxq/Text-1057",
+  "pass_rate": 0.4,
+  "difficulty": "medium"
+ },
+ "mxq/Text-825": {
+  "qid": "mxq/Text-825",
+  "pass_rate": 0.7333333333333333,
+  "difficulty": "medium"
+ },
+ "mxq/Text-1447": {
+  "qid": "mxq/Text-1447",
+  "pass_rate": 0.8,
+  "difficulty": "easy"
+ },
+ "mxq/Text-1179": {
+  "qid": "mxq/Text-1179",
+  "pass_rate": 0.06666666666666667,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1537": {
+  "qid": "mxq/Text-1537",
+  "pass_rate": 0.06666666666666667,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1389": {
+  "qid": "mxq/Text-1389",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1531": {
+  "qid": "mxq/Text-1531",
+  "pass_rate": 0.3333333333333333,
+  "difficulty": "medium"
+ },
+ "mxq/Text-1573": {
+  "qid": "mxq/Text-1573",
+  "pass_rate": 1.0,
+  "difficulty": "easy"
+ },
+ "mxq/Text-1727": {
+  "qid": "mxq/Text-1727",
+  "pass_rate": 0.13333333333333333,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1816": {
+  "qid": "mxq/Text-1816",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-2180": {
+  "qid": "mxq/Text-2180",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-68": {
+  "qid": "mxq/Text-68",
+  "pass_rate": 0.3333333333333333,
+  "difficulty": "medium"
+ },
+ "mxq/Text-1261": {
+  "qid": "mxq/Text-1261",
+  "pass_rate": 0.6666666666666666,
+  "difficulty": "medium"
+ },
+ "mxq/Text-1201": {
+  "qid": "mxq/Text-1201",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1648": {
+  "qid": "mxq/Text-1648",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-381": {
+  "qid": "mxq/Text-381",
+  "pass_rate": 1.0,
+  "difficulty": "easy"
+ },
+ "mxq/Text-1333": {
+  "qid": "mxq/Text-1333",
+  "pass_rate": 0.13333333333333333,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1271": {
+  "qid": "mxq/Text-1271",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-100": {
+  "qid": "mxq/Text-100",
+  "pass_rate": 0.7333333333333333,
+  "difficulty": "medium"
+ },
+ "mxq/Text-917": {
+  "qid": "mxq/Text-917",
+  "pass_rate": 0.2,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1246": {
+  "qid": "mxq/Text-1246",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-364": {
+  "qid": "mxq/Text-364",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-456": {
+  "qid": "mxq/Text-456",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1388": {
+  "qid": "mxq/Text-1388",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-2132": {
+  "qid": "mxq/Text-2132",
+  "pass_rate": 0.5333333333333333,
+  "difficulty": "medium"
+ },
+ "mxq/Text-706": {
+  "qid": "mxq/Text-706",
+  "pass_rate": 1.0,
+  "difficulty": "easy"
+ },
+ "mxq/Text-236": {
+  "qid": "mxq/Text-236",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-716": {
+  "qid": "mxq/Text-716",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1223": {
+  "qid": "mxq/Text-1223",
+  "pass_rate": 0.3333333333333333,
+  "difficulty": "medium"
+ },
+ "mxq/Text-1205": {
+  "qid": "mxq/Text-1205",
+  "pass_rate": 0.6666666666666666,
+  "difficulty": "medium"
+ },
+ "mxq/Text-2181": {
+  "qid": "mxq/Text-2181",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1170": {
+  "qid": "mxq/Text-1170",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-384": {
+  "qid": "mxq/Text-384",
+  "pass_rate": 0.2,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1755": {
+  "qid": "mxq/Text-1755",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-774": {
+  "qid": "mxq/Text-774",
+  "pass_rate": 0.6666666666666666,
+  "difficulty": "medium"
+ },
+ "mxq/Text-1624": {
+  "qid": "mxq/Text-1624",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-829": {
+  "qid": "mxq/Text-829",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-698": {
+  "qid": "mxq/Text-698",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-785": {
+  "qid": "mxq/Text-785",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1776": {
+  "qid": "mxq/Text-1776",
+  "pass_rate": 0.3333333333333333,
+  "difficulty": "medium"
+ },
+ "mxq/Text-1121": {
+  "qid": "mxq/Text-1121",
+  "pass_rate": 0.3333333333333333,
+  "difficulty": "medium"
+ },
+ "mxq/Text-1771": {
+  "qid": "mxq/Text-1771",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-2133": {
+  "qid": "mxq/Text-2133",
+  "pass_rate": 0.9333333333333333,
+  "difficulty": "easy"
+ },
+ "mxq/Text-2076": {
+  "qid": "mxq/Text-2076",
+  "pass_rate": 0.3333333333333333,
+  "difficulty": "medium"
+ },
+ "mxq/Text-437": {
+  "qid": "mxq/Text-437",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1443": {
+  "qid": "mxq/Text-1443",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-122": {
+  "qid": "mxq/Text-122",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1368": {
+  "qid": "mxq/Text-1368",
+  "pass_rate": 0.2,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1598": {
+  "qid": "mxq/Text-1598",
+  "pass_rate": 0.13333333333333333,
+  "difficulty": "hard"
+ },
+ "mxq/Text-581": {
+  "qid": "mxq/Text-581",
+  "pass_rate": 0.6666666666666666,
+  "difficulty": "medium"
+ },
+ "mxq/Text-592": {
+  "qid": "mxq/Text-592",
+  "pass_rate": 0.8666666666666667,
+  "difficulty": "easy"
+ },
+ "mxq/Text-2104": {
+  "qid": "mxq/Text-2104",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-329": {
+  "qid": "mxq/Text-329",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1035": {
+  "qid": "mxq/Text-1035",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1681": {
+  "qid": "mxq/Text-1681",
+  "pass_rate": 0.3333333333333333,
+  "difficulty": "medium"
+ },
+ "mxq/Text-1608": {
+  "qid": "mxq/Text-1608",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-12": {
+  "qid": "mxq/Text-12",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-819": {
+  "qid": "mxq/Text-819",
+  "pass_rate": 0.13333333333333333,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1153": {
+  "qid": "mxq/Text-1153",
+  "pass_rate": 0.2,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1922": {
+  "qid": "mxq/Text-1922",
+  "pass_rate": 0.06666666666666667,
+  "difficulty": "hard"
+ },
+ "mxq/Text-195": {
+  "qid": "mxq/Text-195",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1163": {
+  "qid": "mxq/Text-1163",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1811": {
+  "qid": "mxq/Text-1811",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1435": {
+  "qid": "mxq/Text-1435",
+  "pass_rate": 0.3333333333333333,
+  "difficulty": "medium"
+ },
+ "mxq/Text-1": {
+  "qid": "mxq/Text-1",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1436": {
+  "qid": "mxq/Text-1436",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1893": {
+  "qid": "mxq/Text-1893",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-2385": {
+  "qid": "mxq/Text-2385",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1312": {
+  "qid": "mxq/Text-1312",
+  "pass_rate": 0.2,
+  "difficulty": "hard"
+ },
+ "mxq/Text-492": {
+  "qid": "mxq/Text-492",
+  "pass_rate": 0.4666666666666667,
+  "difficulty": "medium"
+ },
+ "mxq/Text-2070": {
+  "qid": "mxq/Text-2070",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-97": {
+  "qid": "mxq/Text-97",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1700": {
+  "qid": "mxq/Text-1700",
+  "pass_rate": 0.4666666666666667,
+  "difficulty": "medium"
+ },
+ "mxq/Text-2146": {
+  "qid": "mxq/Text-2146",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1602": {
+  "qid": "mxq/Text-1602",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-2195": {
+  "qid": "mxq/Text-2195",
+  "pass_rate": 1.0,
+  "difficulty": "easy"
+ },
+ "mxq/Text-2204": {
+  "qid": "mxq/Text-2204",
+  "pass_rate": 0.06666666666666667,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1998": {
+  "qid": "mxq/Text-1998",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1253": {
+  "qid": "mxq/Text-1253",
+  "pass_rate": 0.26666666666666666,
+  "difficulty": "medium"
+ },
+ "mxq/Text-1305": {
+  "qid": "mxq/Text-1305",
+  "pass_rate": 0.3333333333333333,
+  "difficulty": "medium"
+ },
+ "mxq/Text-530": {
+  "qid": "mxq/Text-530",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-962": {
+  "qid": "mxq/Text-962",
+  "pass_rate": 0.5333333333333333,
+  "difficulty": "medium"
+ },
+ "mxq/Text-249": {
+  "qid": "mxq/Text-249",
+  "pass_rate": 0.13333333333333333,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1283": {
+  "qid": "mxq/Text-1283",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-487": {
+  "qid": "mxq/Text-487",
+  "pass_rate": 0.3333333333333333,
+  "difficulty": "medium"
+ },
+ "mxq/Text-1041": {
+  "qid": "mxq/Text-1041",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1071": {
+  "qid": "mxq/Text-1071",
+  "pass_rate": 0.3333333333333333,
+  "difficulty": "medium"
+ },
+ "mxq/Text-1750": {
+  "qid": "mxq/Text-1750",
+  "pass_rate": 0.3333333333333333,
+  "difficulty": "medium"
+ },
+ "mxq/Text-2287": {
+  "qid": "mxq/Text-2287",
+  "pass_rate": 0.3333333333333333,
+  "difficulty": "medium"
+ },
+ "mxq/Text-2317": {
+  "qid": "mxq/Text-2317",
+  "pass_rate": 0.4,
+  "difficulty": "medium"
+ },
+ "mxq/Text-1145": {
+  "qid": "mxq/Text-1145",
+  "pass_rate": 0.06666666666666667,
+  "difficulty": "hard"
+ },
+ "mxq/Text-863": {
+  "qid": "mxq/Text-863",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-2194": {
+  "qid": "mxq/Text-2194",
+  "pass_rate": 0.3333333333333333,
+  "difficulty": "medium"
+ },
+ "mxq/Text-1895": {
+  "qid": "mxq/Text-1895",
+  "pass_rate": 0.3333333333333333,
+  "difficulty": "medium"
+ },
+ "mxq/Text-219": {
+  "qid": "mxq/Text-219",
+  "pass_rate": 0.06666666666666667,
+  "difficulty": "hard"
+ },
+ "mxq/Text-992": {
+  "qid": "mxq/Text-992",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-2447": {
+  "qid": "mxq/Text-2447",
+  "pass_rate": 0.9333333333333333,
+  "difficulty": "easy"
+ },
+ "mxq/Text-689": {
+  "qid": "mxq/Text-689",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-267": {
+  "qid": "mxq/Text-267",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-2244": {
+  "qid": "mxq/Text-2244",
+  "pass_rate": 0.4666666666666667,
+  "difficulty": "medium"
+ },
+ "mxq/Text-1831": {
+  "qid": "mxq/Text-1831",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1491": {
+  "qid": "mxq/Text-1491",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1195": {
+  "qid": "mxq/Text-1195",
+  "pass_rate": 0.06666666666666667,
+  "difficulty": "hard"
+ },
+ "mxq/Text-2283": {
+  "qid": "mxq/Text-2283",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-918": {
+  "qid": "mxq/Text-918",
+  "pass_rate": 0.6666666666666666,
+  "difficulty": "medium"
+ },
+ "mxq/Text-593": {
+  "qid": "mxq/Text-593",
+  "pass_rate": 0.26666666666666666,
+  "difficulty": "medium"
+ },
+ "mxq/Text-1034": {
+  "qid": "mxq/Text-1034",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-818": {
+  "qid": "mxq/Text-818",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-140": {
+  "qid": "mxq/Text-140",
+  "pass_rate": 0.13333333333333333,
+  "difficulty": "hard"
+ },
+ "mxq/Text-2128": {
+  "qid": "mxq/Text-2128",
+  "pass_rate": 0.3333333333333333,
+  "difficulty": "medium"
+ },
+ "mxq/Text-1414": {
+  "qid": "mxq/Text-1414",
+  "pass_rate": 0.6666666666666666,
+  "difficulty": "medium"
+ },
+ "mxq/Text-2230": {
+  "qid": "mxq/Text-2230",
+  "pass_rate": 0.3333333333333333,
+  "difficulty": "medium"
+ },
+ "mxq/Text-1133": {
+  "qid": "mxq/Text-1133",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-532": {
+  "qid": "mxq/Text-532",
+  "pass_rate": 0.6666666666666666,
+  "difficulty": "medium"
+ },
+ "mxq/Text-1431": {
+  "qid": "mxq/Text-1431",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-639": {
+  "qid": "mxq/Text-639",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1130": {
+  "qid": "mxq/Text-1130",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1677": {
+  "qid": "mxq/Text-1677",
+  "pass_rate": 0.06666666666666667,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1489": {
+  "qid": "mxq/Text-1489",
+  "pass_rate": 0.06666666666666667,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1192": {
+  "qid": "mxq/Text-1192",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1918": {
+  "qid": "mxq/Text-1918",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-289": {
+  "qid": "mxq/Text-289",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-80": {
+  "qid": "mxq/Text-80",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1987": {
+  "qid": "mxq/Text-1987",
+  "pass_rate": 0.2,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1341": {
+  "qid": "mxq/Text-1341",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-946": {
+  "qid": "mxq/Text-946",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-584": {
+  "qid": "mxq/Text-584",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-269": {
+  "qid": "mxq/Text-269",
+  "pass_rate": 0.6,
+  "difficulty": "medium"
+ },
+ "mxq/Text-2061": {
+  "qid": "mxq/Text-2061",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1328": {
+  "qid": "mxq/Text-1328",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-2190": {
+  "qid": "mxq/Text-2190",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-704": {
+  "qid": "mxq/Text-704",
+  "pass_rate": 0.3333333333333333,
+  "difficulty": "medium"
+ },
+ "mxq/Text-1646": {
+  "qid": "mxq/Text-1646",
+  "pass_rate": 0.06666666666666667,
+  "difficulty": "hard"
+ },
+ "mxq/Text-345": {
+  "qid": "mxq/Text-345",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-723": {
+  "qid": "mxq/Text-723",
+  "pass_rate": 0.5333333333333333,
+  "difficulty": "medium"
+ },
+ "mxq/Text-1348": {
+  "qid": "mxq/Text-1348",
+  "pass_rate": 0.3333333333333333,
+  "difficulty": "medium"
+ },
+ "mxq/Text-2164": {
+  "qid": "mxq/Text-2164",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-85": {
+  "qid": "mxq/Text-85",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-2267": {
+  "qid": "mxq/Text-2267",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1892": {
+  "qid": "mxq/Text-1892",
+  "pass_rate": 0.06666666666666667,
+  "difficulty": "hard"
+ },
+ "mxq/Text-994": {
+  "qid": "mxq/Text-994",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-956": {
+  "qid": "mxq/Text-956",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-129": {
+  "qid": "mxq/Text-129",
+  "pass_rate": 0.06666666666666667,
+  "difficulty": "hard"
+ },
+ "mxq/Text-2074": {
+  "qid": "mxq/Text-2074",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-2036": {
+  "qid": "mxq/Text-2036",
+  "pass_rate": 0.3333333333333333,
+  "difficulty": "medium"
+ },
+ "mxq/Text-618": {
+  "qid": "mxq/Text-618",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1422": {
+  "qid": "mxq/Text-1422",
+  "pass_rate": 0.13333333333333333,
+  "difficulty": "hard"
+ },
+ "mxq/Text-789": {
+  "qid": "mxq/Text-789",
+  "pass_rate": 0.5333333333333333,
+  "difficulty": "medium"
+ },
+ "mxq/Text-673": {
+  "qid": "mxq/Text-673",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1164": {
+  "qid": "mxq/Text-1164",
+  "pass_rate": 0.9333333333333333,
+  "difficulty": "easy"
+ },
+ "mxq/Text-368": {
+  "qid": "mxq/Text-368",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-2140": {
+  "qid": "mxq/Text-2140",
+  "pass_rate": 0.9333333333333333,
+  "difficulty": "easy"
+ },
+ "mxq/Text-1113": {
+  "qid": "mxq/Text-1113",
+  "pass_rate": 0.3333333333333333,
+  "difficulty": "medium"
+ },
+ "mxq/Text-135": {
+  "qid": "mxq/Text-135",
+  "pass_rate": 0.4666666666666667,
+  "difficulty": "medium"
+ },
+ "mxq/Text-1326": {
+  "qid": "mxq/Text-1326",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-736": {
+  "qid": "mxq/Text-736",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-2339": {
+  "qid": "mxq/Text-2339",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1581": {
+  "qid": "mxq/Text-1581",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1553": {
+  "qid": "mxq/Text-1553",
+  "pass_rate": 0.06666666666666667,
+  "difficulty": "hard"
+ },
+ "mxq/Text-2429": {
+  "qid": "mxq/Text-2429",
+  "pass_rate": 0.2,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1874": {
+  "qid": "mxq/Text-1874",
+  "pass_rate": 0.7333333333333333,
+  "difficulty": "medium"
+ },
+ "mxq/Text-2422": {
+  "qid": "mxq/Text-2422",
+  "pass_rate": 0.5333333333333333,
+  "difficulty": "medium"
+ },
+ "mxq/Text-1641": {
+  "qid": "mxq/Text-1641",
+  "pass_rate": 0.3333333333333333,
+  "difficulty": "medium"
+ },
+ "mxq/Text-1777": {
+  "qid": "mxq/Text-1777",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-830": {
+  "qid": "mxq/Text-830",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-166": {
+  "qid": "mxq/Text-166",
+  "pass_rate": 0.6666666666666666,
+  "difficulty": "medium"
+ },
+ "mxq/Text-455": {
+  "qid": "mxq/Text-455",
+  "pass_rate": 1.0,
+  "difficulty": "easy"
+ },
+ "mxq/Text-926": {
+  "qid": "mxq/Text-926",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-942": {
+  "qid": "mxq/Text-942",
+  "pass_rate": 0.3333333333333333,
+  "difficulty": "medium"
+ },
+ "mxq/Text-258": {
+  "qid": "mxq/Text-258",
+  "pass_rate": 0.0,
+  "difficulty": "hard"
+ },
+ "mxq/Text-1264": {
+  "qid": "mxq/Text-1264",
+  "pass_rate": 0.2,
+  "difficulty": "hard"
+ },
+ "mxq/Text-919": {
+  "qid": "mxq/Text-919",
+  "pass_rate": 0.13333333333333333,
+  "difficulty": "hard"
+ },
+ "mxq/Text-2291": {
+  "qid": "mxq/Text-2291",
+  "pass_rate": 1.0,
+  "difficulty": "easy"
+ },
+ "mxq/Text-181": {
+  "qid": "mxq/Text-181",
+  "pass_rate": 0.3333333333333333,
+  "difficulty": "medium"
+ }
+}

@@ -1,0 +1,329 @@
+"""其余五图，统一按 NMI 的视觉语言重做。
+编码方案按图分别选择（忠于原作：他们的 Fig 1 用颜色标家族，成本图用颜色标架构）。"""
+import sys, pathlib, glob, collections
+ROOT = pathlib.Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT))
+import numpy as np, matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
+from matplotlib.patches import Patch
+from experiments.analyze import load
+from experiments.vizstyle import (rcparams, clean, shape_legend, solid_legend, ARCH_MARKER,
+                                  ARCH_ORDER, MAS_ORDER, arch_color, ARCH_SOLID, LINE, LINE_SAS,
+                                  TIER_ORDER, TIER_LABEL, BENCH_ORDER, BENCH_LABEL, BENCH_COLOR,
+                                  INK, MUTED, FAINT, GAIN_POS, GAIN_NEG)
+from mechanisms.nmi_metrics import config_metrics, fit_turn_powerlaw
+from panels.architectures import NMI_CLASS
+FIG = ROOT / "paper/figures"
+
+
+def build():
+    rows = load(sorted(glob.glob(str(ROOT / "results/G_*.jsonl"))))
+    c = collections.defaultdict(list)
+    for r in rows:
+        c[(r["model"], r["bench"], r["arch"], r["N"])].append(r)
+    return c
+
+
+# 5 个类别挤进 2.1in 面板：只有三字母缩写能不旋转、不重叠（全称见 caption）
+SHORT_ARCH = {"cot": "SAS", "centralized": "Cen", "discussion": "Dec",
+              "independent": "Ind", "tiered": "Hyb"}
+
+
+def acc(v):
+    return sum(x["correct"] for x in v) / len(v) * 100 if v else np.nan
+
+
+# ---------------------------------------------------------------- N-scaling
+def fig_nscaling(cells):
+    pairs = [(m, b) for b in BENCH_ORDER for m in TIER_ORDER
+             if any(k[:2] == (m, b) and k[2] in MAS_ORDER for k in cells)]
+    ncol = 3; nrow = int(np.ceil(len(pairs) / ncol))
+    fig, axes = plt.subplots(nrow, ncol, figsize=(2.10 * ncol, 1.90 * nrow), squeeze=False)
+    for i, (m, b) in enumerate(pairs):
+        ax = axes[i // ncol][i % ncol]
+        base = acc(cells.get((m, b, "cot", 1), []))
+        if not np.isnan(base):
+            ax.axhline(base, ls="--", lw=1.1, color=LINE_SAS, zorder=2)
+            ax.text(9.5, base, " SAS", color=MUTED, fontsize=8.2, va="center")
+        for a in MAS_ORDER:
+            st = ARCH_MARKER[a]
+            Ns = sorted(k[3] for k in cells if k[:3] == (m, b, a))
+            if not Ns:
+                continue
+            ys = [acc(cells[(m, b, a, N)]) for N in Ns]
+            col = arch_color(b, a)
+            ax.plot(Ns, ys, ls="--", lw=1.3, color=col, marker=st["marker"],
+                    ms=st["ms"], mfc=col, mec=col, mew=0.0, zorder=4)
+        clean(ax)
+        ax.set_xticks([1, 3, 5, 7, 9]); ax.set_xlim(0.3, 10.4)
+        # 小倍数网格的标准做法：列头=模型（只在首行），行头=benchmark（只在首列）。
+        # 每个面板都写"模型·benchmark"必然串栏。
+        if i // ncol == 0:
+            ax.set_title(TIER_LABEL[m].replace(chr(10), " "), fontsize=9.8, pad=6)
+        if i % ncol == 0:
+            ax.set_ylabel(f"{BENCH_LABEL.get(b, b)}\nPerformance (%)", fontsize=8.6,
+                          linespacing=1.35)
+        if i // ncol == nrow - 1:
+            ax.set_xlabel("Number of agents $n_a$")
+        ax.margins(y=.20)
+    for j in range(len(pairs), nrow * ncol):
+        axes[j // ncol][j % ncol].axis("off")
+    shape_legend(fig, ncol=5, y=0.005)
+    fig.tight_layout(rect=[0, 0.065, 1, 1])
+    for e in ("pdf", "png"):
+        fig.savefig(FIG / f"fig2_nscaling.{e}", dpi=200, bbox_inches="tight")
+    print("fig2_nscaling ok")
+
+
+# ---------------------------------------------------------------- 协作窗口
+def fig_window(cells):
+    pts = []
+    for (m, b, a, N), v in cells.items():
+        if a not in MAS_ORDER:
+            continue
+        base = cells.get((m, b, "cot", 1))
+        if not base:
+            continue
+        ids = {x["qid"] for x in v} & {x["qid"] for x in base}
+        if len(ids) < 50:
+            continue
+        A = sum(x["correct"] for x in v if x["qid"] in ids) / len(ids)
+        P = sum(x["correct"] for x in base if x["qid"] in ids) / len(ids)
+        pts.append((P * 100, (A - P) * 100, a, m, b, N))
+    if len(pts) < 5:
+        print("fig3 数据不足"); return
+    fig, axes = plt.subplots(1, 2, figsize=(6.30, 2.35), gridspec_kw={"width_ratios": [1.55, 1]})
+    ax = axes[0]
+    ax.axvspan(25, 50, color="#f7d68a", alpha=.30, zorder=0, lw=0)
+    ax.axhline(0, color="#7a7a7a", lw=1.0, zorder=1)
+    for a in MAS_ORDER:
+        st = ARCH_MARKER[a]
+        for b in BENCH_ORDER:
+            sub = [p for p in pts if p[2] == a and p[4] == b]
+            if sub:
+                ax.plot([p[0] for p in sub], [p[1] for p in sub], ls="none",
+                        marker=st["marker"], ms=st["ms"], mfc=arch_color(b, a),
+                        mec="white", mew=1.0, zorder=4)
+    ax.axvline(45, color=INK, ls="--", lw=1.5, zorder=3)
+    gs = sorted(p[1] for p in pts)
+    lo_, hi_ = np.percentile(gs, 1), np.percentile(gs, 99)
+    pad = (hi_ - lo_) * .26
+    ax.set_ylim(lo_ - pad, hi_ + pad)
+    n_clip = sum(1 for g in gs if g < lo_ - pad or g > hi_ + pad)
+    # 标注贴着它们指的东西：窗口名放在带内底部，45% 阈值竖排贴在线上
+    ax.text(37.5, lo_ - pad * .72, "collaboration window", ha="center", va="bottom",
+            fontsize=8.4, color="#946a00", fontweight="bold")
+    ax.text(45.8, hi_ + pad * .45, "45% ceiling", ha="left", va="top",
+            fontsize=8.0, color=INK)
+    if n_clip:
+        ax.text(.99, .02, f"{n_clip} point(s) outside axis range", transform=ax.transAxes,
+                ha="right", va="bottom", fontsize=7.4, color=MUTED, style="italic")
+    clean(ax)
+    ax.set_xlabel("Single-doctor baseline $P_{SA}$ (%)")
+    ax.set_ylabel("Collaboration gain (pp)")
+    ax.set_title("(a)  Gain against the single-doctor baseline", loc="left",
+                 fontsize=9.6, pad=5)
+
+    ax = axes[1]
+    bins = [(0, 25, "<25"), (25, 35, "25–35"), (35, 50, "35–50"), (50, 70, "50–70"), (70, 101, ">70")]
+    xs, ys, es, fr = [], [], [], []
+    for lo, hi, l in bins:
+        s_ = [p[1] for p in pts if lo <= p[0] < hi]
+        if not s_:
+            continue
+        xs.append(l); ys.append(np.mean(s_)); es.append(np.std(s_) / max(1, np.sqrt(len(s_))))
+        fr.append(np.mean([v > 0 for v in s_]) * 100)
+    cols = ["#e0a33c" if l in ("25–35", "35–50") else "#c4c4c4" for l in xs]
+    ax.bar(xs, ys, yerr=es, color=cols, capsize=3, width=.66,
+           error_kw=dict(ecolor="#3a3a3a", lw=1.0), zorder=3)
+    ax.axhline(0, color="#3a3a3a", lw=1.0, zorder=4)
+    for i, (y, e, f) in enumerate(zip(ys, es, fr)):
+        top = y + e if y >= 0 else y - e
+        ax.text(i, top + (.20 if y >= 0 else -.20), f"{f:.0f}%", ha="center",
+                va="bottom" if y >= 0 else "top", fontsize=8.6, color=INK, fontweight="bold")
+    clean(ax)
+    ax.margins(y=.20)
+    ax.set_xlabel("Single-doctor baseline $P_{SA}$ (%)")
+    ax.set_ylabel("Mean collaboration gain (pp)")
+    ax.set_title("(b)  Binned; label = % of configurations that gain", loc="left",
+                 fontsize=9.6, pad=5)
+    shape_legend(fig, ncol=4, y=0.005, include=MAS_ORDER)
+    fig.tight_layout(rect=[0, 0.075, 1, 1])
+    for e in ("pdf", "png"):
+        fig.savefig(FIG / f"fig3_window.{e}", dpi=200, bbox_inches="tight")
+    print("fig3_window ok")
+
+
+# ---------------------------------------------------------------- 成本-性能
+def fig_cost(cells):
+    benches = [b for b in BENCH_ORDER if any(k[1] == b for k in cells)]
+    fig, axes = plt.subplots(1, len(benches), figsize=(2.10 * len(benches), 2.00), squeeze=False)
+    for bi, b in enumerate(benches):
+        ax = axes[0][bi]
+        for a in ARCH_ORDER:
+            st = ARCH_MARKER[a]
+            xs, ys, xe, ye = [], [], [], []
+            for k, v in cells.items():
+                if k[1] != b or k[2] != a or not v:
+                    continue
+                acc_ = np.array([x["correct"] for x in v]) * 100
+                usd = np.array([x["cost"]["usd"] for x in v]) * 1000
+                xs.append(usd.mean()); ys.append(acc_.mean())
+                xe.append(usd.std() / np.sqrt(len(usd))); ye.append(acc_.std() / np.sqrt(len(acc_)))
+            if xs:
+                ax.errorbar(xs, ys, xerr=xe, yerr=ye, ls="none", marker=st["marker"],
+                            ms=st["ms"], mfc=ARCH_SOLID[a], mec="white", mew=.9,
+                            ecolor=ARCH_SOLID[a], elinewidth=1.0, capsize=2.2,
+                            alpha=.95, zorder=3)
+        clean(ax, grid_axis="both")
+        ax.set_title(BENCH_LABEL.get(b, b), pad=7)
+        ax.set_xlabel("Cost / 1,000 questions ($)")
+        if bi == 0:
+            ax.set_ylabel("Performance (%)")
+        ax.set_xlim(left=0)
+    solid_legend(fig, ncol=5, y=0.005)
+    fig.tight_layout(rect=[0, 0.075, 1, 1])
+    for e in ("pdf", "png"):
+        fig.savefig(FIG / f"fig4_cost.{e}", dpi=200, bbox_inches="tight")
+    print("fig4_cost ok")
+
+
+# ---------------------------------------------------------------- 分布箱线图
+def fig_box(cells):
+    benches = [b for b in BENCH_ORDER if any(k[1] == b for k in cells)]
+    fig, axes = plt.subplots(1, len(benches), figsize=(2.10 * len(benches), 2.05), squeeze=False)
+    for bi, b in enumerate(benches):
+        ax = axes[0][bi]
+        data, cols, labs = [], [], []
+        for a in ARCH_ORDER:
+            if a == "cot":
+                vals = [acc(cells[(m, b, "cot", 1)]) for m in TIER_ORDER if (m, b, "cot", 1) in cells]
+            else:
+                vals = [acc(v) for k, v in cells.items() if k[1] == b and k[2] == a]
+            if vals:
+                data.append(vals); cols.append(arch_color(b, a))
+                labs.append(SHORT_ARCH[a])
+        base = np.mean(data[0]) if data else np.nan
+        bp = ax.boxplot(data, patch_artist=True, widths=.58, showfliers=False,
+                        medianprops=dict(color=INK, lw=1.4),
+                        whiskerprops=dict(color="#9a9a9a", lw=1.0),
+                        capprops=dict(color="#9a9a9a", lw=1.0))
+        for patch, c in zip(bp["boxes"], cols):
+            patch.set_facecolor(c); patch.set_alpha(.32)
+            patch.set_edgecolor(c); patch.set_linewidth(1.3)
+        for i, (d, c) in enumerate(zip(data, cols), start=1):
+            ax.plot(np.random.RandomState(i).normal(i, .05, len(d)), d, ".",
+                    color=c, ms=3.6, alpha=.8, zorder=4)
+        if not np.isnan(base) and base:
+            rng = max(max(x) for x in data) - min(min(x) for x in data)
+            for i, d in enumerate(data[1:], start=2):
+                rel = (np.mean(d) - base) / base * 100
+                col = GAIN_POS if rel >= 0 else GAIN_NEG
+                ax.text(i, max(d) + rng * .05, f"{rel:+.1f}", ha="center",
+                        fontsize=7.2, color=col, fontweight="bold")
+        clean(ax)
+        ax.set_xticklabels(labs, fontsize=7.8)
+        ax.set_title(BENCH_LABEL.get(b, b), fontsize=9.8, pad=5)
+        if bi == 0:
+            ax.set_ylabel("Performance (%)")
+        ax.margins(y=.20)
+    fig.tight_layout()
+    for e in ("pdf", "png"):
+        fig.savefig(FIG / f"fig5_distribution.{e}", dpi=200, bbox_inches="tight")
+    print("fig5_distribution ok")
+
+
+# ---------------------------------------------------------------- 协调动力学
+def fig_coord(cells):
+    md = []
+    for (m, b, a, N), v in cells.items():
+        if a in ("cot", "zeroshot"):
+            continue
+        base = cells.get((m, b, "cot", 1))
+        if not base:
+            continue
+        r = config_metrics(v, base)
+        if r:
+            r.update(arch=a, cls=NMI_CLASS.get(a, a), model=m, bench=b)
+            md.append(r)
+    if len(md) < 5:
+        print("fig6 数据不足"); return
+    # 四面板：A_e 与 absorption 量纲差十倍，共用一根 y 轴会让 A_e 不可读，必须拆开
+    fig, axes2 = plt.subplots(2, 2, figsize=(6.30, 4.35))
+    axes = axes2.ravel()
+
+    ax = axes[0]
+    for a in MAS_ORDER:
+        st = ARCH_MARKER[a]
+        sub = [(r["n_agents"], r["turns"]) for r in md if r["arch"] == a]
+        if sub:
+            ax.plot([x[0] for x in sub], [x[1] for x in sub], ls="none", marker=st["marker"],
+                    ms=st["ms"], mfc=ARCH_SOLID[a], mec="white", mew=.9, alpha=.9, zorder=4)
+    pl = fit_turn_powerlaw([(r["n_agents"], r["turns"]) for r in md])
+    xs = np.linspace(1, 10, 60)
+    if pl:
+        ax.plot(xs, pl["a"] * (xs + .5) ** pl["exponent"], "-", color=INK, lw=1.6, zorder=5)
+        ax.plot(xs, 2.72 * (xs + .5) ** 1.724, "--", color="#a8a8a8", lw=1.4, zorder=3)
+        ax.text(.04, .97, "ours: $T=%.2f(n{+}0.5)^{%.2f}$,  $R^2$=%.2f"
+                % (pl["a"], pl["exponent"], pl["r2"]), transform=ax.transAxes,
+                fontsize=7.6, va="top")
+        ax.text(.04, .875, "general domain: $2.72(n{+}0.5)^{1.72}$,  $R^2$=0.97",
+                transform=ax.transAxes, fontsize=7.6, color="#8a8a8a", va="top")
+    ax.set_yscale("log"); clean(ax)
+    ax.set_ylim(top=ax.get_ylim()[1] * 5.0)   # 给面板内两行拟合注释腾出顶部空间
+    ax.set_xlabel("Number of agents $n_a$"); ax.set_ylabel("Reasoning turns $T$")
+    ax.set_title("(a)  Turn-count scaling", loc="left", fontsize=9.6, pad=5)
+
+    ax = axes[1]
+    for a in MAS_ORDER:
+        st = ARCH_MARKER[a]
+        sub = [(r["msg_density"], r["accuracy"] * 100) for r in md if r["arch"] == a]
+        if sub:
+            ax.plot([x[0] for x in sub], [x[1] for x in sub], ls="none", marker=st["marker"],
+                    ms=st["ms"], mfc=ARCH_SOLID[a], mec="white", mew=.9, alpha=.9, zorder=4)
+    ax.axvline(.39, color=GAIN_NEG, ls="--", lw=1.3, zorder=3)
+    clean(ax)
+    y0, y1 = ax.get_ylim(); ax.set_ylim(y0, y1 + (y1 - y0) * .16)
+    ax.text(.47, y1 + (y1 - y0) * .12, "plateau $c^*{=}0.39$", fontsize=7.6,
+            color=GAIN_NEG, ha="left", va="top")
+    ax.set_xlabel("Message density $c$"); ax.set_ylabel("Performance (%)")
+    ax.set_title("(b)  Message density", loc="left", fontsize=9.6, pad=5)
+
+    order = ["Independent", "Centralized", "Decentralized", "Hybrid"]
+    key = {"Independent": "independent", "Centralized": "centralized",
+           "Decentralized": "discussion", "Hybrid": "tiered"}
+    cls = [c for c in order if any(r["cls"] == c for r in md)]
+    cc = [ARCH_SOLID[key[c]] for c in cls]
+    xp = np.arange(len(cls))
+    short = [c.replace("Decentralized", "Decentr.").replace("Independent", "Independ.") for c in cls]
+
+    ax = axes[2]
+    ae = [np.mean([r["error_amp"] for r in md if r["cls"] == c]) for c in cls]
+    ax.bar(xp, ae, .58, color=cc, zorder=3, edgecolor="white", lw=.7)
+    for i2, v in enumerate(ae):
+        ax.text(i2, v + max(ae) * .035, f"{v:.2f}", ha="center", fontsize=8.4, color=INK)
+    clean(ax, grid_axis="y"); ax.set_xticks(xp); ax.set_xticklabels(short, fontsize=8.4)
+    ax.set_ylabel("$A_e$  (information discarded)"); ax.margins(y=.18)
+    ax.set_title("(c)  Error amplification", loc="left", fontsize=9.6, pad=5)
+
+    ax = axes[3]
+    ab = [np.mean([r["absorb"] for r in md if r["cls"] == c]) * 100 for c in cls]
+    ax.bar(xp, ab, .58, color=cc, zorder=3, edgecolor="white", lw=.7, hatch="///")
+    for i2, v in enumerate(ab):
+        ax.text(i2, v + .5, f"{v:.1f}%", ha="center", fontsize=8.4, color=INK)
+    ax.axhline(22.7, color=GAIN_NEG, ls="--", lw=1.2, zorder=4)
+    ax.text(-.42, 23.6, "reported 22.7%", fontsize=7.8, color=GAIN_NEG, va="bottom")
+    clean(ax, grid_axis="y"); ax.set_xticks(xp); ax.set_xticklabels(short, fontsize=8.4)
+    ax.set_ylabel("Error absorption (%)"); ax.set_ylim(0, 27)
+    ax.set_title("(d)  Error absorption", loc="left", fontsize=9.6, pad=5)
+
+    shape_legend(fig, ncol=4, y=0.004, include=MAS_ORDER)
+    fig.tight_layout(rect=[0, 0.075, 1, 1])
+    for e in ("pdf", "png"):
+        fig.savefig(FIG / f"fig6_coordination.{e}", dpi=200, bbox_inches="tight")
+    print("fig6_coordination ok")
+
+
+if __name__ == "__main__":
+    rcparams()
+    c = build()
+    fig_nscaling(c); fig_window(c); fig_cost(c); fig_box(c); fig_coord(c)
