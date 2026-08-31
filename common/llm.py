@@ -44,6 +44,12 @@ PRICING: dict[str, tuple[float, float]] = {
     "gpt-5.4-nano":  (0.05, 0.40),
     "gpt-5.4-mini":  (0.25, 2.00),
     "gpt-5.4":       (1.25, 10.00),
+    # Gemini Flash 系列
+    "gemini-3.7-flash":      (0.30, 2.50),
+    "gemini-3.5-flash":      (0.30, 2.50),
+    "gemini-3.5-flash-lite": (0.10, 0.40),
+    "gemini-3.1-flash-lite": (0.10, 0.40),
+    "gemini-2.5-flash":      (0.30, 2.50),
 }
 # OpenAI reasoning models: no `temperature`, no `top_p`, use max_completion_tokens.
 REASONING_PREFIXES = ("gpt-5", "o3", "o4")
@@ -55,6 +61,14 @@ REASONING_MIN_TOKENS = int(os.environ.get("REASONING_MIN_TOKENS", "1600"))
 # 模型名以 "local/" 开头即走本地端点；计价为 0（GPU 时间不计入美元上限），
 # 但 token 仍照常记账，因此成本图上它们出现在 0 美元处而不是缺失。
 LOCAL_PREFIX = "local/"
+
+# ---- Google Gemini：官方 OpenAI 兼容端点，复用同一个客户端栈。
+GEMINI_BASE = os.environ.get(
+    "GEMINI_BASE_URL", "https://generativelanguage.googleapis.com/v1beta/openai")
+
+
+def is_gemini(model: str) -> bool:
+    return model.startswith("gemini-")
 
 
 def _local_registry() -> dict[str, str]:
@@ -84,7 +98,10 @@ def local_endpoint(model: str) -> str:
 
 
 def is_reasoning(model: str) -> bool:
-    return (not is_local(model)) and model.startswith(REASONING_PREFIXES)
+    """仅指 OpenAI 的推理系列（改用 max_completion_tokens / reasoning_effort）。
+    Gemini 与本地模型走标准参数。"""
+    return (not is_local(model)) and (not is_gemini(model)) \
+        and model.startswith(REASONING_PREFIXES)
 
 
 @dataclass
@@ -184,14 +201,25 @@ class BudgetExceeded(RuntimeError):
 
 
 _client = None
+_gemini_client = None
 _local_clients: dict[str, Any] = {}
 _json_off: dict[str, bool] = {}   # 端点拒绝 response_format 时记下，之后不再尝试
 _client_lock = threading.Lock()
 
 
 def _openai(model: str | None = None):
-    """OpenAI 官方端点，或（模型名以 local/ 开头时）某个 vLLM 兼容端点。"""
-    global _client
+    """按模型名路由：OpenAI 官方 / Gemini 兼容端点 / 本地 vLLM 端点。"""
+    global _client, _gemini_client
+    if model and is_gemini(model):
+        with _client_lock:
+            if _gemini_client is None:
+                from openai import OpenAI
+                k = os.environ.get("GEMINI_API_KEY")
+                if not k:
+                    raise RuntimeError("GEMINI_API_KEY 未设置")
+                _gemini_client = OpenAI(base_url=GEMINI_BASE, api_key=k,
+                                        timeout=300.0, max_retries=0)
+            return _gemini_client
     if model and is_local(model):
         url = local_endpoint(model)
         with _client_lock:
@@ -261,7 +289,12 @@ def chat(model: str, messages: list[dict], system: str | None = None,
         try:
             wire = model[len(LOCAL_PREFIX):] if is_local(model) else model
             kw: dict[str, Any] = dict(model=wire, messages=msgs)
-            if n > 1:
+            # Gemini 的 OpenAI 兼容层不认 seed，也不开 multiple candidates：
+            #   seed  -> 400 Unknown name "seed"
+            #   n>1   -> 400 Multiple candidates is not enabled for this model
+            # 因此 n>1 改为顺序多次采样（温度提供随机性），seed 直接丢弃。
+            gem = is_gemini(model)
+            if n > 1 and not gem:
                 kw["n"] = n
             if is_reasoning(model):
                 # reasoning tokens are drawn from the same budget: too small a cap returns "".
@@ -272,19 +305,27 @@ def chat(model: str, messages: list[dict], system: str | None = None,
                 kw["max_tokens"] = max_tokens
                 if temperature is not None:
                     kw["temperature"] = temperature
-                if seed is not None:
+                if seed is not None and not gem:
                     kw["seed"] = seed
             if json_mode and not (is_local(model) and _json_off.get(model)):
                 kw["response_format"] = {"type": "json_object"}
             t0 = time.time()
-            with _INFLIGHT:
-                resp = _openai(model).chat.completions.create(**kw)
-            texts = [(c.message.content or "") for c in resp.choices]
-            inp, out = resp.usage.prompt_tokens, resp.usage.completion_tokens
-            rtok = 0
-            ctd = getattr(resp.usage, "completion_tokens_details", None)
-            if ctd is not None:
-                rtok = getattr(ctd, "reasoning_tokens", 0) or 0
+            if gem and n > 1:
+                texts, inp, out, rtok = [], 0, 0, 0
+                for _ in range(n):
+                    with _INFLIGHT:
+                        rr = _openai(model).chat.completions.create(**kw)
+                    texts.append(rr.choices[0].message.content or "")
+                    inp += rr.usage.prompt_tokens; out += rr.usage.completion_tokens
+            else:
+                with _INFLIGHT:
+                    resp = _openai(model).chat.completions.create(**kw)
+                texts = [(c.message.content or "") for c in resp.choices]
+                inp, out = resp.usage.prompt_tokens, resp.usage.completion_tokens
+                rtok = 0
+                ctd = getattr(resp.usage, "completion_tokens_details", None)
+                if ctd is not None:
+                    rtok = getattr(ctd, "reasoning_tokens", 0) or 0
             r = {"texts": texts, "text": texts[0], "input_tokens": inp, "output_tokens": out,
                  "reasoning_tokens": rtok, "model": model, "cached": False}
             if use_cache:
@@ -308,7 +349,9 @@ def chat(model: str, messages: list[dict], system: str | None = None,
                 continue
             if any(s in msg for s in ("invalid_request", "does not exist", "invalid_api_key",
                                       "model_not_found", "Unsupported parameter",
-                                      "Unsupported value", "unsupported_value")):
+                                      "Unsupported value", "unsupported_value",
+                                      "INVALID_ARGUMENT", "Unknown name",
+                                      "Multiple candidates is not enabled")):
                 raise
             # 429s need a much longer, jittered backoff than transient errors, and the
             # server's own Retry-After beats any guess.

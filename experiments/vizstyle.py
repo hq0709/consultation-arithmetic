@@ -65,12 +65,15 @@ def arch_color(bench, arch):
 
 
 TIER_LABEL = {"gpt-4.1-nano": "GPT-4.1\nnano", "gpt-5-nano": "GPT-5\nnano",
-              "gpt-5-mini": "GPT-5\nmini"}
+              "gpt-5-mini": "GPT-5\nmini",
+              "gemini-3.5-flash-lite": "Gemini 3.5\nFlash Lite",
+              "gemini-3.7-flash": "Gemini 3.7\nFlash"}
 TIER_ORDER = ["gpt-4.1-nano", "gpt-5-nano", "gpt-5-mini"]
 BENCH_LABEL = {"medxpertqa": "MedXpertQA", "medqa": "MedQA (USMLE)",
                "medagentsbench": "MedAgentsBench-hard"}
 BENCH_ORDER = ["medxpertqa", "medagentsbench", "medqa"]
-CAPABILITY = {"gpt-4.1-nano": 34.0, "gpt-5-nano": 50.8, "gpt-5-mini": 59.2}
+CAPABILITY = {"gpt-4.1-nano": 34.0, "gpt-5-nano": 50.8, "gpt-5-mini": 59.2,
+              "gemini-3.5-flash-lite": 54.2, "gemini-3.7-flash": 81.7}
 
 
 def rcparams():
@@ -175,7 +178,8 @@ def gain_arrow(ax, x, y0, y1, pct):
 FAMILY = {
     "openai":    dict(label="OpenAI GPT",       logo="openai.png",
                       models=["gpt-4.1-nano", "gpt-5-nano", "gpt-5-mini"]),
-    "google":    dict(label="Google Gemini",    logo="gemini.png", models=[]),
+    "google":    dict(label="Google Gemini",    logo="gemini.png",
+                      models=["gemini-3.5-flash-lite", "gemini-3.7-flash"]),
     "anthropic": dict(label="Anthropic Claude", logo="claude.png", models=[]),
 }
 FAMILY_ORDER = ["openai", "google", "anthropic"]

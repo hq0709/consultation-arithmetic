@@ -13,7 +13,8 @@ from experiments.vizstyle import (rcparams, clean, shape_legend, GAIN_POS, ARCH_
 FIG = ROOT / "paper/figures"
 # x 刻度用短名，避免 I=50.8 与 59.2 两点的标签相撞
 TICK_LABEL = {"gpt-4.1-nano": "4.1-nano", "gpt-5-nano": "5-nano",
-              "gpt-5-mini": "5-mini"}
+              "gpt-5-mini": "5-mini",
+              "gemini-3.5-flash-lite": "3.5-lite", "gemini-3.7-flash": "3.7-flash"}
 
 
 def main():

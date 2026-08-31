@@ -1,0 +1,18 @@
+[
+ {
+  "model": "gemini-3.7-flash",
+  "medxpertqa": 0.8,
+  "medagentsbench": 0.675,
+  "medqa": 0.975,
+  "I": 81.66666666666667,
+  "usd_per_1k": 0.4142916666666667
+ },
+ {
+  "model": "gemini-3.5-flash-lite",
+  "medxpertqa": 0.3,
+  "medagentsbench": 0.375,
+  "medqa": 0.95,
+  "I": 54.166666666666664,
+  "usd_per_1k": 0.09255833333333334
+ }
+]

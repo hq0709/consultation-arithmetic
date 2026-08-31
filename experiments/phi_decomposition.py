@@ -20,6 +20,8 @@ FAMILY = {
     # ---- OpenAI 生态 ----
     "gpt-4o-mini": "4o", "gpt-4.1-nano": "4.1", "gpt-4.1-mini": "4.1",
     "gpt-5-nano": "5", "gpt-5-mini": "5", "gpt-5.4-nano": "5",
+    # ---- Google Gemini ----
+    "gemini-3.5-flash-lite": "gemini-3.5", "gemini-3.7-flash": "gemini-3.7",
     # ---- 开源权重（每个是独立生态）----
     "local/medgemma-4b": "gemma", "local/medgemma-27b": "gemma",
     "local/lingshu-7b": "lingshu", "local/lingshu-32b": "lingshu",
@@ -29,10 +31,12 @@ FAMILY = {
 }
 # 生态 = 训练它的组织。跨生态比跨家族更彻底。
 ECOSYSTEM = {"4o": "openai", "4.1": "openai", "5": "openai",
+             "gemini-3.5": "google", "gemini-3.7": "google",
              "gemma": "google", "lingshu": "alibaba", "llava-med": "microsoft",
              "huatuo": "freedomintel", "qwen": "alibaba"}
 LABEL = {"gpt-4o-mini": "4o-mini", "gpt-4.1-nano": "4.1-nano", "gpt-4.1-mini": "4.1-mini",
          "gpt-5-nano": "5-nano", "gpt-5-mini": "5-mini", "gpt-5.4-nano": "5.4-nano",
+         "gemini-3.5-flash-lite": "G3.5-lite", "gemini-3.7-flash": "G3.7-flash",
          "local/medgemma-4b": "MedGemma-4B", "local/medgemma-27b": "MedGemma-27B",
          "local/lingshu-7b": "Lingshu-7B", "local/lingshu-32b": "Lingshu-32B",
          "local/llava-med": "LLaVA-Med", "local/huatuo-7b": "HuatuoGPT-V-7B",
