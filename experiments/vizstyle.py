@@ -192,15 +192,35 @@ def family_of(model):
     return None
 
 
+# ---- 厂商 logo：不同来源的 PNG 画布尺寸与透明边距都不同（openai 512px 无边距、
+# gemini 1024px 含 84px 边距、claude 1200px），统一 zoom 会渲染出一大一小。
+# 按 alpha 通道裁到实际内容，再反算 zoom，使所有 logo 的**内容高度**都等于
+# LOGO_PT 磅。以后加新厂商无需手工调参。
+LOGO_PT = 13.0
+
+
+def _logo_offsetimage(path, target_pt=LOGO_PT, dpi=72.0):
+    """裁掉透明边距并归一化到统一显示高度的 OffsetImage。"""
+    import numpy as np
+    import matplotlib.image as mpimg
+    from matplotlib.offsetbox import OffsetImage
+    img = mpimg.imread(str(path))
+    if img.ndim == 3 and img.shape[2] == 4:                 # 有 alpha：裁到内容
+        ys, xs = np.where(img[..., 3] > 0.04)
+        if len(ys):
+            img = img[ys.min():ys.max() + 1, xs.min():xs.max() + 1]
+    h_px = img.shape[0]
+    return OffsetImage(img, zoom=target_pt / h_px * (dpi / 72.0))
+
+
 def title_with_logo(ax, fam, text, y=1.035, zoom=0.028, fontsize=11.0, tail=None):
     """标题 + 厂商 logo 打包居中；logo 紧贴厂商名右侧，不挂在标题末尾。"""
-    import matplotlib.image as mpimg
-    from matplotlib.offsetbox import (OffsetImage, AnnotationBbox, TextArea, HPacker)
+    from matplotlib.offsetbox import (AnnotationBbox, TextArea, HPacker)
     import pathlib as _p
     f = _p.Path(__file__).resolve().parents[1] / "paper/figures/logos" / FAMILY[fam]["logo"]
     kids = [TextArea(text, textprops=dict(color=INK, fontsize=fontsize, family="serif"))]
     if f.exists():
-        kids.append(OffsetImage(mpimg.imread(str(f)), zoom=zoom))
+        kids.append(_logo_offsetimage(f, target_pt=fontsize * 1.18))
     if tail:
         kids.append(TextArea(tail, textprops=dict(color=INK, fontsize=fontsize, family="serif")))
     box = HPacker(children=kids, align="center", pad=0, sep=6) if len(kids) > 1 else kids[0]
@@ -210,13 +230,12 @@ def title_with_logo(ax, fam, text, y=1.035, zoom=0.028, fontsize=11.0, tail=None
 
 def fig_title_with_logo(fig, fam, text, y=0.985, zoom=0.026, fontsize=10.5):
     """厂商标识作为**整图**总标题出现一次，而不是每个面板挂一个。"""
-    import matplotlib.image as mpimg
-    from matplotlib.offsetbox import (OffsetImage, AnnotationBbox, TextArea, HPacker)
+    from matplotlib.offsetbox import (AnnotationBbox, TextArea, HPacker)
     import pathlib as _p
     f = _p.Path(__file__).resolve().parents[1] / "paper/figures/logos" / FAMILY[fam]["logo"]
     kids = [TextArea(text, textprops=dict(color=INK, fontsize=fontsize, family="serif"))]
     if f.exists():
-        kids.append(OffsetImage(mpimg.imread(str(f)), zoom=zoom))
+        kids.append(_logo_offsetimage(f, target_pt=fontsize * 1.18))
     box = HPacker(children=kids, align="center", pad=0, sep=5) if len(kids) > 1 else kids[0]
     ab = AnnotationBbox(box, (0.5, y), xycoords="figure fraction",
                         frameon=False, box_alignment=(0.5, 1.0))

@@ -19,7 +19,11 @@ TICK_LABEL = {"gpt-4.1-nano": "4.1-nano", "gpt-5-nano": "5-nano",
 
 def main():
     rcparams()
-    rows = load(sorted(glob.glob(str(ROOT / "results/G_*.jsonl"))))
+    # Gemini 网格写的是 GEM_*.jsonl，与 OpenAI 的 G_*.jsonl 是两个独立网格。
+    # 只有这张能力图把两者并列（列 = 厂商家族）；其余分析仍只用 OpenAI 网格，
+    # 否则 "180 个配置"、窗口划分、phi=0.734 等主结果的口径会被静默改掉。
+    rows = load(sorted(glob.glob(str(ROOT / "results/G_*.jsonl")))
+                + sorted(glob.glob(str(ROOT / "results/GEM_*.jsonl"))))
     cells = collections.defaultdict(list)
     for r in rows:
         cells[(r["model"], r["bench"], r["arch"], r["N"])].append(r)

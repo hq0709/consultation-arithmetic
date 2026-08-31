@@ -48,3 +48,6 @@ docs/NMI_*
 docs/GAP_ANALYSIS.md
 CLAUDE.md
 MANIFEST.md
+
+# 论文 PDF 属于论文仓，不属于这里（曾因 cp 到错误目录混入一次）
+main.pdf
