@@ -68,7 +68,7 @@ def main():
         # 行=厂商、列=benchmark。厂商名竖排在最左，省掉每行的标题空间，
         # 所以厂商数增加时不必压面板高度。宽度钉死在 \textwidth。
         nr, nc = len(fams), len(benches)
-        fig, axes = plt.subplots(nr, nc, figsize=(TEXT_W, 1.42 * nr), squeeze=False,
+        fig, axes = plt.subplots(nr, nc, figsize=(TEXT_W, 1.78 * nr), squeeze=False,
                                  sharey=True)
 
     gy_all = []
@@ -109,6 +109,15 @@ def main():
             # 模型名下沉为 x 刻度（目标图：x 轴是干净的数值轴，没有浮在数据里的标注）
             ax.set_xticks(xs)
             ax.set_xticklabels([TICK_LABEL[m] for m in models], fontsize=7.4)
+            xi = len(models) - 1
+            cand = [series[a][xi] for a in MAS_ORDER if not np.isnan(series[a][xi])]
+            if cand:
+                y1 = max(cand)
+                ax.text(0.035, 0.955, f"best panel {y1:+.1f} pp",
+                        transform=ax.transAxes, ha="left", va="top",
+                        # 负增益必须用负色：绿色的 "-2.0 pp" 会被读成好消息
+                        fontsize=8.0, fontweight="bold",
+                        color=GAIN_POS if y1 >= 0 else GAIN_NEG)
             clean(ax)
             if single:
                 ax.set_title(BENCH_LABEL.get(b, b), fontsize=10.0, pad=5)
@@ -121,9 +130,7 @@ def main():
                     ax.set_title(BENCH_LABEL.get(b, b), fontsize=10.2, pad=6)
                 if ci == 0:
                     vendor_side_label(ax, fam)
-                # 厂商名已在左侧，x 轴不再重复厂商，只在最底一行标一次
-                if ri == nr - 1:
-                    ax.set_xlabel("capability index $I$", fontsize=9.0)
+                # x 轴刻度就是模型名，自解释，不再另加轴标题
     if not single and gy_all:
         lo, hi = min(gy_all), max(gy_all); sp = (hi - lo) or 1.0
         for row in axes:
