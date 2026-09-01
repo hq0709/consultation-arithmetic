@@ -53,8 +53,8 @@ def main():
     ax.set_xlabel("Accuracy: is a correct answer available? (%)")
     ax.set_title("(a)  Nine specialists $\\approx$ one generalist asked nine times",
                  loc="left", fontsize=9.0, pad=5)
+    # 左边框保留：(b) 面板是四边框，两图并排必须一致（图 6 同因修过）
     clean(ax, grid_axis="x")
-    ax.spines["left"].set_visible(False)
     ax.tick_params(axis="y", length=0)
 
     # ---------- (b) 捕获率刻度

@@ -29,8 +29,14 @@ def mcnemar(a: dict, b: dict):
     return b10, b01, min(1.0, p)
 
 
-def load(paths):
+def load(paths, dedup=True):
+    """读取 episode。默认按 (qid, cfg_hash) 去重。
+
+    去重是必需的，不是可选的：一个输出文件如果被两个进程同时追加（2026-08-31
+    出现过一次，两个并发设置不同的网格写了同一个文件），同一条 episode 会出现
+    两次，准确率就会按重复的份数加权。保留首次出现的那条。"""
     rows = []
+    seen = set()
     for p in paths:
         for l in open(p):
             try:
@@ -40,6 +46,11 @@ def load(paths):
             # R1 #6: infrastructure failures are excluded from accuracy, never scored 0.
             if r.get("status") == "error" or "error" in r:
                 continue
+            if dedup:
+                k = (r.get("qid"), r.get("cfg_hash"), r.get("model"), r.get("bench"))
+                if k in seen:
+                    continue
+                seen.add(k)
             rows.append(r)
     return rows
 

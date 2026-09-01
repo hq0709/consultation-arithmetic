@@ -67,13 +67,30 @@ def arch_color(bench, arch):
 TIER_LABEL = {"gpt-4.1-nano": "GPT-4.1\nnano", "gpt-5-nano": "GPT-5\nnano",
               "gpt-5-mini": "GPT-5\nmini",
               "gemini-3.5-flash-lite": "Gemini 3.5\nFlash Lite",
-              "gemini-3.7-flash": "Gemini 3.7\nFlash"}
+              "gemini-3.7-flash": "Gemini 3.7\nFlash",
+              "claude-haiku-4-5-20251001": "Claude Haiku\n4.5",
+              "claude-sonnet-5": "Claude\nSonnet 5",
+              "deepseek-v4-flash": "DeepSeek\nV4 Flash",
+              "deepseek-v4-pro": "DeepSeek\nV4 Pro"}
 TIER_ORDER = ["gpt-4.1-nano", "gpt-5-nano", "gpt-5-mini"]
 BENCH_LABEL = {"medxpertqa": "MedXpertQA", "medqa": "MedQA (USMLE)",
                "medagentsbench": "MedAgentsBench-hard"}
 BENCH_ORDER = ["medxpertqa", "medagentsbench", "medqa"]
-CAPABILITY = {"gpt-4.1-nano": 34.0, "gpt-5-nano": 50.8, "gpt-5-mini": 59.2,
-              "gemini-3.5-flash-lite": 54.2, "gemini-3.7-flash": 81.7}
+# I = 三个 benchmark 上单医生 CoT 准确率的均值，与 paper/tables/table6_capability_index.tex
+# 同源。这里是图的 x 轴坐标，任何偏离都会把点画到错误的能力位置上。
+CAPABILITY = {"gpt-4.1-nano": 34.0,
+              "claude-haiku-4-5-20251001": 41.2,
+              "gemini-3.5-flash-lite": 50.3,
+              "gpt-5-nano": 50.8,
+              "qwen3.8-flash": 52.1,
+              "deepseek-v4-flash": 54.9,
+              "qwen3.8-max": 56.9,
+              "gpt-5-mini": 59.2,
+              "deepseek-v4-pro": 59.7,
+              "glm-5.3": 60.9,
+              "glm-5.3-flash": 62.1,
+              "claude-sonnet-5": 63.7,
+              "gemini-3.7-flash": 70.9}
 
 
 def rcparams():
@@ -180,9 +197,13 @@ FAMILY = {
                       models=["gpt-4.1-nano", "gpt-5-nano", "gpt-5-mini"]),
     "google":    dict(label="Google Gemini",    logo="gemini.png",
                       models=["gemini-3.5-flash-lite", "gemini-3.7-flash"]),
-    "anthropic": dict(label="Anthropic Claude", logo="claude.png", models=[]),
+    "anthropic": dict(label="Anthropic Claude", logo="claude.png",
+                      models=["claude-haiku-4-5-20251001", "claude-sonnet-5"]),
+    # 图标来自 Wikimedia Commons（CC0，公有领域），512x512 带 alpha，与其余三个同规格
+    "deepseek":  dict(label="DeepSeek", logo="deepseek.png",
+                      models=["deepseek-v4-flash", "deepseek-v4-pro"]),
 }
-FAMILY_ORDER = ["openai", "google", "anthropic"]
+FAMILY_ORDER = ["openai", "google", "anthropic", "deepseek"]
 
 
 def family_of(model):
@@ -217,9 +238,10 @@ def title_with_logo(ax, fam, text, y=1.035, zoom=0.028, fontsize=11.0, tail=None
     """标题 + 厂商 logo 打包居中；logo 紧贴厂商名右侧，不挂在标题末尾。"""
     from matplotlib.offsetbox import (AnnotationBbox, TextArea, HPacker)
     import pathlib as _p
-    f = _p.Path(__file__).resolve().parents[1] / "paper/figures/logos" / FAMILY[fam]["logo"]
+    _lg = FAMILY[fam].get("logo")
+    f = (_p.Path(__file__).resolve().parents[1] / "paper/figures/logos" / _lg) if _lg else None
     kids = [TextArea(text, textprops=dict(color=INK, fontsize=fontsize, family="serif"))]
-    if f.exists():
+    if f is not None and f.exists():
         kids.append(_logo_offsetimage(f, target_pt=fontsize * 1.18))
     if tail:
         kids.append(TextArea(tail, textprops=dict(color=INK, fontsize=fontsize, family="serif")))
@@ -232,9 +254,10 @@ def fig_title_with_logo(fig, fam, text, y=0.985, zoom=0.026, fontsize=10.5):
     """厂商标识作为**整图**总标题出现一次，而不是每个面板挂一个。"""
     from matplotlib.offsetbox import (AnnotationBbox, TextArea, HPacker)
     import pathlib as _p
-    f = _p.Path(__file__).resolve().parents[1] / "paper/figures/logos" / FAMILY[fam]["logo"]
+    _lg = FAMILY[fam].get("logo")
+    f = (_p.Path(__file__).resolve().parents[1] / "paper/figures/logos" / _lg) if _lg else None
     kids = [TextArea(text, textprops=dict(color=INK, fontsize=fontsize, family="serif"))]
-    if f.exists():
+    if f is not None and f.exists():
         kids.append(_logo_offsetimage(f, target_pt=fontsize * 1.18))
     box = HPacker(children=kids, align="center", pad=0, sep=5) if len(kids) > 1 else kids[0]
     ab = AnnotationBbox(box, (0.5, y), xycoords="figure fraction",

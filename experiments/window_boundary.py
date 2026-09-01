@@ -11,6 +11,7 @@ import sys, pathlib, glob, json, collections
 ROOT = pathlib.Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT))
 import numpy as np
 from experiments.analyze import load
+from experiments.grid_files import main_grid
 
 MAS = ("independent", "centralized", "discussion", "tiered")
 N_STRATA = 3
@@ -26,7 +27,7 @@ def loo_difficulty(solo):
 
 
 def main():
-    files = sorted(glob.glob(str(ROOT / "results/G_*.jsonl"))) + \
+    files = main_grid() + \
             sorted(glob.glob(str(ROOT / "results/PHI_*.jsonl")))
     rows = load(files)
     solo = collections.defaultdict(dict)

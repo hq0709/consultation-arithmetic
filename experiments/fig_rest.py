@@ -6,6 +6,7 @@ import numpy as np, matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
 from experiments.analyze import load
+from experiments.grid_files import main_grid
 from experiments.vizstyle import (rcparams, clean, shape_legend, solid_legend, ARCH_MARKER,
                                   ARCH_ORDER, MAS_ORDER, arch_color, ARCH_SOLID, LINE, LINE_SAS,
                                   TIER_ORDER, TIER_LABEL, BENCH_ORDER, BENCH_LABEL, BENCH_COLOR,
@@ -16,7 +17,7 @@ FIG = ROOT / "paper/figures"
 
 
 def build():
-    rows = load(sorted(glob.glob(str(ROOT / "results/G_*.jsonl"))))
+    rows = load(main_grid())
     c = collections.defaultdict(list)
     for r in rows:
         c[(r["model"], r["bench"], r["arch"], r["N"])].append(r)

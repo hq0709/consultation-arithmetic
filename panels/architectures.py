@@ -14,7 +14,65 @@ from panels.base import (Opinion, user_prompt, render_question, parse_opinion, m
                          conf_weighted, has_majority, entropy, unanimous, ANSWER_JSON)
 from panels.roles import route, role_system
 
+# Claude 5 系列自适应思考常开，思考与输出共用 max_tokens：MedXpertQA 的长题目下 400 会被
+# 思考吃光、返回空串（2026-08-31 实测 sonnet-5 有 28/250 空输出，out_tok 正好顶到 400）。
+# haiku-4.5 不属于该系列，实测空答率 0.06--1.31%，维持 400 以保住已付费的缓存。
 MAX_TOK_OPINION = 400
+MAX_TOK_THINKING = 2000
+THINKING_MODELS = ("claude-sonnet-5", "claude-opus-5", "claude-fable-5", "gemini-3.1-pro")
+
+
+def _thinks(model: str) -> bool:
+    """思考与输出共用 max_tokens 的模型，必须给更大的预算，否则返回空串。
+
+    走 OpenRouter 的一律算在内：那条路把思考 token 计入 max_tokens，而直连
+    Google 不计（实测 gemini-3.7-flash 直连每样本可见输出 57 tok，
+    经 OpenRouter 同一提示 out=251 其中思考 210）。同样的 400 在两条路上
+    语义不同，按路由判定才不会踩空输出。
+    """
+    from common.llm import is_openrouter
+    return model.startswith(THINKING_MODELS) or is_openrouter(model)
+
+
+# 逐模型的思考预算。2000 对 glm / qwen 这类不够：实测 glm-5.3-flash 单次思考
+# 就用到 1420 token，可见输出只剩 98，再多一点就被挤没变成空串。
+# 这几个模型是新加的、没有既有缓存，调大不损失任何东西；
+# 已在跑或已跑完的模型不动，否则会作废它们的缓存与进度。
+THINK_BUDGET = {
+    # max_tokens 是封顶不是预付：不用不计费。所以在模型允许的范围内往高了给，
+    # 让思考永远挤不掉可见输出 —— 一次截断要重试，等于时间和钱双输。
+    # 各模型最大输出上限实测：deepseek 384k、qwen/glm 131k，32000 远在其内，
+    # 且是实测最大思考量(3781)的 8 倍。
+    "glm-5.3": 32000, "glm-5.3-flash": 32000,
+    "qwen3.8-flash": 32000, "qwen3.8-max": 32000,
+    "deepseek-v4-flash": 32000, "deepseek-v4-pro": 32000,
+}
+
+
+def opinion_budget(model: str) -> int:
+    if model in THINK_BUDGET:
+        return THINK_BUDGET[model]
+    return MAX_TOK_THINKING if _thinks(model) else MAX_TOK_OPINION
+
+
+def baseline_budget(model: str, default: int) -> int:
+    """零样本 / CoT 基线的预算。
+
+    这两条原来直接写 MAX_TOK_THINKING，绕过了 THINK_BUDGET —— 结果 qwen3.8-flash
+    每次都从 2000 起步、被思考顶满、再加倍重试，一条数据付两三次钱。
+    基线和面板意见必须走同一套预算表。
+    """
+    if model in THINK_BUDGET:
+        return THINK_BUDGET[model]
+    return MAX_TOK_THINKING if _thinks(model) else default
+
+
+def round_budget(model: str) -> int:
+    if model in THINK_BUDGET:
+        return THINK_BUDGET[model]
+    return MAX_TOK_THINKING if _thinks(model) else MAX_TOK_ROUND
+
+
 MAX_TOK_ROUND = 400
 SC_CHUNK = 8            # OpenAI hard limit: n <= 8 per request
 SC_POOL = 40            # self-consistency pool = 5 chunks; any k <= pool is a prefix (cache-shared)
@@ -87,8 +145,15 @@ def round0_opinions(item, roster, n, model, seed_base, temp, effort, meter,
         m_i = agent_model(cfg, i) if cfg else model
         # 异质 panel 的 agent 模型不同 -> tag 必须带模型，否则会串到同质 panel 的缓存
         tg = ("op0g" if generic_roles else "op0") + ("" if m_i == model else f"|{m_i}")
+        # 通用角色下每个 agent 的系统提示与用户提示完全相同，agent 索引只体现在 seed 上；
+        # 而推理模型会在进缓存键之前丢掉 seed（见 _ask），于是 N 个 agent 命中同一条缓存、
+        # 返回同一个答案，"零多样性"就成了构造出来的假象。把索引写进 tag。
+        # 专科角色不需要这一条（roster[i] 不同 -> 系统提示不同 -> 缓存键已不同），
+        # 因此保持原 tag 以复用既有缓存。
+        if generic_roles:
+            tg = f"{tg}|a{i}"
         txt = _ask(meter, m_i, sysmsg, up, seed_base * 100 + i, temp, effort,
-                   tag=tg, sbase=seed_base)
+                   tag=tg, sbase=seed_base, max_tokens=opinion_budget(m_i))
         return parse_opinion(txt, valid, agent=f"{'generalist' if generic_roles else roster[i]}#{i}", rnd=0)
 
     from common.llm import pmap
@@ -159,7 +224,7 @@ def arch_discussion(item, cfg, meter, roster=None, ops0=None, max_rounds=DISCUSS
             txt = _ask(meter, m_i, role_system(roster[i], cfg.get("generic_roles", False)),
                        u, cfg["seed"] * 100 + i, cfg["temp"], cfg.get("effort"),
                        tag=f"disc{rnd}n{cfg['N']}v2" + ("" if m_i == cfg["model"] else f"|{m_i}"),
-                       max_tokens=MAX_TOK_ROUND, sbase=cfg["seed"])
+                       max_tokens=round_budget(cfg["model"]), sbase=cfg["seed"])
             return parse_opinion(txt, valid, agent=cur[i].agent, rnd=rnd)
 
         ops = pmap(one, list(range(cfg["N"])))
@@ -237,7 +302,7 @@ def arch_centralized(item, cfg, meter, roster=None, rounds=MAX_ORCH_ROUNDS):
                       '"retask": "<specialty to re-task, or empty to commit>"}',
                       cfg["seed"] * 100 + 80 + r, 0.3, cfg.get("effort"),
                       tag=f"orch{r}n{N}" + ("" if orch_model(cfg) == cfg["model"] else f"|{orch_model(cfg)}"),
-                      max_tokens=MAX_TOK_ROUND, sbase=cfg["seed"])
+                      max_tokens=round_budget(cfg["model"]), sbase=cfg["seed"])
         orch_turns += 1
         verdict = parse_opinion(review, valid, agent="orchestrator", rnd=r)
         hist.append([verdict.__dict__])
@@ -260,7 +325,7 @@ def arch_centralized(item, cfg, meter, roster=None, rounds=MAX_ORCH_ROUNDS):
                    f"concern about your specialty's read:\n\"{verdict.reason}\"\n\n"
                    f"Reconsider and answer again.\n\n{ANSWER_JSON}",
                    cfg["seed"] * 100 + tgt, cfg["temp"], cfg.get("effort"),
-                   tag=f"retask{r}n{N}", max_tokens=MAX_TOK_ROUND, sbase=cfg["seed"])
+                   tag=f"retask{r}n{N}", max_tokens=round_budget(cfg["model"]), sbase=cfg["seed"])
         ops = list(ops)
         ops[tgt] = parse_opinion(txt, valid, agent=ops[tgt].agent, rnd=r)
         hist.append([o.__dict__ for o in ops])
@@ -316,7 +381,7 @@ def arch_debate(item, cfg, meter, roster=None, rounds=DEBATE_ROUNDS):
             u = (f"{q}\n\nDebate transcript (round {rnd - 1}):\n{peers}\n\n"
                  f"Rebut the arguments you disagree with and state your answer for round {rnd}.\n\n{ANSWER_JSON}")
             txt = _ask(meter, cfg["model"], sysmsg, u, cfg["seed"] * 100 + i, cfg["temp"],
-                       cfg.get("effort"), tag=f"deb{rnd}n{N}v2", max_tokens=MAX_TOK_ROUND,
+                       cfg.get("effort"), tag=f"deb{rnd}n{N}v2", max_tokens=round_budget(cfg["model"]),
                        sbase=cfg["seed"])
             return parse_opinion(txt, valid, agent=cur[i].agent, rnd=rnd)
 
@@ -342,7 +407,7 @@ def base_zeroshot(item, cfg, meter):
     valid = list(item["options"])
     u = render_question(item) + '\n\nAnswer immediately, with no explanation. Reply with JSON only: {"answer": "<option letter>"}'
     txt = _ask(meter, cfg["model"], role_system("internal medicine", generic=True), u,
-               cfg["seed"] * 100 + 0, 0.3, cfg.get("effort"), tag="zs", max_tokens=30,
+               cfg["seed"] * 100 + 0, 0.3, cfg.get("effort"), tag="zs", max_tokens=baseline_budget(cfg["model"], 30),
                sbase=cfg["seed"])
     o = parse_opinion(txt, valid, "single-zs")
     return {"pred": o.answer, "pred_cw": o.answer, "tie": False, "rounds": [[o.__dict__]], "n_rounds": 1}
@@ -354,7 +419,7 @@ def base_cot(item, cfg, meter):
          'your final answer. Reply with JSON only: {"answer": "<option letter>", '
          '"confidence": <0-100>, "reason": "<your step-by-step reasoning, at most 150 words>"}')
     txt = _ask(meter, cfg["model"], role_system("internal medicine", generic=True), u,
-               cfg["seed"] * 100 + 1, 0.3, cfg.get("effort"), tag="cot", max_tokens=800,
+               cfg["seed"] * 100 + 1, 0.3, cfg.get("effort"), tag="cot", max_tokens=baseline_budget(cfg["model"], 800),
                sbase=cfg["seed"])
     o = parse_opinion(txt, valid, "single-cot")
     return {"pred": o.answer, "pred_cw": o.answer, "tie": False, "rounds": [[o.__dict__]], "n_rounds": 1}
@@ -375,7 +440,7 @@ def base_selfconsistency(item, cfg, meter, k):
                  system=role_system("internal medicine", generic=True),
                  temperature=_temp(cfg["model"], 0.7),
                  seed=None if is_reasoning(cfg["model"]) else cfg["seed"] * 1000 + c,
-                 n=SC_CHUNK, max_tokens=MAX_TOK_OPINION, effort=cfg.get("effort"),
+                 n=SC_CHUNK, max_tokens=opinion_budget(cfg["model"]), effort=cfg.get("effort"),
                  json_mode=True,
                  # R1 #4: seed MUST be in the cache tag, else "3 seeds" of SC are one
                  # cached sample set replayed three times.

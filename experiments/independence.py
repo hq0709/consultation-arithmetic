@@ -17,6 +17,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT)
 import numpy as np
 from scipy import stats
 from experiments.analyze import load
+from experiments.grid_files import main_grid
 
 MAS = ("independent", "centralized", "discussion", "tiered")
 
@@ -47,7 +48,7 @@ def phi(cellrows, round_idx=0):
 
 
 def main():
-    rows = load(sorted(glob.glob(str(ROOT / "results/G_*.jsonl"))))
+    rows = load(main_grid())
     cells = collections.defaultdict(list)
     for r in rows:
         cells[(r["model"], r["bench"], r["arch"], r["N"])].append(r)

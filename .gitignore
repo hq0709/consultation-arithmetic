@@ -23,7 +23,12 @@ cache/
 logs/
 refine-logs/
 results/*.jsonl
+# 子目录里的原始数据同样不进仓库 —— results/*.jsonl 匹配不到子目录
+results/**/*.jsonl
+results/_superseded/
 results/results/
+# flock 的锁文件：运行时产物
+*.lock
 __pycache__/
 *.pyc
 .ipynb_checkpoints/

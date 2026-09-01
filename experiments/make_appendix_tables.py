@@ -29,22 +29,54 @@ rows += [r"\midrule",
 (OUT / "table4_scaling_coefficients.tex").write_text("\n".join(rows))
 
 # ---- Table 6: 能力指数分量 ----
-cap = json.loads((ROOT / "results/tier_probe.json").read_text()) if (ROOT / "results/tier_probe.json").exists() else []
-sas = {}
-for r in build_table(sorted(p.name for p in (ROOT / "results").glob("G_*.jsonl"))).itertuples():
-    sas[(r.model, r.bench)] = r.sas_baseline
-models = ["gpt-4.1-nano", "gpt-5-nano", "gpt-5-mini"]
-LBL = {"gpt-4.1-nano": r"\texttt{gpt-4.1-nano}", "gpt-5-nano": r"\texttt{gpt-5-nano}",
-       "gpt-5-mini": r"\texttt{gpt-5-mini}"}
-rows = [r"\begin{tabular}{@{}lrrrrl@{}}", r"\toprule",
-        r"Model & MedXpertQA & MedAgentsBench & MedQA & $I$ (mean) & Reasoning \\",
+# 三个厂商全部由数据生成。此前只生成 OpenAI 三行、Google 两行是手工补的，
+# 一重跑生成器就被覆盖掉了（2026-09-01 发生过一次）。
+from experiments.refresh_capability import capability_from_results
+CAP, ACC = capability_from_results()
+VENDORS = [
+    ("\\openai", "OpenAI --- the capability ladder the grid is run on",
+     ["gpt-4.1-nano", "gpt-5-nano", "gpt-5-mini"]),
+    ("\\gemini", "Google --- a second vendor, for the diversity ladder",
+     ["gemini-3.5-flash-lite", "gemini-3.7-flash"]),
+    ("\\claude", "Anthropic --- a third vendor, for the diversity ladder",
+     ["claude-haiku-4-5-20251001", "claude-sonnet-5"]),
+    ("\\deepseek", "DeepSeek / Alibaba / Zhipu --- independently trained ecosystems, "
+                 "single-doctor baselines only",
+     ["deepseek-v4-flash", "deepseek-v4-pro"]),
+    ("\\qwen", None, ["qwen3.8-flash", "qwen3.8-max"]),   # 无图标资源，用文字
+    ("\\zhipu", None, ["glm-5.3-flash", "glm-5.3"]),
+]
+TEX = {"claude-haiku-4-5-20251001": r"\texttt{claude-haiku-4.5}",
+       "claude-sonnet-5": r"\texttt{claude-sonnet-5}"}
+BEN3 = ("medxpertqa", "medagentsbench", "medqa")
+rows = [r"\setlength{\tabcolsep}{4pt}", r"\renewcommand{\arraystretch}{1.02}",
+        r"\begin{tabular}{@{}lrrrrl@{}}", r"\toprule",
+        r"Model & MedXpertQA & MedAgentsBench & MedQA & $I$ (mean) & Setting \\",
         r"\midrule"]
-for m in models:
-    v = [sas.get((m, b), np.nan) * 100 for b in ("medxpertqa", "medagentsbench", "medqa")]
-    rows.append(f"{LBL[m]} & {v[0]:.1f} & {v[1]:.1f} & {v[2]:.1f} & "
-                f"\\textbf{{{np.nanmean(v):.1f}}} & "
-                f"{'effort=low' if m.startswith('gpt-5') else '---'} \\\\")
-rows += [r"\bottomrule", r"\end{tabular}"]
+for vi, (ven, head, ms) in enumerate(VENDORS):
+    ms = [m for m in ms if m in CAP]
+    if not ms:
+        continue
+    # head=None 表示与上一节共用标题（三家中国实验室合成一节），不再重复画标题行
+    if head:
+        if vi:
+            rows.append(r"\midrule")
+        rows += [r"\sectrow", rf"\multicolumn{{6}}{{@{{}}l}}{{\textit{{{head}}}}} \\"]
+    for m in ms:
+        v = [100 * np.mean(ACC[m][b]) for b in BEN3]
+        if any(25 <= x < 50 for x in v):        # 落在协作窗口内的行加底纹
+            rows.append(r"\winrow")
+        # 厂商图标前置到模型名，不再单开一列
+        rows.append(f"{ven}~{TEX.get(m, chr(92)+'texttt{'+m+'}')} & "
+                    f"{v[0]:.1f} & {v[1]:.1f} & {v[2]:.1f} & "
+                    f"\\textbf{{{CAP[m]:.1f}}} & "
+                    f"{'effort=low' if m.startswith('gpt-5') else '---'} \\\\")
+rows += [r"\bottomrule",
+         r"\multicolumn{6}{@{}l}{\scriptsize shaded rows have a single-doctor baseline between $25$ and $50\%$ on at} \\",
+         r"\multicolumn{6}{@{}l}{\scriptsize least one benchmark. Capability-matched cross-vendor pairs:} \\",
+         r"\multicolumn{6}{@{}l}{\scriptsize \texttt{gemini-3.5-flash-lite} ($50.3$) with \texttt{gpt-5-nano} ($50.8$), and} \\",
+         r"\multicolumn{6}{@{}l}{\scriptsize \texttt{deepseek-v4-pro} ($59.7$) with \texttt{gpt-5-mini} ($59.2$) across the Pacific.} \\",
+         r"\end{tabular}"]
 (OUT / "table6_capability_index.tex").write_text("\n".join(rows))
 
 # ---- Table 7: 域复杂度 ----

@@ -50,7 +50,9 @@ def main():
     ax.set_xlabel("Effective independent opinions in a panel of nine")
     ax.set_title("(a)  The ladder stops before the vendor boundary",
                  loc="left", fontsize=9.0, pad=5)
-    clean(ax, grid_axis="x"); ax.spines["left"].set_visible(False)
+    # 左边框保留：(b) 面板是四边框，两图并排必须一致；而且横条从 x=0 起长，
+    # 左边那条线就是条形的基线，去掉会让整排条悬空。
+    clean(ax, grid_axis="x")
     ax.tick_params(axis="y", length=0)
 
     # ---------- (b) 84 个模型对

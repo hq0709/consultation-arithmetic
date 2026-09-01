@@ -28,9 +28,18 @@ def main():
          [r for r in recs if r["same_family"]]),
         ("Distinct families, one vendor",
          [r for r in recs if not r["same_family"] and r["same_ecosystem"]]),
-        ("Distinct vendors (OpenAI/Google)",
+        (None,   # 标签按数据里实际出现的厂商生成，避免加了厂商却忘了改字面量
          [r for r in recs if not r["same_ecosystem"]]),
     ]:
+        if lab is None:
+            from experiments.phi_decomposition import FAMILY as PFAM, ECOSYSTEM as PECO
+            seen = {PECO[PFAM[m]] for r in sel for m in (r["m_a"], r["m_b"])}
+            # 叙事顺序：OpenAI 是基准阶梯，写在前面
+            ORDER = ("openai", "google", "anthropic", "deepseek", "alibaba", "zhipu")
+            vend = [v for v in ORDER if v in seen] + sorted(seen - set(ORDER))
+            NICE = {"openai": "OpenAI", "google": "Google", "anthropic": "Anthropic",
+                    "deepseek": "DeepSeek", "alibaba": "Alibaba", "zhipu": "Zhipu"}
+            lab = "Distinct vendors (" + "/".join(NICE.get(v, v) for v in vend) + ")"
         rows.append((lab, float(np.mean([r["phi"] for r in sel])),
                      float(np.mean([r["phi_max"] for r in sel])), len(sel)))
 

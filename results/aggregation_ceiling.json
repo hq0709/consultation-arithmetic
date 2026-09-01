@@ -1,31 +1,139 @@
 {
  "pair_decomposition": {
   "medagentsbench": {
-   "agree_wrong": 86730,
-   "split_both_wrong": 12237,
-   "agree_right": 39981,
-   "split_one_right": 18084
+   "agree_wrong": 198564,
+   "agree_right": 112092,
+   "split_one_right": 33204,
+   "split_both_wrong": 21108
   },
   "medqa": {
-   "agree_right": 123771,
-   "split_one_right": 9783,
-   "agree_wrong": 21753,
-   "split_both_wrong": 1881
+   "agree_wrong": 41055,
+   "agree_right": 307395,
+   "split_one_right": 15333,
+   "split_both_wrong": 3405
   },
   "medxpertqa": {
-   "agree_wrong": 90244,
-   "split_both_wrong": 23764,
-   "split_one_right": 19365,
-   "agree_right": 45483
+   "agree_wrong": 193466,
+   "split_both_wrong": 36391,
+   "agree_right": 123165,
+   "split_one_right": 33425
   }
  },
  "pair_total": {
-  "agree_wrong": 198727,
-  "split_both_wrong": 37882,
-  "agree_right": 209235,
-  "split_one_right": 47232
+  "agree_wrong": 433085,
+  "agree_right": 542652,
+  "split_one_right": 81962,
+  "split_both_wrong": 60904
  },
  "oracle": [
+  {
+   "model": "claude-haiku-4-5-20251001",
+   "bench": "medagentsbench",
+   "psa": 20.8,
+   "best": 25.6,
+   "oracle": 29.599999999999998,
+   "headroom": 8.799999999999997,
+   "captured": 54.545454545454575
+  },
+  {
+   "model": "claude-haiku-4-5-20251001",
+   "bench": "medqa",
+   "psa": 79.60000000000001,
+   "best": 81.6,
+   "oracle": 83.2,
+   "headroom": 3.5999999999999943,
+   "captured": 55.555555555555244
+  },
+  {
+   "model": "claude-haiku-4-5-20251001",
+   "bench": "medxpertqa",
+   "psa": 23.200000000000003,
+   "best": 23.200000000000003,
+   "oracle": 28.000000000000004,
+   "headroom": 4.800000000000001,
+   "captured": 0.0
+  },
+  {
+   "model": "claude-sonnet-5",
+   "bench": "medagentsbench",
+   "psa": 47.599999999999994,
+   "best": 45.6,
+   "oracle": 54.0,
+   "headroom": 6.400000000000006,
+   "captured": -31.24999999999986
+  },
+  {
+   "model": "claude-sonnet-5",
+   "bench": "medqa",
+   "psa": 94.0,
+   "best": 94.8,
+   "oracle": 96.39999999999999,
+   "headroom": 2.3999999999999915,
+   "captured": 33.33333333333333
+  },
+  {
+   "model": "claude-sonnet-5",
+   "bench": "medxpertqa",
+   "psa": 49.6,
+   "best": 48.8,
+   "oracle": 54.0,
+   "headroom": 4.399999999999999,
+   "captured": -18.181818181818286
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medagentsbench",
+   "psa": 31.2,
+   "best": 35.199999999999996,
+   "oracle": 46.0,
+   "headroom": 14.8,
+   "captured": 27.027027027027
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medqa",
+   "psa": 84.8,
+   "best": 89.60000000000001,
+   "oracle": 91.2,
+   "headroom": 6.400000000000006,
+   "captured": 75.00000000000011
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medxpertqa",
+   "psa": 34.8,
+   "best": 39.2,
+   "oracle": 46.800000000000004,
+   "headroom": 12.000000000000007,
+   "captured": 36.66666666666669
+  },
+  {
+   "model": "gemini-3.7-flash",
+   "bench": "medagentsbench",
+   "psa": 56.39999999999999,
+   "best": 58.8,
+   "oracle": 62.4,
+   "headroom": 6.000000000000007,
+   "captured": 40.00000000000005
+  },
+  {
+   "model": "gemini-3.7-flash",
+   "bench": "medqa",
+   "psa": 96.39999999999999,
+   "best": 96.39999999999999,
+   "oracle": 97.2,
+   "headroom": 0.8000000000000114,
+   "captured": 0.0
+  },
+  {
+   "model": "gemini-3.7-flash",
+   "bench": "medxpertqa",
+   "psa": 60.4,
+   "best": 64.0,
+   "oracle": 70.0,
+   "headroom": 9.600000000000001,
+   "captured": 37.500000000000014
+  },
   {
    "model": "gpt-4.1-nano",
    "bench": "medagentsbench",

@@ -9,6 +9,7 @@ import sys, pathlib, glob, json, collections
 ROOT = pathlib.Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT))
 import numpy as np
 from experiments.analyze import load
+from experiments.grid_files import main_grid
 
 AL = {"independent": "Independent", "centralized": "Centralized",
       "discussion": "Decentralized", "tiered": "Hybrid", "sc": "Self-consistency"}
@@ -16,7 +17,7 @@ MAS = ("independent", "centralized", "discussion", "tiered")
 
 
 def main():
-    rows = load(sorted(glob.glob(str(ROOT / "results/G_*.jsonl"))))
+    rows = load(main_grid())
     cells = collections.defaultdict(list)
     for r in rows:
         cells[(r["model"], r["bench"], r["arch"], r["N"])].append(r)
@@ -38,10 +39,13 @@ def main():
         psa = float(np.mean([B[q] for q in ids]) * 100)
         orc = float(np.mean(oc) * 100)
         acc = float(np.mean([x["correct"] for x in v]) * 100)
-        if orc - psa < 1.0:
-            continue
+        # 可用空间过小时 kappa 的分母不稳，但准确率与预言机本身是好的 ——
+        # 过去这里整条丢弃，把准确率最高的 cell（可用空间最小）一并排除，
+        # 使"单医生"均值被压低 2.2pp。现在只在 kappa 上打标记，不丢数据。
+        thin = (orc - psa) < 1.0
         recs.append(dict(model=m, bench=b, arch=a, N=N, psa=psa, acc=acc, oracle=orc,
-                         headroom=orc - psa, kappa=(acc - psa) / (orc - psa) * 100))
+                         headroom=orc - psa, thin=thin,
+                         kappa=(None if thin else (acc - psa) / (orc - psa) * 100)))
 
     out = {}
     print("=" * 78)
@@ -52,6 +56,8 @@ def main():
     out["oracle_n9"] = float(np.mean([r["oracle"] for r in n9]))
     best = []
     for r in n9:
+        if r["thin"]:
+            continue
         cand = [x["acc"] for x in recs if (x["model"], x["bench"], x["N"]) ==
                 (r["model"], r["bench"], 9) and x["arch"] in MAS]
         best.append((max(cand) - r["psa"]) / r["headroom"] * 100)
@@ -69,7 +75,7 @@ def main():
     print("=" * 78)
     out["kappa_by_arch"] = {}
     for a in ("sc",) + MAS:
-        s = [r["kappa"] for r in recs if r["arch"] == a]
+        s = [r["kappa"] for r in recs if r["arch"] == a and r["kappa"] is not None]
         if not s:
             continue
         out["kappa_by_arch"][AL[a]] = float(np.mean(s))
@@ -89,7 +95,7 @@ def main():
             continue
         row = dict(band=lab, n=len(s),
                    headroom=float(np.mean([r["headroom"] for r in s])),
-                   kappa=float(np.mean([r["kappa"] for r in s])),
+                   kappa=float(np.mean([r["kappa"] for r in s if r["kappa"] is not None])),
                    gain=float(np.mean([r["acc"] - r["psa"] for r in s])))
         out["bins"].append(row)
         print(f"  {lab:12s}{row['n']:5d}{row['headroom']:+9.1f}pp{row['kappa']:+8.1f}%"

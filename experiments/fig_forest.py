@@ -2,7 +2,7 @@
 
 三张图按目标视觉语言重做，关键改动：
   fig7  竖版 32 行→**横版双栏毛虫图**，按效应量排序，每行有名字；颜色只用两种
-        （窗口内 / 窗口外），显著性用实心/空心。原版 34% 的墨迹全是背景色带。
+        （单医生 25–50% / 其余），显著性用实心/空心。原版 34% 的墨迹全是背景色带。
   fig8  砍掉"半个面板放两个数字"的斜率图，换成 φ 等值线族 + 120 个配置的 φ 分布。
   fig9  可靠性图的对角线跑出画布 → 改画**校准残差**（置信 − 准确率），零线永远可见。
 """
@@ -12,6 +12,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 from experiments.analyze import load, mcnemar
+from experiments.grid_files import main_grid
 from experiments.vizstyle import (rcparams, clean, panel_legend, ARCH_MARKER, MAS_ORDER,
                                   ARCH_SOLID, INK, MUTED, GRID, C_ORANGE, C_ROSE,
                                   C_PURPLE, C_CYAN)
@@ -20,14 +21,16 @@ MAS = ("independent", "centralized", "discussion", "tiered")
 AL = {"independent": "Independent", "centralized": "Centralized",
       "discussion": "Decentralized", "tiered": "Hybrid"}
 SHORT_B = {"medxpertqa": "MedXpert", "medagentsbench": "MedAgents", "medqa": "MedQA"}
-SHORT_M = {"gpt-4.1-nano": "4.1-nano", "gpt-5-nano": "5-nano", "gpt-5-mini": "5-mini"}
+SHORT_M = {"gpt-4.1-nano": "4.1-nano", "gpt-5-nano": "5-nano", "gpt-5-mini": "5-mini",
+           "claude-haiku-4-5-20251001": "haiku-4.5", "claude-sonnet-5": "sonnet-5",
+           "gemini-3.5-flash-lite": "G3.5-lite", "gemini-3.7-flash": "G3.7-flash"}
 SHORT_A = {"independent": "Ind", "centralized": "Cen",
            "discussion": "Dec", "tiered": "Hyb"}
-IN_WIN, OUT_WIN = "#d9962f", "#9a9a9a"      # 只有两种颜色：窗口内 / 窗口外
+SIG, NS = "#d9962f", "#9a9a9a"      # 只有两种颜色：显著 / 不显著
 
 
 def collect():
-    rows = load(sorted(glob.glob(str(ROOT / "results/G_*.jsonl"))))
+    rows = load(main_grid())
     cells = collections.defaultdict(list)
     for r in rows:
         cells[(r["model"], r["bench"], r["arch"], r["N"])].append(r)
@@ -74,7 +77,7 @@ def forest(recs):
         ys = np.arange(len(chunk))[::-1]
         for y, r in zip(ys, chunk):
             ins = 0.25 <= r["psa"] < 0.50
-            c = IN_WIN if ins else OUT_WIN
+            c = SIG if ins else NS
             sig = r["p"] < 0.05
             ax.plot([r["lo"], r["hi"]], [y, y], color=c, lw=1.2,
                     solid_capstyle="round", zorder=3)
@@ -94,10 +97,10 @@ def forest(recs):
                      f"{ci * half + len(chunk)} of {len(sel)}",
                      loc="left", fontsize=8.0, pad=4, color=MUTED)
 
-    h = [Line2D([], [], color=IN_WIN, lw=1.2, marker="o", ms=4.4, mfc=IN_WIN, mec=IN_WIN,
-                label="inside the 25\u201350% window"),
-         Line2D([], [], color=OUT_WIN, lw=1.2, marker="o", ms=4.4, mfc=OUT_WIN, mec=OUT_WIN,
-                label="outside it"),
+    h = [Line2D([], [], color=SIG, lw=1.2, marker="o", ms=4.4, mfc=SIG, mec=SIG,
+                label="single doctor 25–50%"),
+         Line2D([], [], color=NS, lw=1.2, marker="o", ms=4.4, mfc=NS, mec=NS,
+                label="outside that range"),
          Line2D([], [], ls="none", marker="o", ms=4.4, mfc=INK, mec=INK, label="$p<0.05$"),
          Line2D([], [], ls="none", marker="o", ms=4.4, mfc="white", mec=INK, mew=1.1,
                 label="n.s.")]

@@ -22,6 +22,12 @@ FAMILY = {
     "gpt-5-nano": "5", "gpt-5-mini": "5", "gpt-5.4-nano": "5",
     # ---- Google Gemini ----
     "gemini-3.5-flash-lite": "gemini-3.5", "gemini-3.7-flash": "gemini-3.7",
+    # ---- Anthropic Claude ----
+    "claude-haiku-4-5-20251001": "claude-4.5", "claude-sonnet-5": "claude-5",
+    # ---- 中国实验室：第四、五、六个生态 ----
+    "deepseek-v4-flash": "deepseek-v4", "deepseek-v4-pro": "deepseek-v4",
+    "qwen3.8-flash": "qwen3.8", "qwen3.8-max": "qwen3.8",
+    "glm-5.3": "glm-5", "glm-5.3-flash": "glm-5",
     # ---- 开源权重（每个是独立生态）----
     "local/medgemma-4b": "gemma", "local/medgemma-27b": "gemma",
     "local/lingshu-7b": "lingshu", "local/lingshu-32b": "lingshu",
@@ -32,11 +38,17 @@ FAMILY = {
 # 生态 = 训练它的组织。跨生态比跨家族更彻底。
 ECOSYSTEM = {"4o": "openai", "4.1": "openai", "5": "openai",
              "gemini-3.5": "google", "gemini-3.7": "google",
+             "claude-4.5": "anthropic", "claude-5": "anthropic",
+             "deepseek-v4": "deepseek", "qwen3.8": "alibaba", "glm-5": "zhipu",
              "gemma": "google", "lingshu": "alibaba", "llava-med": "microsoft",
              "huatuo": "freedomintel", "qwen": "alibaba"}
 LABEL = {"gpt-4o-mini": "4o-mini", "gpt-4.1-nano": "4.1-nano", "gpt-4.1-mini": "4.1-mini",
          "gpt-5-nano": "5-nano", "gpt-5-mini": "5-mini", "gpt-5.4-nano": "5.4-nano",
          "gemini-3.5-flash-lite": "G3.5-lite", "gemini-3.7-flash": "G3.7-flash",
+         "claude-haiku-4-5-20251001": "Haiku-4.5", "claude-sonnet-5": "Sonnet-5",
+         "deepseek-v4-flash": "DS-V4-flash", "deepseek-v4-pro": "DS-V4-pro",
+         "qwen3.8-flash": "Qwen3.8-fl", "qwen3.8-max": "Qwen3.8-max",
+         "glm-5.3": "GLM-5.3", "glm-5.3-flash": "GLM-5.3-fl",
          "local/medgemma-4b": "MedGemma-4B", "local/medgemma-27b": "MedGemma-27B",
          "local/lingshu-7b": "Lingshu-7B", "local/lingshu-32b": "Lingshu-32B",
          "local/llava-med": "LLaVA-Med", "local/huatuo-7b": "HuatuoGPT-V-7B",
@@ -70,7 +82,10 @@ def collect_solo():
     """每个模型在每个 benchmark 上的逐题错误指示（单医生 CoT）。"""
     files = (sorted(glob.glob(str(ROOT / "results/G_*.jsonl")))
              + sorted(glob.glob(str(ROOT / "results/PHI_*.jsonl")))
-             + sorted(glob.glob(str(ROOT / "results/OPEN_*.jsonl"))))
+             + sorted(glob.glob(str(ROOT / "results/OPEN_*.jsonl")))
+             + sorted(glob.glob(str(ROOT / "results/GEM_*.jsonl")))
+             + sorted(glob.glob(str(ROOT / "results/CLA_*.jsonl")))
+             + sorted(glob.glob(str(ROOT / "results/OR_*.jsonl"))))
     rows = load(files)
     err = collections.defaultdict(dict)
     for r in rows:

@@ -10,6 +10,10 @@ from panels.roles import route  # noqa: E402
 
 _lock = threading.Lock()
 
+# 单个 cell 里"无法解析出答案"的比例超过此值即中止整个网格。
+# 正常运行远低于 1%；坏配置会一次性冲到 50% 以上。
+BAD_OUTPUT_ABORT = float(os.environ.get("BAD_OUTPUT_ABORT", "0.15"))
+
 
 def load_items(path, limit=None):
     rows = [json.loads(l) for l in open(path)]
@@ -91,6 +95,19 @@ def main():
         print("[grid] routing specialties...", flush=True)
         pmap(lambda it: route(it, True), items, workers=8)
 
+    # 输出文件独占锁：两个进程写同一个文件会产生重复 episode（并不损坏 JSON，
+    # 但会让准确率按重复份数加权）。2026-08-31 因为杀进程的模式没匹配上，
+    # 旧的并发设置与新的并发设置同时写了 2250 条重复。
+    import fcntl
+    lockp = outp.with_suffix(outp.suffix + ".lock")
+    lockf = lockp.open("w")
+    try:
+        fcntl.flock(lockf, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError:
+        print(f"!! 另一个进程正在写 {outp.name}；本次退出以免产生重复记录。", flush=True)
+        sys.exit(2)
+    lockf.write(str(os.getpid())); lockf.flush()
+
     fh = outp.open("a")
     t0 = time.time()
     stats = collections.defaultdict(lambda: [0, 0, 0.0, 0])   # n, correct, usd, samples
@@ -119,7 +136,7 @@ def main():
             res = pmap(work, jobs, workers=a.workers)
         except BudgetExceeded as e:
             print(f"\n!! BUDGET STOP: {e}", flush=True); break
-        n_err = 0
+        n_err = n_blank = n_unparsed = 0
         for r in res:
             if r is None:
                 continue
@@ -132,13 +149,35 @@ def main():
             s = stats[k]
             s[0] += 1; s[1] += r.get("correct", 0)
             s[2] += r.get("cost", {}).get("usd", 0.0); s[3] += r.get("cost", {}).get("samples", 0)
+            # 质量守卫：模型返回了内容却解析不出答案，或干脆返回空串。
+            # 2026-08-31 的教训：effort=high 让推理吃光 token 预算，
+            # 245/250 条是空输出，却一路跑完 6 个 cell 才被发现。
+            ops = (r.get("rounds") or [[]])[0]
+            if ops:
+                first = ops[0]
+                if not str(first.get("raw", "")).strip():
+                    n_blank += 1
+                elif not first.get("answer"):
+                    n_unparsed += 1
         fh.flush()
         k = (cfg["arch"], cfg["N"], cfg["seed"])
         s = stats[k]
         if s[0]:
+            nres = sum(1 for r in res if r is not None)
+            bad = (n_blank + n_unparsed) / max(1, nres)
+            qual = ""
+            if n_blank or n_unparsed:
+                qual = f"  blank={n_blank} unparsed={n_unparsed}"
             print(f"[{ci+1}/{len(cells)}] {cfg['arch']:12s} N={cfg['N']:<2d} seed={cfg['seed']} "
                   f"acc={s[1]/s[0]*100:5.1f}%  n={s[0]:4d}  ${s[2]:.4f}  samples/item={s[3]/s[0]:.1f}  "
-                  f"err={n_err:<3d} [{time.time()-t0:.0f}s]", flush=True)
+                  f"err={n_err:<3d}{qual} [{time.time()-t0:.0f}s]", flush=True)
+            if bad > BAD_OUTPUT_ABORT:
+                print(f"\n!! QUALITY STOP: {bad*100:.0f}% of this cell produced no parsable "
+                      f"answer (blank={n_blank}, unparsed={n_unparsed} of {nres}).\n"
+                      f"   Most often the model's reasoning consumed the whole token budget; "
+                      f"raise --max-tokens / REASONING_MIN_TOKENS and rerun.\n"
+                      f"   Aborting so the rest of the grid is not wasted.", flush=True)
+                break
     fh.close()
     print("\n" + LEDGER.report())
     print(f"actual spend this run: ${LEDGER.total_cost():.4f} | today total: ${global_spend_usd():.4f}")

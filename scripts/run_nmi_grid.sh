@@ -30,7 +30,7 @@ run T1 gpt-4.1-nano none medagentsbench medagentsbench_500.jsonl
 echo "=== 对照：generic roles, T2/MedXpertQA ==="
 python3 -u experiments/run_grid.py --temp 0.7 --theta 80 --Ns 1,3,5,7,9 --seeds 1 --workers 8 \
   --arches independent,centralized,discussion --generic-roles \
-  --model gpt-5-nano --effort low --items data/medxpertqa_500.jsonl --out G_T2_generic.jsonl
+  --model gpt-5-nano --effort low --items data/medxpertqa_500.jsonl --out CTRL_T2_generic.jsonl
 
 # T3 最贵，放最后
 run T3 gpt-5-mini low medxpertqa   medxpertqa_500.jsonl

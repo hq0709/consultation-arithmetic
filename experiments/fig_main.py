@@ -5,25 +5,27 @@ import sys, pathlib, glob, collections
 ROOT = pathlib.Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT))
 import numpy as np, matplotlib.pyplot as plt
 from experiments.analyze import load
+from experiments.grid_files import main_grid
 from experiments.vizstyle import series as vs_series
-from experiments.vizstyle import (rcparams, clean, shape_legend, GAIN_POS, ARCH_MARKER,
+from experiments.vizstyle import (rcparams, clean, shape_legend, GAIN_POS, GAIN_NEG, ARCH_MARKER,
                                   ARCH_ORDER, MAS_ORDER, arch_color, LINE, LINE_SAS,
-                                  TIER_LABEL, BENCH_ORDER, BENCH_LABEL, CAPABILITY, INK, MUTED,
+                                  TIER_LABEL, BENCH_ORDER, BENCH_LABEL, CAPABILITY, INK, MUTED, TEXT_W,
                                   FAMILY, FAMILY_ORDER, title_with_logo, fig_title_with_logo)
 FIG = ROOT / "paper/figures"
 # x 刻度用短名，避免 I=50.8 与 59.2 两点的标签相撞
 TICK_LABEL = {"gpt-4.1-nano": "4.1-nano", "gpt-5-nano": "5-nano",
               "gpt-5-mini": "5-mini",
-              "gemini-3.5-flash-lite": "3.5-lite", "gemini-3.7-flash": "3.7-flash"}
+              "gemini-3.5-flash-lite": "3.5-lite", "gemini-3.7-flash": "3.7-flash",
+              "claude-haiku-4-5-20251001": "haiku-4.5", "claude-sonnet-5": "sonnet-5",
+              "deepseek-v4-flash": "V4-flash", "deepseek-v4-pro": "V4-pro"}
 
 
 def main():
     rcparams()
-    # Gemini 网格写的是 GEM_*.jsonl，与 OpenAI 的 G_*.jsonl 是两个独立网格。
-    # 只有这张能力图把两者并列（列 = 厂商家族）；其余分析仍只用 OpenAI 网格，
-    # 否则 "180 个配置"、窗口划分、phi=0.734 等主结果的口径会被静默改掉。
-    rows = load(sorted(glob.glob(str(ROOT / "results/G_*.jsonl")))
-                + sorted(glob.glob(str(ROOT / "results/GEM_*.jsonl"))))
+    # 与全文分析同一个网格定义：图里出现的厂商就是分析里用的厂商。
+    # 各画各的会让图上多出没进任何分析的厂商，也把版面撑坏。
+    rows = load(main_grid())
+
     cells = collections.defaultdict(list)
     for r in rows:
         cells[(r["model"], r["bench"], r["arch"], r["N"])].append(r)
@@ -42,12 +44,14 @@ def main():
         axes = [[axes0[0][i]] for i in range(nr)]
         gain_axes = [axes0[1][i] for i in range(nr)]
     else:
-        fig, axes = plt.subplots(nr, nc, figsize=(2.10 * nc + 0.3, 1.85 * nr), squeeze=False)
+        # 宽度钉死在 \textwidth：出图比排版宽会被 LaTeX 缩小，图内字号跟着缩水。
+        fig, axes = plt.subplots(nr, nc, figsize=(TEXT_W, 1.85 * nr), squeeze=False)
 
     for ri, b in enumerate(benches):
         for ci, fam in enumerate(fams):
             ax = axes[ri][ci]
-            models = [m for m in FAMILY[fam]["models"] if (m, b, "cot", 1) in cells]
+            models = [m for m in FAMILY[fam]["models"]
+                      if (m, b, "cot", 1) in cells and m in CAPABILITY]
             if not models:
                 ax.axis("off"); continue
             xs = [CAPABILITY[m] for m in models]
@@ -84,7 +88,9 @@ def main():
                 # 而且为它留的边距把三个模型压进面板左侧 70%，刻度因此相撞。
                 ax.text(0.035, 0.965, f"best panel {y1 - s0:+.1f} pp",
                         transform=ax.transAxes, ha="left", va="top",
-                        fontsize=8.2, color=GAIN_POS, fontweight="bold")
+                        # 负增益必须用负色：绿色的 "-2.0 pp" 会被读成好消息
+                        fontsize=8.2, fontweight="bold",
+                        color=GAIN_POS if y1 - s0 >= 0 else GAIN_NEG)
             clean(ax)
             if single:
                 ax.set_title(BENCH_LABEL.get(b, b), fontsize=10.0, pad=5)
@@ -99,7 +105,9 @@ def main():
                 if ci == 0:
                     ax.set_ylabel(f"{BENCH_LABEL.get(b, b)}\nPerformance (%)", fontsize=9.2)
                 if ri == nr - 1:
-                    ax.set_xlabel("GPT model  (capability index $I$)", fontsize=9.0)
+                    short = {"openai": "GPT", "google": "Gemini", "anthropic": "Claude",
+                             "deepseek": "DeepSeek"}.get(fam, FAMILY[fam]["label"])
+                    ax.set_xlabel(f"{short} model  (capability index $I$)", fontsize=9.0)
     if single:
         gy = []
         for ri, b in enumerate(benches):

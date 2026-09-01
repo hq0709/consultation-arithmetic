@@ -1,0 +1,827 @@
+{
+ "bands": [
+  {
+   "band": "25-50 (in window)",
+   "n": 40,
+   "gain": 2.27,
+   "sig_up": 2,
+   "sig_dn": 0
+  },
+  {
+   "band": "50-70",
+   "n": 20,
+   "gain": 0.328256880733945,
+   "sig_up": 0,
+   "sig_dn": 0
+  },
+  {
+   "band": ">70",
+   "n": 20,
+   "gain": 2.7599999999999993,
+   "sig_up": 13,
+   "sig_dn": 0
+  }
+ ],
+ "configs": [
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medagentsbench",
+   "arch": "independent",
+   "N": 1,
+   "psa": 31.2,
+   "gain": 0.8,
+   "p": 0.8318119049072266,
+   "band": "25-50 (in window)"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medagentsbench",
+   "arch": "independent",
+   "N": 3,
+   "psa": 31.2,
+   "gain": 3.2,
+   "p": 0.09625244140625,
+   "band": "25-50 (in window)"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medagentsbench",
+   "arch": "independent",
+   "N": 5,
+   "psa": 31.2,
+   "gain": 2.4,
+   "p": 0.14599609375,
+   "band": "25-50 (in window)"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medagentsbench",
+   "arch": "independent",
+   "N": 7,
+   "psa": 31.2,
+   "gain": 2.0,
+   "p": 0.266845703125,
+   "band": "25-50 (in window)"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medagentsbench",
+   "arch": "independent",
+   "N": 9,
+   "psa": 31.2,
+   "gain": 0.4,
+   "p": 1.0,
+   "band": "25-50 (in window)"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medagentsbench",
+   "arch": "centralized",
+   "N": 1,
+   "psa": 31.2,
+   "gain": 2.8000000000000003,
+   "p": 0.26493089646101,
+   "band": "25-50 (in window)"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medagentsbench",
+   "arch": "centralized",
+   "N": 3,
+   "psa": 31.2,
+   "gain": 3.5999999999999996,
+   "p": 0.0783538818359375,
+   "band": "25-50 (in window)"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medagentsbench",
+   "arch": "centralized",
+   "N": 5,
+   "psa": 31.2,
+   "gain": 2.8000000000000003,
+   "p": 0.18924713134765625,
+   "band": "25-50 (in window)"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medagentsbench",
+   "arch": "centralized",
+   "N": 7,
+   "psa": 31.2,
+   "gain": 3.2,
+   "p": 0.11531829833984375,
+   "band": "25-50 (in window)"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medagentsbench",
+   "arch": "centralized",
+   "N": 9,
+   "psa": 31.2,
+   "gain": 3.2,
+   "p": 0.076812744140625,
+   "band": "25-50 (in window)"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medagentsbench",
+   "arch": "discussion",
+   "N": 1,
+   "psa": 31.2,
+   "gain": 0.8,
+   "p": 0.8318119049072266,
+   "band": "25-50 (in window)"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medagentsbench",
+   "arch": "discussion",
+   "N": 3,
+   "psa": 31.2,
+   "gain": 4.0,
+   "p": 0.04138946533203125,
+   "band": "25-50 (in window)"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medagentsbench",
+   "arch": "discussion",
+   "N": 5,
+   "psa": 31.2,
+   "gain": 3.2,
+   "p": 0.076812744140625,
+   "band": "25-50 (in window)"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medagentsbench",
+   "arch": "discussion",
+   "N": 7,
+   "psa": 31.2,
+   "gain": 3.5999999999999996,
+   "p": 0.0783538818359375,
+   "band": "25-50 (in window)"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medagentsbench",
+   "arch": "discussion",
+   "N": 9,
+   "psa": 31.2,
+   "gain": 2.0,
+   "p": 0.4048728942871094,
+   "band": "25-50 (in window)"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medagentsbench",
+   "arch": "tiered",
+   "N": 1,
+   "psa": 31.2,
+   "gain": 2.0,
+   "p": 0.3017578125,
+   "band": "25-50 (in window)"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medagentsbench",
+   "arch": "tiered",
+   "N": 3,
+   "psa": 31.2,
+   "gain": 2.0,
+   "p": 0.3017578125,
+   "band": "25-50 (in window)"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medagentsbench",
+   "arch": "tiered",
+   "N": 5,
+   "psa": 31.2,
+   "gain": 2.0,
+   "p": 0.3017578125,
+   "band": "25-50 (in window)"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medagentsbench",
+   "arch": "tiered",
+   "N": 7,
+   "psa": 31.2,
+   "gain": 2.0,
+   "p": 0.3017578125,
+   "band": "25-50 (in window)"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medagentsbench",
+   "arch": "tiered",
+   "N": 9,
+   "psa": 31.2,
+   "gain": 1.6,
+   "p": 0.454498291015625,
+   "band": "25-50 (in window)"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medqa",
+   "arch": "independent",
+   "N": 1,
+   "psa": 84.8,
+   "gain": 0.4,
+   "p": 1.0,
+   "band": ">70"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medqa",
+   "arch": "independent",
+   "N": 3,
+   "psa": 84.8,
+   "gain": 2.0,
+   "p": 0.1796875,
+   "band": ">70"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medqa",
+   "arch": "independent",
+   "N": 5,
+   "psa": 84.8,
+   "gain": 1.6,
+   "p": 0.21875,
+   "band": ">70"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medqa",
+   "arch": "independent",
+   "N": 7,
+   "psa": 84.8,
+   "gain": 2.4,
+   "p": 0.0703125,
+   "band": ">70"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medqa",
+   "arch": "independent",
+   "N": 9,
+   "psa": 84.8,
+   "gain": 2.4,
+   "p": 0.0703125,
+   "band": ">70"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medqa",
+   "arch": "centralized",
+   "N": 1,
+   "psa": 84.8,
+   "gain": 2.4,
+   "p": 0.1795654296875,
+   "band": ">70"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medqa",
+   "arch": "centralized",
+   "N": 3,
+   "psa": 84.8,
+   "gain": 4.8,
+   "p": 0.00048828125,
+   "band": ">70"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medqa",
+   "arch": "centralized",
+   "N": 5,
+   "psa": 84.8,
+   "gain": 4.0,
+   "p": 0.001953125,
+   "band": ">70"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medqa",
+   "arch": "centralized",
+   "N": 7,
+   "psa": 84.8,
+   "gain": 3.2,
+   "p": 0.021484375,
+   "band": ">70"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medqa",
+   "arch": "centralized",
+   "N": 9,
+   "psa": 84.8,
+   "gain": 3.5999999999999996,
+   "p": 0.01171875,
+   "band": ">70"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medqa",
+   "arch": "discussion",
+   "N": 1,
+   "psa": 84.8,
+   "gain": 0.4,
+   "p": 1.0,
+   "band": ">70"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medqa",
+   "arch": "discussion",
+   "N": 3,
+   "psa": 84.8,
+   "gain": 4.0,
+   "p": 0.001953125,
+   "band": ">70"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medqa",
+   "arch": "discussion",
+   "N": 5,
+   "psa": 84.8,
+   "gain": 2.8000000000000003,
+   "p": 0.0390625,
+   "band": ">70"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medqa",
+   "arch": "discussion",
+   "N": 7,
+   "psa": 84.8,
+   "gain": 4.3999999999999995,
+   "p": 0.0009765625,
+   "band": ">70"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medqa",
+   "arch": "discussion",
+   "N": 9,
+   "psa": 84.8,
+   "gain": 2.8000000000000003,
+   "p": 0.0390625,
+   "band": ">70"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medqa",
+   "arch": "tiered",
+   "N": 1,
+   "psa": 84.8,
+   "gain": 2.8000000000000003,
+   "p": 0.0390625,
+   "band": ">70"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medqa",
+   "arch": "tiered",
+   "N": 3,
+   "psa": 84.8,
+   "gain": 2.8000000000000003,
+   "p": 0.0390625,
+   "band": ">70"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medqa",
+   "arch": "tiered",
+   "N": 5,
+   "psa": 84.8,
+   "gain": 2.8000000000000003,
+   "p": 0.0390625,
+   "band": ">70"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medqa",
+   "arch": "tiered",
+   "N": 7,
+   "psa": 84.8,
+   "gain": 2.8000000000000003,
+   "p": 0.0390625,
+   "band": ">70"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medqa",
+   "arch": "tiered",
+   "N": 9,
+   "psa": 84.8,
+   "gain": 2.8000000000000003,
+   "p": 0.0390625,
+   "band": ">70"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medxpertqa",
+   "arch": "independent",
+   "N": 1,
+   "psa": 34.8,
+   "gain": 0.8,
+   "p": 0.8318119049072266,
+   "band": "25-50 (in window)"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medxpertqa",
+   "arch": "independent",
+   "N": 3,
+   "psa": 34.8,
+   "gain": 2.0,
+   "p": 0.359283447265625,
+   "band": "25-50 (in window)"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medxpertqa",
+   "arch": "independent",
+   "N": 5,
+   "psa": 34.8,
+   "gain": 2.0,
+   "p": 0.38331031799316406,
+   "band": "25-50 (in window)"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medxpertqa",
+   "arch": "independent",
+   "N": 7,
+   "psa": 34.8,
+   "gain": 1.2,
+   "p": 0.6476058959960938,
+   "band": "25-50 (in window)"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medxpertqa",
+   "arch": "independent",
+   "N": 9,
+   "psa": 34.8,
+   "gain": -0.4,
+   "p": 1.0,
+   "band": "25-50 (in window)"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medxpertqa",
+   "arch": "centralized",
+   "N": 1,
+   "psa": 34.8,
+   "gain": 2.0,
+   "p": 0.4048728942871094,
+   "band": "25-50 (in window)"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medxpertqa",
+   "arch": "centralized",
+   "N": 3,
+   "psa": 34.8,
+   "gain": 2.4,
+   "p": 0.237884521484375,
+   "band": "25-50 (in window)"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medxpertqa",
+   "arch": "centralized",
+   "N": 5,
+   "psa": 34.8,
+   "gain": 3.5999999999999996,
+   "p": 0.0931396484375,
+   "band": "25-50 (in window)"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medxpertqa",
+   "arch": "centralized",
+   "N": 7,
+   "psa": 34.8,
+   "gain": 3.2,
+   "p": 0.13380050659179688,
+   "band": "25-50 (in window)"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medxpertqa",
+   "arch": "centralized",
+   "N": 9,
+   "psa": 34.8,
+   "gain": 2.8000000000000003,
+   "p": 0.1670684814453125,
+   "band": "25-50 (in window)"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medxpertqa",
+   "arch": "discussion",
+   "N": 1,
+   "psa": 34.8,
+   "gain": 0.8,
+   "p": 0.8318119049072266,
+   "band": "25-50 (in window)"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medxpertqa",
+   "arch": "discussion",
+   "N": 3,
+   "psa": 34.8,
+   "gain": 3.2,
+   "p": 0.09625244140625,
+   "band": "25-50 (in window)"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medxpertqa",
+   "arch": "discussion",
+   "N": 5,
+   "psa": 34.8,
+   "gain": 3.5999999999999996,
+   "p": 0.0783538818359375,
+   "band": "25-50 (in window)"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medxpertqa",
+   "arch": "discussion",
+   "N": 7,
+   "psa": 34.8,
+   "gain": 4.3999999999999995,
+   "p": 0.0192108154296875,
+   "band": "25-50 (in window)"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medxpertqa",
+   "arch": "discussion",
+   "N": 9,
+   "psa": 34.8,
+   "gain": 3.5999999999999996,
+   "p": 0.063568115234375,
+   "band": "25-50 (in window)"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medxpertqa",
+   "arch": "tiered",
+   "N": 1,
+   "psa": 34.8,
+   "gain": 1.6,
+   "p": 0.557197093963623,
+   "band": "25-50 (in window)"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medxpertqa",
+   "arch": "tiered",
+   "N": 3,
+   "psa": 34.8,
+   "gain": 1.6,
+   "p": 0.557197093963623,
+   "band": "25-50 (in window)"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medxpertqa",
+   "arch": "tiered",
+   "N": 5,
+   "psa": 34.8,
+   "gain": 1.6,
+   "p": 0.557197093963623,
+   "band": "25-50 (in window)"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medxpertqa",
+   "arch": "tiered",
+   "N": 7,
+   "psa": 34.8,
+   "gain": 1.6,
+   "p": 0.557197093963623,
+   "band": "25-50 (in window)"
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "bench": "medxpertqa",
+   "arch": "tiered",
+   "N": 9,
+   "psa": 34.8,
+   "gain": 1.6,
+   "p": 0.557197093963623,
+   "band": "25-50 (in window)"
+  },
+  {
+   "model": "gemini-3.7-flash",
+   "bench": "medagentsbench",
+   "arch": "independent",
+   "N": 1,
+   "psa": 54.12844036697248,
+   "gain": -1.834862385321101,
+   "p": 0.480682373046875,
+   "band": "50-70"
+  },
+  {
+   "model": "gemini-3.7-flash",
+   "bench": "medagentsbench",
+   "arch": "independent",
+   "N": 3,
+   "psa": 56.39999999999999,
+   "gain": -0.8,
+   "p": 0.79052734375,
+   "band": "50-70"
+  },
+  {
+   "model": "gemini-3.7-flash",
+   "bench": "medagentsbench",
+   "arch": "independent",
+   "N": 5,
+   "psa": 56.39999999999999,
+   "gain": -0.4,
+   "p": 1.0,
+   "band": "50-70"
+  },
+  {
+   "model": "gemini-3.7-flash",
+   "bench": "medagentsbench",
+   "arch": "independent",
+   "N": 7,
+   "psa": 56.39999999999999,
+   "gain": 0.0,
+   "p": 1.0,
+   "band": "50-70"
+  },
+  {
+   "model": "gemini-3.7-flash",
+   "bench": "medagentsbench",
+   "arch": "independent",
+   "N": 9,
+   "psa": 56.39999999999999,
+   "gain": 0.8,
+   "p": 0.7744140625,
+   "band": "50-70"
+  },
+  {
+   "model": "gemini-3.7-flash",
+   "bench": "medagentsbench",
+   "arch": "centralized",
+   "N": 1,
+   "psa": 56.39999999999999,
+   "gain": 0.0,
+   "p": 1.0,
+   "band": "50-70"
+  },
+  {
+   "model": "gemini-3.7-flash",
+   "bench": "medagentsbench",
+   "arch": "centralized",
+   "N": 3,
+   "psa": 56.39999999999999,
+   "gain": 0.4,
+   "p": 1.0,
+   "band": "50-70"
+  },
+  {
+   "model": "gemini-3.7-flash",
+   "bench": "medagentsbench",
+   "arch": "centralized",
+   "N": 5,
+   "psa": 56.39999999999999,
+   "gain": -1.6,
+   "p": 0.454498291015625,
+   "band": "50-70"
+  },
+  {
+   "model": "gemini-3.7-flash",
+   "bench": "medagentsbench",
+   "arch": "centralized",
+   "N": 7,
+   "psa": 56.39999999999999,
+   "gain": -0.4,
+   "p": 1.0,
+   "band": "50-70"
+  },
+  {
+   "model": "gemini-3.7-flash",
+   "bench": "medagentsbench",
+   "arch": "centralized",
+   "N": 9,
+   "psa": 56.39999999999999,
+   "gain": 0.8,
+   "p": 0.7744140625,
+   "band": "50-70"
+  },
+  {
+   "model": "gemini-3.7-flash",
+   "bench": "medagentsbench",
+   "arch": "discussion",
+   "N": 1,
+   "psa": 56.39999999999999,
+   "gain": -0.8,
+   "p": 0.8238029479980469,
+   "band": "50-70"
+  },
+  {
+   "model": "gemini-3.7-flash",
+   "bench": "medagentsbench",
+   "arch": "discussion",
+   "N": 3,
+   "psa": 56.39999999999999,
+   "gain": 0.4,
+   "p": 1.0,
+   "band": "50-70"
+  },
+  {
+   "model": "gemini-3.7-flash",
+   "bench": "medagentsbench",
+   "arch": "discussion",
+   "N": 5,
+   "psa": 56.39999999999999,
+   "gain": 0.8,
+   "p": 0.79052734375,
+   "band": "50-70"
+  },
+  {
+   "model": "gemini-3.7-flash",
+   "bench": "medagentsbench",
+   "arch": "discussion",
+   "N": 7,
+   "psa": 56.39999999999999,
+   "gain": 0.8,
+   "p": 0.7744140625,
+   "band": "50-70"
+  },
+  {
+   "model": "gemini-3.7-flash",
+   "bench": "medagentsbench",
+   "arch": "discussion",
+   "N": 9,
+   "psa": 56.39999999999999,
+   "gain": 1.6,
+   "p": 0.3876953125,
+   "band": "50-70"
+  },
+  {
+   "model": "gemini-3.7-flash",
+   "bench": "medagentsbench",
+   "arch": "tiered",
+   "N": 1,
+   "psa": 56.39999999999999,
+   "gain": 0.4,
+   "p": 1.0,
+   "band": "50-70"
+  },
+  {
+   "model": "gemini-3.7-flash",
+   "bench": "medagentsbench",
+   "arch": "tiered",
+   "N": 3,
+   "psa": 56.39999999999999,
+   "gain": 1.2,
+   "p": 0.60723876953125,
+   "band": "50-70"
+  },
+  {
+   "model": "gemini-3.7-flash",
+   "bench": "medagentsbench",
+   "arch": "tiered",
+   "N": 5,
+   "psa": 56.39999999999999,
+   "gain": 1.2,
+   "p": 0.60723876953125,
+   "band": "50-70"
+  },
+  {
+   "model": "gemini-3.7-flash",
+   "bench": "medagentsbench",
+   "arch": "tiered",
+   "N": 7,
+   "psa": 56.39999999999999,
+   "gain": 1.6,
+   "p": 0.4239501953125,
+   "band": "50-70"
+  },
+  {
+   "model": "gemini-3.7-flash",
+   "bench": "medagentsbench",
+   "arch": "tiered",
+   "N": 9,
+   "psa": 56.39999999999999,
+   "gain": 2.4,
+   "p": 0.14599609375,
+   "band": "50-70"
+  }
+ ]
+}

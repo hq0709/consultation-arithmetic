@@ -14,6 +14,7 @@ import sys, pathlib, glob, json, collections, itertools
 ROOT = pathlib.Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT))
 import numpy as np
 from experiments.analyze import load
+from experiments.grid_files import main_grid
 
 MAS = ("independent", "centralized", "discussion", "tiered")
 PAIR_ARCH = ("independent", "centralized", "discussion")
@@ -72,7 +73,7 @@ def oracle_ceiling(cells):
 
 
 def main():
-    rows = load(sorted(glob.glob(str(ROOT / "results/G_*.jsonl"))))
+    rows = load(main_grid())
     cells = collections.defaultdict(list)
     for r in rows:
         cells[(r["model"], r["bench"], r["arch"], r["N"])].append(r)

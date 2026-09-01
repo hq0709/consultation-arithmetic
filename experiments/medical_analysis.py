@@ -10,6 +10,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT)
 import numpy as np
 from scipy import stats
 from experiments.analyze import load, wilson, mcnemar
+from experiments.grid_files import main_grid
 
 MAS = ("independent", "centralized", "discussion", "tiered")
 ANAME = {"independent": "Independent", "centralized": "Centralized",
@@ -26,7 +27,7 @@ def load_items():
 
 def main():
     items = load_items()
-    rows = load(sorted(glob.glob(str(ROOT / "results/G_*.jsonl"))))
+    rows = load(main_grid())
     cells = collections.defaultdict(list)
     for r in rows:
         cells[(r["model"], r["bench"], r["arch"], r["N"])].append(r)
