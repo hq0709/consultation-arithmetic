@@ -3,10 +3,10 @@
   {
    "source": "One model, specialty prompts",
    "n": null,
-   "phi": 0.7339323525935009,
+   "phi": 0.7526038457611198,
    "phi_max": 0.958,
-   "phi_norm": 0.7661089275506272,
-   "neff9": 1.3097655439373332
+   "phi_norm": 0.7855990039260123,
+   "neff9": 1.281899578532864
   },
   {
    "source": "Distinct models, one family",

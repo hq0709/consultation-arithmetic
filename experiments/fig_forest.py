@@ -14,7 +14,7 @@ from matplotlib.lines import Line2D
 from experiments.refresh_stale import panel_conf
 from experiments.analyze import load, mcnemar
 from experiments.grid_files import main_grid, load_main
-from experiments.vizstyle import (rcparams, clean, panel_legend, ARCH_MARKER, MAS_ORDER,
+from experiments.vizstyle import (SHORT_MODEL, rcparams, clean, panel_legend, ARCH_MARKER, MAS_ORDER,
                                   ARCH_SOLID, INK, MUTED, GRID, C_ORANGE, C_ROSE,
                                   C_PURPLE, C_CYAN)
 FIG = ROOT / "paper/figures"
@@ -22,9 +22,7 @@ MAS = ("independent", "centralized", "discussion", "tiered")
 AL = {"independent": "Independent", "centralized": "Centralized",
       "discussion": "Decentralized", "tiered": "Hybrid"}
 SHORT_B = {"medxpertqa": "MedXpert", "medagentsbench": "MedAgents", "medqa": "MedQA"}
-SHORT_M = {"gpt-4.1-nano": "4.1-nano", "gpt-5-nano": "5-nano", "gpt-5-mini": "5-mini",
-           "claude-haiku-4-5-20251001": "haiku-4.5", "claude-sonnet-5": "sonnet-5",
-           "gemini-3.5-flash-lite": "G3.5-lite", "gemini-3.7-flash": "G3.7-flash"}
+SHORT_M = SHORT_MODEL   # 唯一样式源；本地再抄一份必然漏掉新加的模型
 SHORT_A = {"independent": "Ind", "centralized": "Cen",
            "discussion": "Dec", "tiered": "Hyb"}
 SIG, NS = "#d9962f", "#9a9a9a"      # 只有两种颜色：显著 / 不显著

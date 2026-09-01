@@ -33,6 +33,12 @@ def main():
     cells = collections.defaultdict(list)
     for r in rows:
         cells[(r["model"], r["bench"], r["arch"], r["N"])].append(r)
+    # 只有单医生基线、没有面板的 (model, bench) 不进图：画出来是一个空刻度
+    # 加一条悬空的线，读者会以为增益是零而不是「没测」。deepseek-v4-pro 在
+    # MedAgentsBench 与 MedQA 上就是这种情形。
+    MAS_ = {"independent", "centralized", "discussion", "tiered"}
+    plotted = {(k[0], k[1]) for k in cells if k[2] in MAS_}
+    cells = {k: v for k, v in cells.items() if (k[0], k[1]) in plotted}
     have = {k[0] for k in cells}
     fams = [f for f in FAMILY_ORDER if any(m in have for m in FAMILY[f]["models"])]
     benches = [b for b in BENCH_ORDER if any(k[1] == b for k in cells)]
@@ -96,8 +102,13 @@ def main():
             cand = [series[a][xi] for a in MAS_ORDER if not np.isnan(series[a][xi])]
             if cand:
                 y1 = max(cand)
-                ax.text(0.035, 0.955, f"best panel {y1:+.1f} pp",
-                        transform=ax.transAxes, ha="left", va="top",
+                # 放在框外上方：sharey 让全局 ylim 覆盖单个面板的余量，
+                # 框内任何位置都会被数据点压到。
+                # 首行框外上方是 benchmark 列标题的位置，那一行放框内
+                inside = (ri == 0)
+                ax.text(0.02, (0.955 if inside else 1.015),
+                        f"best panel {y1:+.1f} pp", transform=ax.transAxes,
+                        ha="left", va=("top" if inside else "bottom"),
                         # 负增益必须用负色：绿色的 "-2.0 pp" 会被读成好消息
                         fontsize=8.0, fontweight="bold",
                         color=GAIN_POS if y1 >= 0 else GAIN_NEG)
@@ -154,12 +165,14 @@ def main():
             gax.set_ylim(lo - pad, hi + pad)          # 共享刻度：架构差异可直接横向比较
     shape_legend(fig, ncol=5, y=0.004)
     fig.tight_layout(rect=[0, 0.075 if single else 0.075, 1, 0.955 if single else 1])
+    if not single:
+        fig.subplots_adjust(hspace=0.42)   # 「best panel」标签放在框外，需要行间距
     if single:
         # 厂商标识只出现一次，作为整图总标题（不是每个面板都挂一个）
         fig_title_with_logo(fig, fams[0], FAMILY[fams[0]]["label"], y=0.998)
     for e in ("pdf", "png"):
         fig.savefig(FIG / f"fig1_capability.{e}", dpi=200, bbox_inches="tight")
-    print(f"fig1_capability ok  ({nc} 家族 x {nr} benchmark)")
+    print(f"fig1_capability ok  ({nr} 家族 x {nc} benchmark)")
 
 
 if __name__ == "__main__":

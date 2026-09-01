@@ -139,9 +139,10 @@ def main():
         bn = max(byN, key=lambda n: np.mean(byN[n]))
         w = [r for r in s if r["N"] == bn]
         pp = [r["pp_per_dollar"] for r in w if r["pp_per_dollar"] is not None]
+        mult = [r["mult"] for r in w if r["mult"] is not None]
         print(f"  {AL[a]:<16}{bn:>6}{np.mean([r['gain'] for r in w]):>+8.2f}pp"
               f"{np.median([r['extra_usd_per_1k'] for r in w]):>11.2f}"
-              f"{np.median([r['mult'] for r in w]):>7.1f}x"
+              f"{(np.median(mult) if mult else float('nan')):>7.1f}x"
               f"{(np.median(pp) if pp else float('nan')):>9.1f}")
 
     # ---- D. tab:ppd —— 三个能力层 x 三个 benchmark，每格最好的多智能体配置 ----

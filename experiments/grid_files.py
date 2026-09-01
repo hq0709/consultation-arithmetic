@@ -6,16 +6,34 @@
      落盘，被六个脚本静默算进主网格，12 个 cell 的准确率被改动最多 1.60pp。
 所以主网格改为在这里显式列出，并且只收 27/27 满额的文件。
 
-主网格 = 三家厂商 / 七个模型 / 三个 benchmark，全部 27 cell 同构（temp=0.7）：
+主网格 = 四家厂商 / 八个模型 / 三个 benchmark，全部 27 cell 同构（temp=0.7）：
   OpenAI     gpt-4.1-nano, gpt-5-nano, gpt-5-mini
   Google     gemini-3.5-flash-lite, gemini-3.7-flash
   Anthropic  claude-haiku-4.5, claude-sonnet-5
+  DeepSeek   deepseek-v4-flash
+
+deepseek-v4-pro 只有 MedXpertQA 一个 benchmark 跑满，且缺自洽性最高两档
+（k=9/15 上模型推理失控，单次吐 20 万 reasoning token，2026-09-01 终止）。
+它以显式豁免进主网格 —— 见 EXEMPT。不放松 27 的通用阈值：那样会让别的
+半截文件静默混进来，而这正是 2026-08-31 通用内科对照污染主网格的原因。
 """
 import json, glob, pathlib, collections, functools
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-MAIN_PREFIXES = ("G_", "CLA_", "GEM_", "OR_gemini-3.7-flash_medqa")
+MAIN_PREFIXES = ("G_", "CLA_", "GEM_", "OR_gemini-3.7-flash_medqa",
+                 "OR_deepseek-v4-flash_", "OR_deepseek-v4-pro_")
 EXCLUDE = ("generic", "specialty", "heterogeneity", "pilot", "sanity", "_smoke")
+
+# 显式豁免：文件名 -> 要求的满额 cell 数。只写在这里，不改通用阈值。
+EXEMPT = {
+    # 20 个架构×N 全齐 + zeroshot + cot + sc(k=1,3,5) = 25；缺的是 sc k=9/15。
+    "OR_deepseek-v4-pro_medxpertqa.jsonl": 25,
+    # 这两个只有单医生基线（zeroshot + cot），没有面板。按作者要求一并纳入：
+    # 增益类分析在 (model, bench) 内配对，找不到多智能体 cell 就不产生记录，
+    # 所以它们只贡献基线，不进入任何增益/捕获率的平均。
+    "OR_deepseek-v4-pro_medagentsbench.jsonl": 2,
+    "OR_deepseek-v4-pro_medqa.jsonl": 2,
+}
 
 
 def _cells_full(path, need=27, need_items=240):
@@ -41,7 +59,7 @@ def main_grid(verbose=False):
         b = pathlib.Path(p).name
         if not b.startswith(MAIN_PREFIXES) or any(x in b for x in EXCLUDE):
             continue
-        if _cells_full(p):
+        if _cells_full(p, need=EXEMPT.get(b, 27)):
             out.append(p)
         elif verbose:
             print(f"  [不进主网格] {b}：未满 27 cell")
