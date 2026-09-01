@@ -43,9 +43,12 @@ def fig_nscaling(cells):
     from experiments.vizstyle import vendor_side_label_for_model
     models = [m for m in MODEL_ORDER if any(k[0] == m for k in cells)]
     nrow, ncol = len(models), len(BENCH_ORDER)
-    fig, axes = plt.subplots(nrow, ncol, figsize=(TEXT_W, 1.18 * nrow),
-                             squeeze=False, sharey=True)
-    gy = []
+    # 按行共享 y，不是全图共享：4.1-nano 在 MedQA 上有一个 -13.6pp 的离群点，
+    # 全图共享会把量程拉到 20pp，其余面板 ±5pp 的变化全被压平。
+    # 本图回答的是「对这个模型加人管不管用」——同一模型跨 benchmark 比较。
+    fig, axes = plt.subplots(nrow, ncol, figsize=(TEXT_W, 1.35 * nrow),
+                             squeeze=False, sharey="row")
+    gy_row = [[] for _ in models]
     for ri, m in enumerate(models):
         for ci, b in enumerate(BENCH_ORDER):
             ax = axes[ri][ci]
@@ -59,7 +62,7 @@ def fig_nscaling(cells):
                 if not Ns:
                     continue
                 ys = [acc(cells[(m, b, a, N)]) - base for N in Ns]
-                gy.extend(y for y in ys if not np.isnan(y))
+                gy_row[ri].extend(y for y in ys if not np.isnan(y))
                 col = arch_color(b, a)
                 ax.plot(Ns, ys, ls="--", lw=1.3, color=col, marker=st["marker"],
                         ms=st["ms"], mfc=col, mec=col, mew=0.0, zorder=4)
@@ -71,11 +74,12 @@ def fig_nscaling(cells):
                 vendor_side_label_for_model(ax, m)
             if ri == nrow - 1:
                 ax.set_xlabel("Number of agents $n_a$", fontsize=9.0)
-    if gy:
-        lo, hi = min(gy), max(gy); sp = (hi - lo) or 1.0
-        for row in axes:
-            for ax in row:
-                ax.set_ylim(lo - sp * 0.10, hi + sp * 0.10)
+    for row, ys in zip(axes, gy_row):
+        if not ys:
+            continue
+        lo, hi = min(ys), max(ys); sp = (hi - lo) or 1.0
+        for ax in row:
+            ax.set_ylim(lo - sp * 0.16, hi + sp * 0.16)
     shape_legend(fig, ncol=5, y=0.004)
     fig.tight_layout(rect=[0, 0.05, 1, 1])
     for e in ("pdf", "png"):

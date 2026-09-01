@@ -7,7 +7,7 @@ import numpy as np, matplotlib.pyplot as plt
 from experiments.analyze import load
 from experiments.grid_files import main_grid
 from experiments.vizstyle import series as vs_series
-from experiments.vizstyle import (_logo_offsetimage, rcparams, clean, shape_legend, GAIN_POS, GAIN_NEG, ARCH_MARKER,
+from experiments.vizstyle import (side_label, rcparams, clean, shape_legend, GAIN_POS, GAIN_NEG, ARCH_MARKER,
                                   ARCH_ORDER, MAS_ORDER, arch_color, LINE, LINE_SAS,
                                   TIER_LABEL, BENCH_ORDER, BENCH_LABEL, CAPABILITY, INK, MUTED, TEXT_W,
                                   FAMILY, FAMILY_ORDER, title_with_logo, fig_title_with_logo)
@@ -22,30 +22,6 @@ TICK_LABEL = {"gpt-4.1-nano": "4.1-nano", "gpt-5-nano": "5-nano",
 
 SHORT_FAM = {"openai": "OpenAI", "google": "Google", "anthropic": "Anthropic",
              "deepseek": "DeepSeek"}
-
-
-def vendor_side_label(ax, fam):
-    """厂商标识竖排在面板左外侧：图标在上、名字在下。
-
-    两者都以「面板左外侧中点」为锚，用固定的点偏移错开 —— 不能交给 VPacker：
-    旋转后的 TextArea 仍按未旋转的宽度算边界框，居中会按厂商名的长短偏移，
-    "Anthropic" 和 "OpenAI" 就对不齐。
-    """
-    from matplotlib.offsetbox import AnnotationBbox
-    import pathlib as _p
-    anchor = (-0.30, 0.5)
-    ax.annotate(SHORT_FAM.get(fam, FAMILY[fam]["label"]),
-                xy=anchor, xycoords="axes fraction",
-                xytext=(0, -8), textcoords="offset points",
-                rotation=90, ha="center", va="center", fontsize=9.6, color=INK)
-    lg = FAMILY[fam].get("logo")
-    f = (_p.Path(__file__).resolve().parents[1] / "paper/figures/logos" / lg) if lg else None
-    if f is not None and f.exists():
-        ab = AnnotationBbox(_logo_offsetimage(f, target_pt=11.0), anchor,
-                            xycoords="axes fraction",
-                            xybox=(0, 30), boxcoords="offset points",
-                            frameon=False, box_alignment=(0.5, 0.5))
-        ax.add_artist(ab)
 
 
 def main():
@@ -136,7 +112,8 @@ def main():
                 if ri == 0:
                     ax.set_title(BENCH_LABEL.get(b, b), fontsize=10.2, pad=6)
                 if ci == 0:
-                    vendor_side_label(ax, fam)
+                    side_label(ax, SHORT_FAM.get(fam, FAMILY[fam]["label"]), fam,
+                               fontsize=9.6, logo_pt=11.0)
                 # x 轴刻度就是模型名，自解释，不再另加轴标题
     if not single and gy_all:
         lo, hi = min(gy_all), max(gy_all); sp = (hi - lo) or 1.0

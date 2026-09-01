@@ -275,23 +275,35 @@ def fig_title_with_logo(fig, fam, text, y=0.985, zoom=0.026, fontsize=10.5):
     return ab
 
 
-def vendor_side_label_for_model(ax, model, fontsize=8.6, logo_pt=10.0):
-    """把「厂商图标 + 模型名」竖排在面板左外侧。
+def side_label(ax, text, fam, fontsize=8.6, logo_pt=10.0, gap=3.0):
+    """把「厂商图标 + 一行文字」竖排在面板左外侧。图 1 用厂商名，图 8 用模型名。
 
-    图 1 与图 8 共用。两者都以面板左外侧中点为锚、用固定点偏移错开：交给
-    VPacker 会按未旋转的文字宽度居中，模型名长短不同就对不齐。
+    图标位置由文字的**实测**范围决定。用系数估算不行：旋转后的文字高度取决于
+    具体字符（"3.5-lite" 的半高系数 0.178，"OpenAI" 是 0.270），任何固定系数
+    都会对某些名字偏掉，表现为图标压字或飘远。
     """
     from matplotlib.offsetbox import AnnotationBbox
     import pathlib as _p
     anchor = (-0.30, 0.5)
-    ax.annotate(SHORT_MODEL.get(model, model), xy=anchor, xycoords="axes fraction",
-                xytext=(0, -7), textcoords="offset points",
-                rotation=90, ha="center", va="center", fontsize=fontsize, color=INK)
-    fam = family_of(model)
+    tx = ax.annotate(text, xy=anchor, xycoords="axes fraction",
+                     xytext=(0, 0), textcoords="offset points",
+                     rotation=90, ha="center", va="center", fontsize=fontsize, color=INK)
     lg = FAMILY[fam]["logo"] if fam else None
     f = (_p.Path(__file__).resolve().parents[1] / "paper/figures/logos" / lg) if lg else None
-    if f is not None and f.exists():
-        ax.add_artist(AnnotationBbox(_logo_offsetimage(f, target_pt=logo_pt), anchor,
-                                     xycoords="axes fraction",
-                                     xybox=(0, 26), boxcoords="offset points",
-                                     frameon=False, box_alignment=(0.5, 0.5)))
+    if f is None or not f.exists():
+        return
+    fig = ax.figure
+    try:
+        half = tx.get_window_extent(renderer=fig.canvas.get_renderer()).height / 2 * 72 / fig.dpi
+    except Exception:                       # 后端还没有 renderer 时退回估算
+        half = 0.24 * fontsize * len(text)
+    ax.add_artist(AnnotationBbox(_logo_offsetimage(f, target_pt=logo_pt), anchor,
+                                 xycoords="axes fraction",
+                                 xybox=(0, half + logo_pt * 0.5 + gap),
+                                 boxcoords="offset points",
+                                 frameon=False, box_alignment=(0.5, 0.5)))
+
+
+def vendor_side_label_for_model(ax, model, fontsize=8.6, logo_pt=10.0):
+    side_label(ax, SHORT_MODEL.get(model, model), family_of(model),
+               fontsize=fontsize, logo_pt=logo_pt)
