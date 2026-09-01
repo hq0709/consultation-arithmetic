@@ -327,4 +327,5 @@ def fig_coord(cells):
 if __name__ == "__main__":
     rcparams()
     c = build()
-    fig_nscaling(c); fig_window(c); fig_cost(c); fig_box(c); fig_coord(c)
+    # fig_window 不再生成：窗口一节已从论文移除（七模型下上三档增益两两不显著）
+    fig_nscaling(c); fig_cost(c); fig_box(c); fig_coord(c)

@@ -7,7 +7,7 @@ import numpy as np, matplotlib.pyplot as plt
 from experiments.analyze import load
 from experiments.grid_files import main_grid
 from experiments.vizstyle import series as vs_series
-from experiments.vizstyle import (rcparams, clean, shape_legend, GAIN_POS, GAIN_NEG, ARCH_MARKER,
+from experiments.vizstyle import (_logo_offsetimage, rcparams, clean, shape_legend, GAIN_POS, GAIN_NEG, ARCH_MARKER,
                                   ARCH_ORDER, MAS_ORDER, arch_color, LINE, LINE_SAS,
                                   TIER_LABEL, BENCH_ORDER, BENCH_LABEL, CAPABILITY, INK, MUTED, TEXT_W,
                                   FAMILY, FAMILY_ORDER, title_with_logo, fig_title_with_logo)
@@ -18,6 +18,27 @@ TICK_LABEL = {"gpt-4.1-nano": "4.1-nano", "gpt-5-nano": "5-nano",
               "gemini-3.5-flash-lite": "3.5-lite", "gemini-3.7-flash": "3.7-flash",
               "claude-haiku-4-5-20251001": "haiku-4.5", "claude-sonnet-5": "sonnet-5",
               "deepseek-v4-flash": "V4-flash", "deepseek-v4-pro": "V4-pro"}
+
+
+SHORT_FAM = {"openai": "OpenAI", "google": "Google", "anthropic": "Anthropic",
+             "deepseek": "DeepSeek"}
+
+
+def vendor_side_label(ax, fam):
+    """厂商名竖排在面板左外侧，图标叠在名字上方。
+
+    厂商名放在标题行会占掉每行约 0.4in 的垂直空间，四个厂商就撑破版面；
+    放到左侧则不占高度。"""
+    from matplotlib.offsetbox import AnnotationBbox
+    import pathlib as _p
+    ax.annotate(SHORT_FAM.get(fam, FAMILY[fam]["label"]), xy=(-0.42, 0.5), xycoords="axes fraction",
+                rotation=90, ha="center", va="center", fontsize=9.6, color=INK)
+    lg = FAMILY[fam].get("logo")
+    f = (_p.Path(__file__).resolve().parents[1] / "paper/figures/logos" / lg) if lg else None
+    if f is not None and f.exists():
+        ax.add_artist(AnnotationBbox(_logo_offsetimage(f, target_pt=11.0),
+                                     (-0.42, 1.03), xycoords="axes fraction",
+                                     frameon=False, box_alignment=(0.5, 0.0)))
 
 
 def main():
@@ -44,11 +65,15 @@ def main():
         axes = [[axes0[0][i]] for i in range(nr)]
         gain_axes = [axes0[1][i] for i in range(nr)]
     else:
-        # 宽度钉死在 \textwidth：出图比排版宽会被 LaTeX 缩小，图内字号跟着缩水。
-        fig, axes = plt.subplots(nr, nc, figsize=(TEXT_W, 1.85 * nr), squeeze=False)
+        # 行=厂商、列=benchmark。厂商名竖排在最左，省掉每行的标题空间，
+        # 所以厂商数增加时不必压面板高度。宽度钉死在 \textwidth。
+        nr, nc = len(fams), len(benches)
+        fig, axes = plt.subplots(nr, nc, figsize=(TEXT_W, 1.42 * nr), squeeze=False,
+                                 sharey=True)
 
-    for ri, b in enumerate(benches):
-        for ci, fam in enumerate(fams):
+    gy_all = []
+    for ri, fam in enumerate(fams):
+        for ci, b in enumerate(benches):
             ax = axes[ri][ci]
             models = [m for m in FAMILY[fam]["models"]
                       if (m, b, "cot", 1) in cells and m in CAPABILITY]
@@ -67,30 +92,23 @@ def main():
                         ys.append(max(sum(x["correct"] for x in cells[(m, b, a, N)]) /
                                       len(cells[(m, b, a, N)]) * 100 for N in Ns) if Ns else np.nan)
                 series[a] = ys
+            # 画相对单医生的增益，不画绝对准确率：绝对量程 15--95% 会把架构之间
+            # 仅 ±8pp 的差异压成一条线，五条曲线全部重叠，图就失去了意义。
+            base = series["cot"]
+            for a in ARCH_ORDER:
+                series[a] = [v - b0 if not (np.isnan(v) or np.isnan(b0)) else np.nan
+                             for v, b0 in zip(series[a], base)]
             xspan = (max(xs) - min(xs)) if len(xs) > 1 else 1.0
             dodge = {a: (i - 2) * xspan * 0.012 for i, a in enumerate(ARCH_ORDER)}
             # 目标图的线型分工：连线与 marker 同色；单医生基线是灰虚参考线。
             for a in ARCH_ORDER:
                 vs_series(ax, [x + dodge[a] for x in xs], series[a], a)
-            allv = [v for ys in series.values() for v in ys if not np.isnan(v)]
-            lo, hi = min(allv), max(allv); span = (hi - lo) or 1.0
-            ax.set_ylim(lo - span * 0.18, hi + span * 0.40)
+            ax.axhline(0, color=MUTED, lw=0.9, ls="-", zorder=1)
+            gy_all.extend(v for ys in series.values() for v in ys if not np.isnan(v))
             ax.set_xlim(min(xs) - xspan * 0.13, max(xs) + xspan * 0.13)
             # 模型名下沉为 x 刻度（目标图：x 轴是干净的数值轴，没有浮在数据里的标注）
             ax.set_xticks(xs)
             ax.set_xticklabels([TICK_LABEL[m] for m in models], fontsize=7.4)
-            xi = len(models) - 1
-            s0 = series["cot"][xi]
-            cand = [(series[a][xi], a) for a in MAS_ORDER if not np.isnan(series[a][xi])]
-            if cand and not np.isnan(s0):
-                y1, _ = max(cand)
-                # 左上角是空的（数据自左下往右上走）；箭头挤在右侧会压住数据点，
-                # 而且为它留的边距把三个模型压进面板左侧 70%，刻度因此相撞。
-                ax.text(0.035, 0.965, f"best panel {y1 - s0:+.1f} pp",
-                        transform=ax.transAxes, ha="left", va="top",
-                        # 负增益必须用负色：绿色的 "-2.0 pp" 会被读成好消息
-                        fontsize=8.2, fontweight="bold",
-                        color=GAIN_POS if y1 - s0 >= 0 else GAIN_NEG)
             clean(ax)
             if single:
                 ax.set_title(BENCH_LABEL.get(b, b), fontsize=10.0, pad=5)
@@ -100,14 +118,17 @@ def main():
                     ax.set_xlabel("GPT model  (capability index $I$)", fontsize=9.0)
             else:
                 if ri == 0:
-                    title_with_logo(ax, fam, FAMILY[fam]["label"], y=1.045, zoom=0.030,
-                                    fontsize=11.5)
+                    ax.set_title(BENCH_LABEL.get(b, b), fontsize=10.2, pad=6)
                 if ci == 0:
-                    ax.set_ylabel(f"{BENCH_LABEL.get(b, b)}\nPerformance (%)", fontsize=9.2)
+                    vendor_side_label(ax, fam)
+                # 厂商名已在左侧，x 轴不再重复厂商，只在最底一行标一次
                 if ri == nr - 1:
-                    short = {"openai": "GPT", "google": "Gemini", "anthropic": "Claude",
-                             "deepseek": "DeepSeek"}.get(fam, FAMILY[fam]["label"])
-                    ax.set_xlabel(f"{short} model  (capability index $I$)", fontsize=9.0)
+                    ax.set_xlabel("capability index $I$", fontsize=9.0)
+    if not single and gy_all:
+        lo, hi = min(gy_all), max(gy_all); sp = (hi - lo) or 1.0
+        for row in axes:
+            for ax in row:
+                ax.set_ylim(lo - sp * 0.12, hi + sp * 0.12)
     if single:
         gy = []
         for ri, b in enumerate(benches):
