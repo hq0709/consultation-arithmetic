@@ -82,6 +82,17 @@ def main():
         print(f"  {AL[a]:18s} kappa = {np.mean(s):+6.1f}%   n={len(s):3d}")
     ks = [v for v in out["kappa_by_arch"].values()]
     print(f"  -> 五种机制的范围: {min(ks):+.0f}% .. {max(ks):+.0f}%")
+    # 事后挑每个 cell 表现最好的架构（不可部署的上界）。与上面同口径：全部 N>=3。
+    bp = []
+    for r in recs:
+        if r["arch"] != "discussion" or r["thin"]:
+            continue
+        cand = [x["acc"] for x in recs
+                if (x["model"], x["bench"], x["N"]) == (r["model"], r["bench"], r["N"])
+                and x["arch"] in MAS]
+        bp.append((max(cand) - r["psa"]) / r["headroom"] * 100)
+    out["kappa_best_per_cell"] = float(np.mean(bp))
+    print(f"  -> 事后挑每 cell 最好的架构: {out['kappa_best_per_cell']:+.1f}%  n={len(bp)}")
 
     print("\n" + "=" * 78)
     print("C. 按 P_SA 分箱：可用空间与捕获率的反向变化")
@@ -100,6 +111,35 @@ def main():
         out["bins"].append(row)
         print(f"  {lab:12s}{row['n']:5d}{row['headroom']:+9.1f}pp{row['kappa']:+8.1f}%"
               f"{row['gain']:+8.2f}pp")
+
+    # ---- D. 可用空间从哪来：采样 vs 专科名册 -------------------------------
+    # 以前这三个数存在 results/headroom_decomp.json，由一个已经不在仓库里的脚本
+    # 产出，停在 180 配置网格（single 48.0 / 59.7 / 60.7）。fig_ceiling 画的是那份，
+    # 图注写的却是本文件的新数字 —— 图与图注不同源。现在在这里一起算。
+    print("\n" + "=" * 78)
+    print("D. 可用空间的来源（N=9，同一批 cell）")
+    print("=" * 78)
+    keys = lambda a: {(r["model"], r["bench"]) for r in recs
+                      if r["arch"] == a and r["N"] == 9}
+    common = keys("sc") & keys("discussion")
+    pick = lambda a: [r for r in recs
+                      if r["arch"] == a and r["N"] == 9 and (r["model"], r["bench"]) in common]
+    sc9, pan9 = pick("sc"), pick("discussion")
+    out["decomp"] = {
+        "n_cells": len(common),
+        "single": float(np.mean([r["psa"] for r in pan9])),
+        "sc_oracle": float(np.mean([r["oracle"] for r in sc9])),
+        "panel_oracle": float(np.mean([r["oracle"] for r in pan9])),
+    }
+    d = out["decomp"]
+    roster = d["panel_oracle"] - d["sc_oracle"]
+    total = d["panel_oracle"] - d["single"]
+    d["roster_share"] = roster / total * 100
+    print(f"  单医生问一次            {d['single']:.1f}%          ({d['n_cells']} 个 cell)")
+    print(f"  同一位通才问九次        {d['sc_oracle']:.1f}%")
+    print(f"  九位不同专科各问一次    {d['panel_oracle']:.1f}%")
+    print(f"  -> 可用空间 {total:+.1f}pp，其中专科名册贡献 {roster:+.2f}pp "
+          f"({d['roster_share']:.1f}%)，其余是采样")
 
     (ROOT / "results/ceiling_numbers.json").write_text(json.dumps(out, indent=1))
     print("\n写入 results/ceiling_numbers.json")

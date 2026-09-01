@@ -12,6 +12,7 @@
 import sys, pathlib, glob, json, collections
 ROOT = pathlib.Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT))
 import numpy as np
+from experiments.grid_files import main_grid
 from experiments.analyze import load, mcnemar
 
 # body_system -> 与之对口的专科（路由器词表里的名称）
@@ -37,7 +38,7 @@ def main():
         r = json.loads(l)
         items[r["qid"]] = r.get("meta", {})
 
-    rows = load(sorted(glob.glob(str(ROOT / "results/G_*.jsonl"))))
+    rows = load(main_grid())
     print("=" * 74)
     print("1. 面板里有没有对口专科，成绩有差别吗？")
     print("=" * 74)

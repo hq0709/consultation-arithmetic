@@ -11,6 +11,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT)
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
+from experiments.refresh_stale import panel_conf
 from experiments.analyze import load, mcnemar
 from experiments.grid_files import main_grid
 from experiments.vizstyle import (rcparams, clean, panel_legend, ARCH_MARKER, MAS_ORDER,
@@ -202,15 +203,17 @@ def reliability(cells):
                       ("centralized", "Centralized"), ("discussion", "Decentralized")]:
         pts = []
         for (m, b, a, N), v in cells.items():
-            if a != arch or (arch != "cot" and N < 3):
+            # N=9 与 tab:safety 同口径：正文的一致率、条件错误率、置信差全部报 N=9，
+            # 图跨 N 合并会给出不同的数（讨论后的置信差 2.8 vs 2.4）。
+            if a != arch or (arch != "cot" and N != 9):
                 continue
             for ep in v:
-                rs = [r for r in (ep.get("rounds") or []) if len(r) >= (1 if arch == "cot" else 2)]
-                if not rs:
-                    continue
-                cf = [o.get("confidence", 50) for o in rs[-1] if o.get("answer")]
-                if cf:
-                    pts.append((float(np.mean(cf)), ep["correct"]))
+                # 与 tab:safety 同一个函数：系统实际输出的那一轮的置信度。
+                # Centralized 的输出是编排者的裁决，不是专科医生的均值 —— 临床医生
+                # 看到的就是前者。图和表以前各用一个定义，Centralized 差 0.4 点。
+                c = panel_conf(ep)
+                if c is not None:
+                    pts.append((c, ep["correct"]))
         if len(pts) > 200:
             series[lab] = pts
     if not series:
@@ -229,7 +232,7 @@ def reliability(cells):
         xs, gaps = [], []
         for i in range(len(edges) - 1):
             msk = (c >= edges[i]) & (c < edges[i + 1])
-            if msk.sum() >= 40:
+            if msk.sum() >= 150:
                 xs.append(c[msk].mean()); gaps.append(c[msk].mean() - y[msk].mean())
         if xs:
             ax.plot(xs, gaps, ls="--", lw=1.4, color=COL[lab], marker=MK[lab], ms=4.6,

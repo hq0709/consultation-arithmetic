@@ -11,6 +11,7 @@ import numpy as np, pandas as pd, statsmodels.api as sm
 from scipy import stats as st
 from sklearn.linear_model import LassoCV, RidgeCV
 from sklearn.preprocessing import StandardScaler
+from experiments.grid_files import main_grid
 from experiments.scaling_law import build_table
 from mechanisms.nmi_metrics import fit_turn_powerlaw
 
@@ -30,7 +31,9 @@ def prep(df):
 
 
 def main():
-    df = build_table(sorted(p.name for p in (ROOT / "results").glob("G_*.jsonl")))
+    # 曾经是 glob("G_*.jsonl")：只看得到旧的 9 个文件，420 配置网格里的 12 个
+    # 新文件一个都进不来，所以扩网格之后这里的数字纹丝不动。
+    df = build_table([pathlib.Path(f).name for f in main_grid()])
     d, terms = prep(df)
     X = sm.add_constant(d[terms].astype(float)); y = d["gain"].astype(float)
     res = sm.OLS(y, X).fit()

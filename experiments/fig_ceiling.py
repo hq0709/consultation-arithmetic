@@ -17,7 +17,10 @@ FIG = ROOT / "paper/figures"
 def main():
     rcparams()
     cn = json.loads((ROOT / "results/ceiling_numbers.json").read_text())
-    hd = json.loads((ROOT / "results/headroom_decomp.json").read_text())
+    # 同源：这三个数与图注、正文一起出自 ceiling_numbers.py。
+    # 以前读 results/headroom_decomp.json（180 配置网格的遗留文件），图画的是旧数、
+    # 图注写的是新数。
+    hd = cn["decomp"]
     sd, sco, pao = hd["single"], hd["sc_oracle"], hd["panel_oracle"]
     best = cn["best_acc_n9"]
 
@@ -38,16 +41,16 @@ def main():
         ax.text(v + 0.5, y, f"{v:.1f}", va="center", ha="left", fontsize=8.2,
                 color=INK, fontweight="bold")
     # 两个预言机之间的等价：用一个括号标出来
-    ax.annotate("", xy=(pao + 4.0, ys[1]), xytext=(pao + 4.0, ys[2]),
+    ax.annotate("", xy=(pao + 6.2, ys[1]), xytext=(pao + 6.2, ys[2]),
                 arrowprops=dict(arrowstyle="-", color=MUTED, lw=1.0))
     for yy in (ys[1], ys[2]):
-        ax.plot([pao + 3.4, pao + 4.0], [yy, yy], color=MUTED, lw=1.0, zorder=4)
-    ax.annotate(f"the specialty roster\nis worth {pao-sco:+.1f} pp",
-                xy=(pao + 4.0, (ys[1] + ys[2]) / 2), xytext=(5, 0),
+        ax.plot([pao + 5.6, pao + 6.2], [yy, yy], color=MUTED, lw=1.0, zorder=4)
+    ax.annotate(f"the specialty roster\nis worth {pao-sco:+.2f} pp",
+                xy=(pao + 6.2, (ys[1] + ys[2]) / 2), xytext=(4, 0),
                 textcoords="offset points", va="center", ha="left",
                 fontsize=7.8, color=C_ROSE, fontweight="bold", linespacing=1.25)
     ax.set_yticks(ys); ax.set_yticklabels(LAB, fontsize=7.6, linespacing=1.25)
-    ax.set_xlim(40, pao + 15.0)
+    ax.set_xlim(40, pao + 20.0)
     ax.set_xticks([40, 50, 60])
     ax.set_ylim(-0.65, 3.65)
     ax.set_xlabel("Accuracy: is a correct answer available? (%)")
@@ -70,18 +73,21 @@ def main():
         ax.plot([0, v], [j, j], color=COL[a], lw=1.6, alpha=.55, zorder=3,
                 solid_capstyle="round")
         ax.plot([v], [j], marker=MK[a], ms=6.0, mfc=COL[a], mec=COL[a], zorder=5)
-        ax.annotate(f"{v:.1f}", xy=(v, j), xytext=(6, 0), textcoords="offset points",
-                    va="center", fontsize=7.8, color=INK, fontweight="bold")
+        # 负值的标签放在点的正上方：放左边会被左边框切掉负号（-12.4 变成 12.4）
+        xy, ha, va = ((0, 9), "center", "bottom") if v < 0 else ((6, 0), "left", "center")
+        ax.annotate(f"{v:+.1f}", xy=(v, j), xytext=xy, textcoords="offset points",
+                    va=va, ha=ha, fontsize=7.8, color=INK, fontweight="bold")
     ax.axvline(0, color="#4a4a4a", lw=1.0, zorder=4)
-    ax.text(0, len(order) - .38, " random member", ha="left", va="bottom",
+    ax.text(0, len(order) + .10, " random member", ha="left", va="bottom",
             fontsize=7.4, color="#4a4a4a")
     ax.axvline(100, color=GAIN_NEG, ls="--", lw=1.1, zorder=4)
-    ax.text(100, len(order) - .38, "oracle ", ha="right", va="bottom",
+    ax.text(100, len(order) + .10, "oracle ", ha="right", va="bottom",
             fontsize=7.4, color=GAIN_NEG)
     ax.set_yticks(range(len(order))); ax.set_yticklabels(order, fontsize=8.0)
-    ax.set_ylim(-.6, len(order) - .05)
-    ax.set_xlim(-6, 106)
-    ax.set_xticks([0, 25, 50, 75, 100])
+    ax.set_ylim(-.6, len(order) + .55)
+    lo = min(min(K.values()), 0)
+    ax.set_xlim(lo - 12, 108)
+    ax.set_xticks([t for t in (-25, 0, 25, 50, 75, 100) if t >= lo - 12])
     ax.set_xlabel("Headroom recovered $\\kappa$ (%)")
     ax.set_title("(b)  How much of it any rule recovers", loc="left", fontsize=9.4, pad=5)
     clean(ax, grid_axis="x")

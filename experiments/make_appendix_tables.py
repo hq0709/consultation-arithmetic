@@ -2,11 +2,12 @@
 import sys, pathlib, json, glob
 ROOT = pathlib.Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT))
 import numpy as np, pandas as pd, statsmodels.api as sm
+from experiments.grid_files import main_grid
 from experiments.scaling_law import build_table
 from experiments.robustness import prep
 OUT = ROOT / "paper/tables"; OUT.mkdir(parents=True, exist_ok=True)
 
-df = build_table(sorted(p.name for p in (ROOT / "results").glob("G_*.jsonl")))
+df = build_table([pathlib.Path(f).name for f in main_grid()])
 d, terms = prep(df)
 X = sm.add_constant(d[terms].astype(float)); y = d["gain"].astype(float)
 res = sm.OLS(y, X).fit(cov_type="HC3")
