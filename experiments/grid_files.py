@@ -11,7 +11,7 @@
   Google     gemini-3.5-flash-lite, gemini-3.7-flash
   Anthropic  claude-haiku-4.5, claude-sonnet-5
 """
-import json, glob, pathlib, collections
+import json, glob, pathlib, collections, functools
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 MAIN_PREFIXES = ("G_", "CLA_", "GEM_", "OR_gemini-3.7-flash_medqa")
@@ -59,3 +59,26 @@ if __name__ == "__main__":
     print(f"\n主网格 {len(fs)} 个文件")
     print(f"  模型 {len({r['model'] for r in rows})} · benchmark {len({r['bench'] for r in rows})}")
     print(f"  {len(rows)} episodes · {len(cfg)} 配置 · 其中多智能体 {len([c for c in cfg if c[2] in MAS])}")
+
+
+@functools.lru_cache(maxsize=None)
+def canonical_items(bench):
+    """某个 benchmark 的官方 250 题（论文声明的评测集）。"""
+    f = ROOT / f"data/{bench}_250.jsonl"
+    return frozenset(json.loads(l)["qid"] for l in f.open() if l.strip())
+
+
+def load_main(dedup=True):
+    """主网格的 episode，**只保留官方 250 题**。
+
+    为什么必须过滤：网格是分批跑出来的，早期有几批用 `medxpertqa_500.jsonl` 下的题，
+    后来统一到 250 题。250 是 500 的严格前缀，所以数据本身没坏，但 11 个 cell 的均值
+    落在 500 题的池子上、其余 cell 落在 250 题的池子上 —— 同一个 model x bench 里
+    不同架构就不再是同题比较了（gpt-5-mini/MedXpertQA 的 independent N=1 因此差 4.0pp）。
+    论文声明的是每个 benchmark 250 题，分析口径就必须是 250 题。
+    """
+    import sys
+    sys.path.insert(0, str(ROOT))
+    from experiments.analyze import load
+    rows = load(main_grid(), dedup=dedup)
+    return [r for r in rows if r.get("qid") in canonical_items(r.get("bench"))]

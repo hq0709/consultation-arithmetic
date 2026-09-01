@@ -8,7 +8,7 @@ import sys, pathlib, glob, json, collections
 ROOT = pathlib.Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT))
 import numpy as np
 from experiments.analyze import load
-from experiments.grid_files import main_grid
+from experiments.grid_files import main_grid, load_main
 from sklearn.metrics import roc_auc_score
 
 PANEL = ("independent", "centralized", "discussion")
@@ -26,7 +26,7 @@ def youden(x, y, grid=400):
 
 
 def main():
-    rows = load(main_grid())
+    rows = load_main()
     sig = collections.defaultdict(list)
     for r in rows:
         if r["arch"] not in PANEL or r["N"] < 3:

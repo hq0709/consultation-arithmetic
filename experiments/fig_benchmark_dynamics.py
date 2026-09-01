@@ -5,7 +5,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT)
 import numpy as np, matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 from experiments.analyze import load
-from experiments.grid_files import main_grid
+from experiments.grid_files import main_grid, load_main
 from experiments.vizstyle import (rcparams, clean, BENCH_COLOR, BENCH_LABEL, BENCH_ORDER,
                                   TIER_ORDER, TIER_LABEL, CAPABILITY, INK, MUTED,
                                   GAIN_POS, GAIN_NEG, LINE_SAS)
@@ -15,7 +15,7 @@ MAS = ("independent", "centralized", "discussion", "tiered")
 
 def main():
     rcparams()
-    rows = load(main_grid())
+    rows = load_main()
     cells = collections.defaultdict(list)
     for r in rows:
         cells[(r["model"], r["bench"], r["arch"], r["N"])].append(r)

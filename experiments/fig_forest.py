@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 from experiments.refresh_stale import panel_conf
 from experiments.analyze import load, mcnemar
-from experiments.grid_files import main_grid
+from experiments.grid_files import main_grid, load_main
 from experiments.vizstyle import (rcparams, clean, panel_legend, ARCH_MARKER, MAS_ORDER,
                                   ARCH_SOLID, INK, MUTED, GRID, C_ORANGE, C_ROSE,
                                   C_PURPLE, C_CYAN)
@@ -31,7 +31,7 @@ SIG, NS = "#d9962f", "#9a9a9a"      # 只有两种颜色：显著 / 不显著
 
 
 def collect():
-    rows = load(main_grid())
+    rows = load_main()
     cells = collections.defaultdict(list)
     for r in rows:
         cells[(r["model"], r["bench"], r["arch"], r["N"])].append(r)
@@ -232,7 +232,7 @@ def reliability(cells):
         xs, gaps = [], []
         for i in range(len(edges) - 1):
             msk = (c >= edges[i]) & (c < edges[i + 1])
-            if msk.sum() >= 150:
+            if msk.sum() >= 40:
                 xs.append(c[msk].mean()); gaps.append(c[msk].mean() - y[msk].mean())
         if xs:
             ax.plot(xs, gaps, ls="--", lw=1.4, color=COL[lab], marker=MK[lab], ms=4.6,

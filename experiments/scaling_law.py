@@ -25,8 +25,13 @@ CAPABILITY = {"gpt-4.1-nano": 0.750, "gpt-4o-mini": 0.875, "gpt-4.1-mini": 0.850
               "gpt-5-nano": 0.950, "gpt-5.4-nano": 0.950, "gpt-5-mini": 0.975}
 
 
-def build_table(files):
+def build_table(files, canonical=True):
+    """canonical=True 时只保留每个 benchmark 的官方 250 题。见 grid_files.load_main
+    的说明：网格分批跑，早期几批用的是 500 题文件，不过滤就不是同题比较。"""
     rows = load([ROOT / "results" / f for f in files])
+    if canonical:
+        from experiments.grid_files import canonical_items
+        rows = [r for r in rows if r.get("qid") in canonical_items(r.get("bench"))]
     by = collections.defaultdict(list)
     for r in rows:
         by[(r["model"], r["bench"], r["arch"], r["N"], r["seed"])].append(r)

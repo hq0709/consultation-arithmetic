@@ -5,7 +5,7 @@ import sys, pathlib, glob, collections
 ROOT = pathlib.Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT))
 import numpy as np, matplotlib.pyplot as plt
 from experiments.analyze import load
-from experiments.grid_files import main_grid
+from experiments.grid_files import main_grid, load_main
 from experiments.vizstyle import series as vs_series
 from experiments.vizstyle import (side_label, rcparams, clean, shape_legend, GAIN_POS, GAIN_NEG, ARCH_MARKER,
                                   ARCH_ORDER, MAS_ORDER, arch_color, LINE, LINE_SAS,
@@ -28,7 +28,7 @@ def main():
     rcparams()
     # 与全文分析同一个网格定义：图里出现的厂商就是分析里用的厂商。
     # 各画各的会让图上多出没进任何分析的厂商，也把版面撑坏。
-    rows = load(main_grid())
+    rows = load_main()
 
     cells = collections.defaultdict(list)
     for r in rows:

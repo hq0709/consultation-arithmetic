@@ -15,7 +15,7 @@ import sys, pathlib, glob, json, collections
 ROOT = pathlib.Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT))
 import numpy as np
 from experiments.analyze import load
-from experiments.grid_files import main_grid
+from experiments.grid_files import main_grid, load_main
 
 PANEL = ("independent", "centralized", "discussion")
 
@@ -58,7 +58,7 @@ def episode_features(ops, gold):
 
 
 def main():
-    rows = load(main_grid())
+    rows = load_main()
     eps = []
     for r in rows:
         if r["arch"] not in PANEL or r["N"] < 3 or r.get("status") == "error":
