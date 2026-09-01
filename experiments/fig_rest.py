@@ -181,9 +181,10 @@ def fig_coord(cells):
             md.append(r)
     if len(md) < 5:
         print("fig6 数据不足"); return
-    # 四面板：A_e 与 absorption 量纲差十倍，共用一根 y 轴会让 A_e 不可读，必须拆开
-    fig, axes2 = plt.subplots(2, 2, figsize=(6.30, 4.35))
-    axes = axes2.ravel()
+    # 三面板。第四格原来画 error absorption，已经去掉：
+    # absorb = (E_SAS - E_MAS)/E_SAS = 增益 / (1 - P_SA)，是准确率增益的单调重标，
+    # 不是一个独立的协调测量。把它单独画一格等于把同一个数报两遍。
+    fig, axes = plt.subplots(1, 3, figsize=(6.30, 2.35))
 
     ax = axes[0]
     for a in MAS_ORDER:
@@ -197,11 +198,12 @@ def fig_coord(cells):
     if pl:
         ax.plot(xs, pl["a"] * (xs + .5) ** pl["exponent"], "-", color=INK, lw=1.6, zorder=5)
         ax.plot(xs, 2.72 * (xs + .5) ** 1.724, "--", color="#a8a8a8", lw=1.4, zorder=3)
-        ax.text(.04, .97, "ours: $T=%.2f(n{+}0.5)^{%.2f}$,  $R^2$=%.2f"
+        ax.text(.04, .97, "ours\n$T{=}%.2f(n{+}0.5)^{%.2f}$, $R^2{=}%.2f$"
                 % (pl["a"], pl["exponent"], pl["r2"]), transform=ax.transAxes,
-                fontsize=7.6, va="top")
-        ax.text(.04, .875, "general domain: $2.72(n{+}0.5)^{1.72}$,  $R^2$=0.97",
-                transform=ax.transAxes, fontsize=7.6, color="#8a8a8a", va="top")
+                fontsize=6.6, va="top", linespacing=1.35)
+        ax.text(.04, .78, "general domain\n$2.72(n{+}0.5)^{1.72}$, $R^2{=}0.97$",
+                transform=ax.transAxes, fontsize=6.6, color="#8a8a8a", va="top",
+                linespacing=1.35)
     ax.set_yscale("log"); clean(ax)
     ax.set_ylim(top=ax.get_ylim()[1] * 5.0)   # 给面板内两行拟合注释腾出顶部空间
     ax.set_xlabel("Number of agents $n_a$"); ax.set_ylabel("Reasoning turns $T$")
@@ -235,20 +237,10 @@ def fig_coord(cells):
     ax.bar(xp, ae, .58, color=cc, zorder=3, edgecolor="white", lw=.7)
     for i2, v in enumerate(ae):
         ax.text(i2, v + max(ae) * .035, f"{v:.2f}", ha="center", fontsize=8.4, color=INK)
-    clean(ax, grid_axis="y"); ax.set_xticks(xp); ax.set_xticklabels(short, fontsize=8.4)
-    ax.set_ylabel("$A_e$  (information discarded)"); ax.margins(y=.18)
+    clean(ax, grid_axis="y"); ax.set_xticks(xp)
+    ax.set_xticklabels(short, fontsize=7.6, rotation=30, ha="right")
+    ax.set_ylabel("$A_e$  (information discarded)", fontsize=8.6); ax.margins(y=.18)
     ax.set_title("(c)  Error amplification", loc="left", fontsize=9.6, pad=5)
-
-    ax = axes[3]
-    ab = [np.mean([r["absorb"] for r in md if r["cls"] == c]) * 100 for c in cls]
-    ax.bar(xp, ab, .58, color=cc, zorder=3, edgecolor="white", lw=.7, hatch="///")
-    for i2, v in enumerate(ab):
-        ax.text(i2, v + .5, f"{v:.1f}%", ha="center", fontsize=8.4, color=INK)
-    ax.axhline(22.7, color=GAIN_NEG, ls="--", lw=1.2, zorder=4)
-    ax.text(-.42, 23.6, "reported 22.7%", fontsize=7.8, color=GAIN_NEG, va="bottom")
-    clean(ax, grid_axis="y"); ax.set_xticks(xp); ax.set_xticklabels(short, fontsize=8.4)
-    ax.set_ylabel("Error absorption (%)"); ax.set_ylim(0, 27)
-    ax.set_title("(d)  Error absorption", loc="left", fontsize=9.6, pad=5)
 
     shape_legend(fig, ncol=4, y=0.004, include=MAS_ORDER)
     fig.tight_layout(rect=[0, 0.075, 1, 1])

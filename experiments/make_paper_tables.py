@@ -3,6 +3,7 @@ from __future__ import annotations
 import sys, pathlib, json, glob, collections, argparse
 ROOT = pathlib.Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT))
 import numpy as np, pandas as pd
+from experiments.grid_files import main_grid
 from experiments.analyze import load, wilson, mcnemar
 from mechanisms.nmi_metrics import config_metrics, fit_turn_powerlaw, fit_msg_density_log
 from panels.architectures import NMI_CLASS
@@ -16,10 +17,12 @@ ARCHLAB = {"independent": "Independent", "centralized": "Centralized",
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--glob", default="G_*.jsonl")
+    # 默认走 main_grid()：以前默认是 "G_*.jsonl"，只匹配最早的 9 个 OpenAI 文件，
+    # 所以协调指标表在网格扩到 21 个文件之后仍然只覆盖三个模型（k=45）。
+    ap.add_argument("--glob", default=None, help="覆盖主网格，用于对照臂/消融臂")
     ap.add_argument("--outdir", default="paper")
     a = ap.parse_args()
-    files = sorted(glob.glob(str(ROOT / "results" / a.glob)))
+    files = sorted(glob.glob(str(ROOT / "results" / a.glob))) if a.glob else main_grid()
     if not files:
         print("没有匹配的结果文件"); return
     rows = load(files)
