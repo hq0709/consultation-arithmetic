@@ -1,5 +1,5 @@
 """A1 —— 对标 NMI Figure 4：Agent Heterogeneity Effects。
-四种能力配置 x {Centralized, Decentralized}，在窗口内的 MedXpertQA 上。
+四种能力配置 x {Centralized, Decentralized}，在 MedXpertQA 上。
 NMI 的关键操纵是 orchestrator 与 sub-agent 的能力错配。"""
 import sys, pathlib, json, argparse, collections, time
 ROOT = pathlib.Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT))

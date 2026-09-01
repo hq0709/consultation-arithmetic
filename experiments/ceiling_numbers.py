@@ -84,7 +84,7 @@ def main():
     print(f"  -> 五种机制的范围: {min(ks):+.0f}% .. {max(ks):+.0f}%")
 
     print("\n" + "=" * 78)
-    print("C. 按 P_SA 分箱的分解（窗口的机制解释）")
+    print("C. 按 P_SA 分箱：可用空间与捕获率的反向变化")
     print("=" * 78)
     mas_only = [r for r in recs if r["arch"] in MAS]
     out["bins"] = []

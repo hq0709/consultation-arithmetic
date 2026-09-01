@@ -64,16 +64,13 @@ for vi, (ven, head, ms) in enumerate(VENDORS):
         rows += [r"\sectrow", rf"\multicolumn{{6}}{{@{{}}l}}{{\textit{{{head}}}}} \\"]
     for m in ms:
         v = [100 * np.mean(ACC[m][b]) for b in BEN3]
-        if any(25 <= x < 50 for x in v):        # 落在协作窗口内的行加底纹
-            rows.append(r"\winrow")
         # 厂商图标前置到模型名，不再单开一列
         rows.append(f"{ven}~{TEX.get(m, chr(92)+'texttt{'+m+'}')} & "
                     f"{v[0]:.1f} & {v[1]:.1f} & {v[2]:.1f} & "
                     f"\\textbf{{{CAP[m]:.1f}}} & "
                     f"{'effort=low' if m.startswith('gpt-5') else '---'} \\\\")
 rows += [r"\bottomrule",
-         r"\multicolumn{6}{@{}l}{\scriptsize shaded rows have a single-doctor baseline between $25$ and $50\%$ on at} \\",
-         r"\multicolumn{6}{@{}l}{\scriptsize least one benchmark. Capability-matched cross-vendor pairs:} \\",
+         r"\multicolumn{6}{@{}l}{\scriptsize Capability-matched cross-vendor pairs:} \\",
          r"\multicolumn{6}{@{}l}{\scriptsize \texttt{gemini-3.5-flash-lite} ($50.3$) with \texttt{gpt-5-nano} ($50.8$), and} \\",
          r"\multicolumn{6}{@{}l}{\scriptsize \texttt{deepseek-v4-pro} ($59.7$) with \texttt{gpt-5-mini} ($59.2$) across the Pacific.} \\",
          r"\end{tabular}"]

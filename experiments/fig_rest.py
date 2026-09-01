@@ -87,85 +87,6 @@ def fig_nscaling(cells):
     print(f"fig2_nscaling ok ({nrow} 模型 x {ncol} benchmark)")
 
 
-# ---------------------------------------------------------------- 协作窗口
-def fig_window(cells):
-    pts = []
-    for (m, b, a, N), v in cells.items():
-        if a not in MAS_ORDER:
-            continue
-        base = cells.get((m, b, "cot", 1))
-        if not base:
-            continue
-        ids = {x["qid"] for x in v} & {x["qid"] for x in base}
-        if len(ids) < 50:
-            continue
-        A = sum(x["correct"] for x in v if x["qid"] in ids) / len(ids)
-        P = sum(x["correct"] for x in base if x["qid"] in ids) / len(ids)
-        pts.append((P * 100, (A - P) * 100, a, m, b, N))
-    if len(pts) < 5:
-        print("fig3 数据不足"); return
-    fig, axes = plt.subplots(1, 2, figsize=(6.30, 2.35), gridspec_kw={"width_ratios": [1.55, 1]})
-    ax = axes[0]
-    ax.axvspan(25, 50, color="#f7d68a", alpha=.30, zorder=0, lw=0)
-    ax.axhline(0, color="#7a7a7a", lw=1.0, zorder=1)
-    for a in MAS_ORDER:
-        st = ARCH_MARKER[a]
-        for b in BENCH_ORDER:
-            sub = [p for p in pts if p[2] == a and p[4] == b]
-            if sub:
-                ax.plot([p[0] for p in sub], [p[1] for p in sub], ls="none",
-                        marker=st["marker"], ms=st["ms"], mfc=arch_color(b, a),
-                        mec="white", mew=1.0, zorder=4)
-    ax.axvline(45, color=INK, ls="--", lw=1.5, zorder=3)
-    gs = sorted(p[1] for p in pts)
-    lo_, hi_ = np.percentile(gs, 1), np.percentile(gs, 99)
-    pad = (hi_ - lo_) * .26
-    ax.set_ylim(lo_ - pad, hi_ + pad)
-    n_clip = sum(1 for g in gs if g < lo_ - pad or g > hi_ + pad)
-    # 标注贴着它们指的东西：窗口名放在带内底部，45% 阈值竖排贴在线上
-    ax.text(37.5, lo_ - pad * .72, "collaboration window", ha="center", va="bottom",
-            fontsize=8.4, color="#946a00", fontweight="bold")
-    ax.text(45.8, hi_ + pad * .45, "45% ceiling", ha="left", va="top",
-            fontsize=8.0, color=INK)
-    if n_clip:
-        ax.text(.99, .02, f"{n_clip} point(s) outside axis range", transform=ax.transAxes,
-                ha="right", va="bottom", fontsize=7.4, color=MUTED, style="italic")
-    clean(ax)
-    ax.set_xlabel("Single-doctor baseline $P_{SA}$ (%)")
-    ax.set_ylabel("Collaboration gain (pp)")
-    ax.set_title("(a)  Gain against the single-doctor baseline", loc="left",
-                 fontsize=9.6, pad=5)
-
-    ax = axes[1]
-    bins = [(0, 25, "<25"), (25, 35, "25–35"), (35, 50, "35–50"), (50, 70, "50–70"), (70, 101, ">70")]
-    xs, ys, es, fr = [], [], [], []
-    for lo, hi, l in bins:
-        s_ = [p[1] for p in pts if lo <= p[0] < hi]
-        if not s_:
-            continue
-        xs.append(l); ys.append(np.mean(s_)); es.append(np.std(s_) / max(1, np.sqrt(len(s_))))
-        fr.append(np.mean([v > 0 for v in s_]) * 100)
-    cols = ["#e0a33c" if l in ("25–35", "35–50") else "#c4c4c4" for l in xs]
-    ax.bar(xs, ys, yerr=es, color=cols, capsize=3, width=.66,
-           error_kw=dict(ecolor="#3a3a3a", lw=1.0), zorder=3)
-    ax.axhline(0, color="#3a3a3a", lw=1.0, zorder=4)
-    for i, (y, e, f) in enumerate(zip(ys, es, fr)):
-        top = y + e if y >= 0 else y - e
-        ax.text(i, top + (.20 if y >= 0 else -.20), f"{f:.0f}%", ha="center",
-                va="bottom" if y >= 0 else "top", fontsize=8.6, color=INK, fontweight="bold")
-    clean(ax)
-    ax.margins(y=.20)
-    ax.set_xlabel("Single-doctor baseline $P_{SA}$ (%)")
-    ax.set_ylabel("Mean collaboration gain (pp)")
-    ax.set_title("(b)  Binned; label = % of configurations that gain", loc="left",
-                 fontsize=9.6, pad=5)
-    shape_legend(fig, ncol=4, y=0.005, include=MAS_ORDER)
-    fig.tight_layout(rect=[0, 0.075, 1, 1])
-    for e in ("pdf", "png"):
-        fig.savefig(FIG / f"fig3_window.{e}", dpi=200, bbox_inches="tight")
-    print("fig3_window ok")
-
-
 # ---------------------------------------------------------------- 成本-性能
 def fig_cost(cells):
     benches = [b for b in BENCH_ORDER if any(k[1] == b for k in cells)]
@@ -339,5 +260,4 @@ def fig_coord(cells):
 if __name__ == "__main__":
     rcparams()
     c = build()
-    # fig_window 不再生成：窗口一节已从论文移除（七模型下上三档增益两两不显著）
     fig_nscaling(c); fig_cost(c); fig_box(c); fig_coord(c)
