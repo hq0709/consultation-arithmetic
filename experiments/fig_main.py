@@ -25,20 +25,27 @@ SHORT_FAM = {"openai": "OpenAI", "google": "Google", "anthropic": "Anthropic",
 
 
 def vendor_side_label(ax, fam):
-    """厂商名竖排在面板左外侧，图标叠在名字上方。
+    """厂商标识竖排在面板左外侧：图标在上、名字在下。
 
-    厂商名放在标题行会占掉每行约 0.4in 的垂直空间，四个厂商就撑破版面；
-    放到左侧则不占高度。"""
+    两者都以「面板左外侧中点」为锚，用固定的点偏移错开 —— 不能交给 VPacker：
+    旋转后的 TextArea 仍按未旋转的宽度算边界框，居中会按厂商名的长短偏移，
+    "Anthropic" 和 "OpenAI" 就对不齐。
+    """
     from matplotlib.offsetbox import AnnotationBbox
     import pathlib as _p
-    ax.annotate(SHORT_FAM.get(fam, FAMILY[fam]["label"]), xy=(-0.42, 0.5), xycoords="axes fraction",
+    anchor = (-0.30, 0.5)
+    ax.annotate(SHORT_FAM.get(fam, FAMILY[fam]["label"]),
+                xy=anchor, xycoords="axes fraction",
+                xytext=(0, -8), textcoords="offset points",
                 rotation=90, ha="center", va="center", fontsize=9.6, color=INK)
     lg = FAMILY[fam].get("logo")
     f = (_p.Path(__file__).resolve().parents[1] / "paper/figures/logos" / lg) if lg else None
     if f is not None and f.exists():
-        ax.add_artist(AnnotationBbox(_logo_offsetimage(f, target_pt=11.0),
-                                     (-0.42, 1.03), xycoords="axes fraction",
-                                     frameon=False, box_alignment=(0.5, 0.0)))
+        ab = AnnotationBbox(_logo_offsetimage(f, target_pt=11.0), anchor,
+                            xycoords="axes fraction",
+                            xybox=(0, 30), boxcoords="offset points",
+                            frameon=False, box_alignment=(0.5, 0.5))
+        ax.add_artist(ab)
 
 
 def main():

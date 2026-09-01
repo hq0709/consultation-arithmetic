@@ -9,7 +9,7 @@ from experiments.analyze import load
 from experiments.grid_files import main_grid
 from experiments.vizstyle import (rcparams, clean, shape_legend, solid_legend, ARCH_MARKER,
                                   ARCH_ORDER, MAS_ORDER, arch_color, ARCH_SOLID, LINE, LINE_SAS,
-                                  TIER_ORDER, TIER_LABEL, BENCH_ORDER, BENCH_LABEL, BENCH_COLOR,
+                                  TIER_ORDER, TIER_LABEL, BENCH_ORDER, BENCH_LABEL, BENCH_COLOR, MODEL_ORDER, TEXT_W,
                                   INK, MUTED, FAINT, GAIN_POS, GAIN_NEG)
 from mechanisms.nmi_metrics import config_metrics, fit_turn_powerlaw
 from panels.architectures import NMI_CLASS
@@ -35,44 +35,52 @@ def acc(v):
 
 # ---------------------------------------------------------------- N-scaling
 def fig_nscaling(cells):
-    pairs = [(m, b) for b in BENCH_ORDER for m in TIER_ORDER
-             if any(k[:2] == (m, b) and k[2] in MAS_ORDER for k in cells)]
-    ncol = 3; nrow = int(np.ceil(len(pairs) / ncol))
-    fig, axes = plt.subplots(nrow, ncol, figsize=(2.10 * ncol, 1.90 * nrow), squeeze=False)
-    for i, (m, b) in enumerate(pairs):
-        ax = axes[i // ncol][i % ncol]
-        base = acc(cells.get((m, b, "cot", 1), []))
-        if not np.isnan(base):
-            ax.axhline(base, ls="--", lw=1.1, color=LINE_SAS, zorder=2)
-            ax.text(9.5, base, " SAS", color=MUTED, fontsize=8.2, va="center")
-        for a in MAS_ORDER:
-            st = ARCH_MARKER[a]
-            Ns = sorted(k[3] for k in cells if k[:3] == (m, b, a))
-            if not Ns:
-                continue
-            ys = [acc(cells[(m, b, a, N)]) for N in Ns]
-            col = arch_color(b, a)
-            ax.plot(Ns, ys, ls="--", lw=1.3, color=col, marker=st["marker"],
-                    ms=st["ms"], mfc=col, mec=col, mew=0.0, zorder=4)
-        clean(ax)
-        ax.set_xticks([1, 3, 5, 7, 9]); ax.set_xlim(0.3, 10.4)
-        # 小倍数网格的标准做法：列头=模型（只在首行），行头=benchmark（只在首列）。
-        # 每个面板都写"模型·benchmark"必然串栏。
-        if i // ncol == 0:
-            ax.set_title(TIER_LABEL[m].replace(chr(10), " "), fontsize=9.8, pad=6)
-        if i % ncol == 0:
-            ax.set_ylabel(f"{BENCH_LABEL.get(b, b)}\nPerformance (%)", fontsize=8.6,
-                          linespacing=1.35)
-        if i // ncol == nrow - 1:
-            ax.set_xlabel("Number of agents $n_a$")
-        ax.margins(y=.20)
-    for j in range(len(pairs), nrow * ncol):
-        axes[j // ncol][j % ncol].axis("off")
-    shape_legend(fig, ncol=5, y=0.005)
-    fig.tight_layout(rect=[0, 0.065, 1, 1])
+    """行=模型（左侧带厂商图标）、列=benchmark，y 轴画相对单医生的增益。
+
+    与图 1 同一套结构。旧版把模型挂在列头、只画 OpenAI 三个模型：模型数一多
+    列头就撑破版面，而绝对准确率的 15--95% 量程又会把 ±8pp 的架构差异压平。
+    """
+    from experiments.vizstyle import vendor_side_label_for_model
+    models = [m for m in MODEL_ORDER if any(k[0] == m for k in cells)]
+    nrow, ncol = len(models), len(BENCH_ORDER)
+    fig, axes = plt.subplots(nrow, ncol, figsize=(TEXT_W, 1.18 * nrow),
+                             squeeze=False, sharey=True)
+    gy = []
+    for ri, m in enumerate(models):
+        for ci, b in enumerate(BENCH_ORDER):
+            ax = axes[ri][ci]
+            base = acc(cells.get((m, b, "cot", 1), []))
+            if np.isnan(base):
+                ax.axis("off"); continue
+            ax.axhline(0, color=MUTED, lw=0.9, zorder=1)
+            for a in MAS_ORDER:
+                st = ARCH_MARKER[a]
+                Ns = sorted(k[3] for k in cells if k[:3] == (m, b, a))
+                if not Ns:
+                    continue
+                ys = [acc(cells[(m, b, a, N)]) - base for N in Ns]
+                gy.extend(y for y in ys if not np.isnan(y))
+                col = arch_color(b, a)
+                ax.plot(Ns, ys, ls="--", lw=1.3, color=col, marker=st["marker"],
+                        ms=st["ms"], mfc=col, mec=col, mew=0.0, zorder=4)
+            clean(ax)
+            ax.set_xticks([1, 3, 5, 7, 9]); ax.set_xlim(0.3, 9.7)
+            if ri == 0:
+                ax.set_title(BENCH_LABEL.get(b, b), fontsize=9.8, pad=6)
+            if ci == 0:
+                vendor_side_label_for_model(ax, m)
+            if ri == nrow - 1:
+                ax.set_xlabel("Number of agents $n_a$", fontsize=9.0)
+    if gy:
+        lo, hi = min(gy), max(gy); sp = (hi - lo) or 1.0
+        for row in axes:
+            for ax in row:
+                ax.set_ylim(lo - sp * 0.10, hi + sp * 0.10)
+    shape_legend(fig, ncol=5, y=0.004)
+    fig.tight_layout(rect=[0, 0.05, 1, 1])
     for e in ("pdf", "png"):
         fig.savefig(FIG / f"fig2_nscaling.{e}", dpi=200, bbox_inches="tight")
-    print("fig2_nscaling ok")
+    print(f"fig2_nscaling ok ({nrow} 模型 x {ncol} benchmark)")
 
 
 # ---------------------------------------------------------------- 协作窗口

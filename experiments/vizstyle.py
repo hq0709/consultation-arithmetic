@@ -204,6 +204,15 @@ FAMILY = {
                       models=["deepseek-v4-flash", "deepseek-v4-pro"]),
 }
 FAMILY_ORDER = ["openai", "google", "anthropic", "deepseek"]
+# 全部模型按厂商分组、组内按能力升序 —— 图里凡是「一行一个模型」的都用这个顺序
+MODEL_ORDER = [m for f in FAMILY_ORDER for m in FAMILY[f]["models"]]
+# 模型短名：图里的刻度与竖排标签共用，避免各图各写一份而互相不一致
+SHORT_MODEL = {
+    "gpt-4.1-nano": "4.1-nano", "gpt-5-nano": "5-nano", "gpt-5-mini": "5-mini",
+    "gemini-3.5-flash-lite": "3.5-lite", "gemini-3.7-flash": "3.7-flash",
+    "claude-haiku-4-5-20251001": "haiku-4.5", "claude-sonnet-5": "sonnet-5",
+    "deepseek-v4-flash": "V4-flash", "deepseek-v4-pro": "V4-pro",
+}
 
 
 def family_of(model):
@@ -264,3 +273,25 @@ def fig_title_with_logo(fig, fam, text, y=0.985, zoom=0.026, fontsize=10.5):
                         frameon=False, box_alignment=(0.5, 1.0))
     fig.add_artist(ab)
     return ab
+
+
+def vendor_side_label_for_model(ax, model, fontsize=8.6, logo_pt=10.0):
+    """把「厂商图标 + 模型名」竖排在面板左外侧。
+
+    图 1 与图 8 共用。两者都以面板左外侧中点为锚、用固定点偏移错开：交给
+    VPacker 会按未旋转的文字宽度居中，模型名长短不同就对不齐。
+    """
+    from matplotlib.offsetbox import AnnotationBbox
+    import pathlib as _p
+    anchor = (-0.30, 0.5)
+    ax.annotate(SHORT_MODEL.get(model, model), xy=anchor, xycoords="axes fraction",
+                xytext=(0, -7), textcoords="offset points",
+                rotation=90, ha="center", va="center", fontsize=fontsize, color=INK)
+    fam = family_of(model)
+    lg = FAMILY[fam]["logo"] if fam else None
+    f = (_p.Path(__file__).resolve().parents[1] / "paper/figures/logos" / lg) if lg else None
+    if f is not None and f.exists():
+        ax.add_artist(AnnotationBbox(_logo_offsetimage(f, target_pt=logo_pt), anchor,
+                                     xycoords="axes fraction",
+                                     xybox=(0, 26), boxcoords="offset points",
+                                     frameon=False, box_alignment=(0.5, 0.5)))
