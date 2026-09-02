@@ -40,15 +40,22 @@ def fig_nscaling(cells):
     与图 1 同一套结构。旧版把模型挂在列头、只画 OpenAI 三个模型：模型数一多
     列头就撑破版面，而绝对准确率的 15--95% 量程又会把 ±8pp 的架构差异压平。
     """
-    from experiments.vizstyle import vendor_side_label_for_model
-    models = [m for m in MODEL_ORDER if any(k[0] == m for k in cells)]
+    from experiments.vizstyle import vendor_side_label_for_model, FAMILY, FAMILY_ORDER
+    allm = [m for m in MODEL_ORDER if any(k[0] == m for k in cells)]
+    # 八个模型挤一页要把每行压到 0.92in，面板不到一英寸高，曲线全糊在一起。
+    # 按厂商切成两张，每行保持 1.35in：OpenAI+Google 五行，Anthropic+DeepSeek 三行。
+    groups = [[m for m in allm if any(m in FAMILY[f]["models"] for f in ("openai", "google"))],
+              [m for m in allm if any(m in FAMILY[f]["models"] for f in ("anthropic", "deepseek"))]]
+    for gi, models in enumerate(g for g in groups if g):
+        _nscaling_panel(cells, models, gi, vendor_side_label_for_model)
+
+
+def _nscaling_panel(cells, models, gi, vendor_side_label_for_model):
     nrow, ncol = len(models), len(BENCH_ORDER)
     # 按行共享 y，不是全图共享：4.1-nano 在 MedQA 上有一个 -13.6pp 的离群点，
     # 全图共享会把量程拉到 20pp，其余面板 ±5pp 的变化全被压平。
     # 本图回答的是「对这个模型加人管不管用」——同一模型跨 benchmark 比较。
-    # 每行 1.35in 在 8 个模型时是 12.1in —— 超过单页 9in，图会被裁掉下缘。
-    # 0.92 让 8 行落在 8.3in，加图注仍在一页内。
-    fig, axes = plt.subplots(nrow, ncol, figsize=(TEXT_W, 0.92 * nrow),
+    fig, axes = plt.subplots(nrow, ncol, figsize=(TEXT_W, 1.35 * nrow),
                              squeeze=False, sharey="row")
     gy_row = [[] for _ in models]
     for ri, m in enumerate(models):
@@ -84,9 +91,10 @@ def fig_nscaling(cells):
             ax.set_ylim(lo - sp * 0.16, hi + sp * 0.16)
     shape_legend(fig, ncol=5, y=0.004)
     fig.tight_layout(rect=[0, 0.05, 1, 1])
+    suf = "" if gi == 0 else "b"
     for e in ("pdf", "png"):
-        fig.savefig(FIG / f"fig2_nscaling.{e}", dpi=200, bbox_inches="tight")
-    print(f"fig2_nscaling ok ({nrow} 模型 x {ncol} benchmark)")
+        fig.savefig(FIG / f"fig2_nscaling{suf}.{e}", dpi=200, bbox_inches="tight")
+    print(f"fig2_nscaling{suf} ok ({nrow} 模型 x {ncol} benchmark)")
 
 
 # ---------------------------------------------------------------- 成本-性能
