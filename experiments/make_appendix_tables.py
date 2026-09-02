@@ -41,8 +41,8 @@ VENDORS = [
      ["gemini-3.5-flash-lite", "gemini-3.7-flash"]),
     ("\\claude", "Anthropic --- a third vendor, for the diversity ladder",
      ["claude-haiku-4-5-20251001", "claude-sonnet-5"]),
-    ("\\deepseek", "DeepSeek / Alibaba / Zhipu --- independently trained ecosystems, "
-                 "single-doctor baselines only",
+    ("\\deepseek", "DeepSeek --- a fourth vendor in the grid; Alibaba and Zhipu "
+                 "contribute single-doctor baselines to the diversity ladder",
      ["deepseek-v4-flash", "deepseek-v4-pro"]),
     ("\\qwen", None, ["qwen3.8-flash", "qwen3.8-max"]),   # 无图标资源，用文字
     ("\\zhipu", None, ["glm-5.3-flash", "glm-5.3"]),
