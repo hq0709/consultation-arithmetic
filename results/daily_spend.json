@@ -5,8 +5,9 @@
  "vendor:openai": 130.781737,
  "vendor:google": 34.024952,
  "vendor:anthropic": 324.984882,
- "2026-09-01": 147.835485,
+ "2026-09-01": 154.030736,
  "vendor:zai": 13.251215,
- "vendor:deepseek": 90.589499,
- "vendor:qwen": 33.638345
+ "vendor:deepseek": 136.071144,
+ "vendor:qwen": 33.638345,
+ "2026-09-02": 39.286394
 }

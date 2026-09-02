@@ -9,14 +9,14 @@
   "medqa": {
    "agree_right": 352182,
    "agree_wrong": 43275,
-   "split_both_wrong": 3735,
-   "split_one_right": 19755
+   "split_one_right": 19755,
+   "split_both_wrong": 3735
   },
   "medxpertqa": {
    "agree_right": 149916,
    "agree_wrong": 219478,
-   "split_both_wrong": 48450,
-   "split_one_right": 50660
+   "split_one_right": 50660,
+   "split_both_wrong": 48450
   }
  },
  "pair_total": {

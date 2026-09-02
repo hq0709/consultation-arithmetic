@@ -66,18 +66,6 @@ def main_grid(verbose=False):
     return out
 
 
-if __name__ == "__main__":
-    fs = main_grid(verbose=True)
-    import sys
-    sys.path.insert(0, str(ROOT))
-    from experiments.analyze import load
-    rows = load(fs)
-    MAS = {"independent", "centralized", "discussion", "tiered", "hybrid"}
-    cfg = {(r["model"], r["bench"], r["arch"], r["N"]) for r in rows}
-    print(f"\n主网格 {len(fs)} 个文件")
-    print(f"  模型 {len({r['model'] for r in rows})} · benchmark {len({r['bench'] for r in rows})}")
-    print(f"  {len(rows)} episodes · {len(cfg)} 配置 · 其中多智能体 {len([c for c in cfg if c[2] in MAS])}")
-
 
 @functools.lru_cache(maxsize=None)
 def canonical_items(bench):
@@ -99,4 +87,37 @@ def load_main(dedup=True):
     sys.path.insert(0, str(ROOT))
     from experiments.analyze import load
     rows = load(main_grid(), dedup=dedup)
-    return [r for r in rows if r.get("qid") in canonical_items(r.get("bench"))]
+    rows = [r for r in rows if r.get("qid") in canonical_items(r.get("bench"))]
+
+    # 只保留满额的 (model, bench, arch, N)。网格是分批跑的，有些格子跑到一半
+    # 就停了 —— deepseek-v4-pro 在 MedAgentsBench 上 discussion N=9 只有 175 题、
+    # tiered N=9 一题没有。半截格子混进来，按架构取的均值就会拿 175 题的
+    # 结果去和 250 题的比，而缺席的架构还会静默地不参与竞争。
+    cnt = collections.Counter()
+    for r in rows:
+        cnt[(r["model"], r["bench"], r["arch"], r["N"])] += 1
+    full = {k for k, v in cnt.items() if v >= 240}
+
+    # 再要求 (model, bench) 的架构×N 覆盖完整。deepseek-v4-pro 的 MedQA 只跑到
+    # 2/20、MedAgentsBench 18/20，混进来会让缺席的架构静默地不参与竞争 ——
+    # 按架构取的均值就成了「谁跑得多谁说了算」。宁可少一个 cell，不要一个歪的。
+    MAS_N = {(a, n) for a in ("independent", "centralized", "discussion", "tiered")
+             for n in (1, 3, 5, 7, 9)}
+    cov = collections.defaultdict(set)
+    for m, b, a, n in full:
+        cov[(m, b)].add((a, n))
+    complete = {k for k, v in cov.items() if MAS_N <= v}
+    return [r for r in rows
+            if (r["model"], r["bench"], r["arch"], r["N"]) in full
+            and (r["model"], r["bench"]) in complete]
+
+if __name__ == "__main__":
+    fs = main_grid(verbose=True)
+    import sys
+    sys.path.insert(0, str(ROOT))
+    rows = load_main()   # 必须和分析走同一条路径，否则这里打印的规模不是论文的规模
+    MAS = {"independent", "centralized", "discussion", "tiered", "hybrid"}
+    cfg = {(r["model"], r["bench"], r["arch"], r["N"]) for r in rows}
+    print(f"\n主网格 {len(fs)} 个文件（过滤后）")
+    print(f"  模型 {len({r['model'] for r in rows})} · benchmark {len({r['bench'] for r in rows})}")
+    print(f"  {len(rows)} episodes · {len(cfg)} 配置 · 其中多智能体 {len([c for c in cfg if c[2] in MAS])}")
