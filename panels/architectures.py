@@ -246,8 +246,11 @@ def arch_tiered(item, cfg, meter, roster=None, theta=None):
     theta = cfg.get("theta", DEFAULT_THETA) if theta is None else theta
     valid = list(item["options"])
     roster = roster or route(item, cfg.get("use_router", True))
+    # 分诊的全科医生：漏传 max_tokens 会吃默认的 400，推理模型的思考直接把它吃光
+    # 而输出为空 —— 2026-09-02 deepseek-v4-pro 在这里触发了 98 次加倍重试。
     gen_txt = _ask(meter, cfg["model"], role_system("internal medicine", generic=True),
-                   user_prompt(item), cfg["seed"] * 100 + 90, 0.3, cfg.get("effort"), tag="gen", sbase=cfg["seed"])
+                   user_prompt(item), cfg["seed"] * 100 + 90, 0.3, cfg.get("effort"), tag="gen",
+                   max_tokens=opinion_budget(cfg["model"]), sbase=cfg["seed"])
     gen = parse_opinion(gen_txt, valid, agent="generalist", rnd=0)
     out = {"generalist": gen.__dict__, "referred": False, "escalated": False,
            "theta": theta, "roster": roster[:cfg["N"]], "n_rounds": 1}
@@ -399,6 +402,7 @@ def arch_debate(item, cfg, meter, roster=None, rounds=DEBATE_ROUNDS):
                f"{_peer_block(ops, _peer_order(item['qid'], 99, len(ops)))}\n\n"
                f"Give the panel's final answer.\n\n{ANSWER_JSON}",
                cfg["seed"] * 100 + 99, 0.3, cfg.get("effort"), tag=f"mod n{N}v2",
+               max_tokens=round_budget(cfg["model"]),
                sbase=cfg["seed"])
     m = parse_opinion(mod, valid, agent="moderator", rnd=rounds + 1)
     return {"pred": m.answer, "pred_cw": m.answer, "tie": False, "peer_orders": orders,
