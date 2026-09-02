@@ -21,18 +21,16 @@ import json, glob, pathlib, collections, functools
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 MAIN_PREFIXES = ("G_", "CLA_", "GEM_", "OR_gemini-3.7-flash_medqa",
-                 "OR_deepseek-v4-flash_", "OR_deepseek-v4-pro_")
+                 "OR_deepseek-v4-flash_")
 EXCLUDE = ("generic", "specialty", "heterogeneity", "pilot", "sanity", "_smoke")
 
 # 显式豁免：文件名 -> 要求的满额 cell 数。只写在这里，不改通用阈值。
 EXEMPT = {
-    # 20 个架构×N 全齐 + zeroshot + cot + sc(k=1,3,5) = 25；缺的是 sc k=9/15。
-    "OR_deepseek-v4-pro_medxpertqa.jsonl": 25,
-    # 这两个只有单医生基线（zeroshot + cot），没有面板。按作者要求一并纳入：
-    # 增益类分析在 (model, bench) 内配对，找不到多智能体 cell 就不产生记录，
-    # 所以它们只贡献基线，不进入任何增益/捕获率的平均。
-    "OR_deepseek-v4-pro_medagentsbench.jsonl": 2,
-    "OR_deepseek-v4-pro_medqa.jsonl": 2,
+    # deepseek-v4-pro 不进主网格：只有 MedXpertQA 跑完了架构×N，另外两个
+    # benchmark 停在 18/20 和 2/20（2026-09-02，OpenRouter 余额耗尽）。
+    # 一个只有单 benchmark 的模型会在按 benchmark 分列的图里留下残缺的一行。
+    # 它仍然参与多样性阶梯 —— 那里按模型对配对，不要求三个 benchmark 同构，
+    # 而它正是与 gpt-5-mini 能力匹配的跨太平洋那一对。
 }
 
 

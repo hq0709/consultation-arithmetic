@@ -3,8 +3,8 @@
   "medagentsbench": {
    "agree_wrong": 220062,
    "agree_right": 125240,
-   "split_both_wrong": 26175,
-   "split_one_right": 44938
+   "split_one_right": 44938,
+   "split_both_wrong": 26175
   },
   "medqa": {
    "agree_right": 352182,
@@ -13,17 +13,17 @@
    "split_both_wrong": 3735
   },
   "medxpertqa": {
-   "agree_right": 149916,
-   "agree_wrong": 219478,
-   "split_one_right": 50660,
-   "split_both_wrong": 48450
+   "agree_wrong": 202207,
+   "split_both_wrong": 41004,
+   "agree_right": 132894,
+   "split_one_right": 40928
   }
  },
  "pair_total": {
-  "agree_wrong": 482815,
-  "agree_right": 627338,
-  "split_both_wrong": 78360,
-  "split_one_right": 115353
+  "agree_wrong": 465544,
+  "agree_right": 610316,
+  "split_one_right": 105621,
+  "split_both_wrong": 70914
  },
  "oracle": [
   {
@@ -106,15 +106,6 @@
    "oracle": 64.0,
    "headroom": 26.799999999999997,
    "captured": 26.86567164179103
-  },
-  {
-   "model": "deepseek-v4-pro",
-   "bench": "medxpertqa",
-   "psa": 44.800000000000004,
-   "best": 51.2,
-   "oracle": 67.2,
-   "headroom": 22.4,
-   "captured": 28.571428571428566
   },
   {
    "model": "gemini-3.5-flash-lite",

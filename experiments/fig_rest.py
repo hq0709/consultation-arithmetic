@@ -46,7 +46,9 @@ def fig_nscaling(cells):
     # 按行共享 y，不是全图共享：4.1-nano 在 MedQA 上有一个 -13.6pp 的离群点，
     # 全图共享会把量程拉到 20pp，其余面板 ±5pp 的变化全被压平。
     # 本图回答的是「对这个模型加人管不管用」——同一模型跨 benchmark 比较。
-    fig, axes = plt.subplots(nrow, ncol, figsize=(TEXT_W, 1.35 * nrow),
+    # 每行 1.35in 在 8 个模型时是 12.1in —— 超过单页 9in，图会被裁掉下缘。
+    # 0.92 让 8 行落在 8.3in，加图注仍在一页内。
+    fig, axes = plt.subplots(nrow, ncol, figsize=(TEXT_W, 0.92 * nrow),
                              squeeze=False, sharey="row")
     gy_row = [[] for _ in models]
     for ri, m in enumerate(models):
