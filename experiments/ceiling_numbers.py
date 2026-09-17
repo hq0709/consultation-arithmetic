@@ -75,11 +75,13 @@ def main():
     print("=" * 78)
     out["kappa_by_arch"] = {}
     for a in ("sc",) + MAS:
-        s = [r["kappa"] for r in recs if r["arch"] == a and r["kappa"] is not None]
+        s = [r for r in recs if r["arch"] == a and not r["thin"]]
         if not s:
             continue
-        out["kappa_by_arch"][AL[a]] = float(np.mean(s))
-        print(f"  {AL[a]:18s} kappa = {np.mean(s):+6.1f}%   n={len(s):3d}")
+        # 同上：增益总和 / 可用空间总和，而不是逐配置比值的均值。
+        k = float(np.sum([r["acc"] - r["psa"] for r in s]) / np.sum([r["headroom"] for r in s]) * 100)
+        out["kappa_by_arch"][AL[a]] = k
+        print(f"  {AL[a]:18s} kappa = {k:+6.1f}%   n={len(s):3d}")
     ks = [v for v in out["kappa_by_arch"].values()]
     print(f"  -> 五种机制的范围: {min(ks):+.0f}% .. {max(ks):+.0f}%")
     # 事后挑每个 cell 表现最好的架构（不可部署的上界）。与上面同口径：全部 N>=3。
@@ -104,10 +106,15 @@ def main():
         s = [r for r in mas_only if lo <= r["psa"] < hi]
         if not s:
             continue
-        row = dict(band=lab, n=len(s),
-                   headroom=float(np.mean([r["headroom"] for r in s])),
-                   kappa=float(np.mean([r["kappa"] for r in s if r["kappa"] is not None])),
-                   gain=float(np.mean([r["acc"] - r["psa"] for r in s])))
+        # kappa 必须是「增益总和 / 可用空间总和」，不能是逐配置比值的均值：
+        # 比值的均值不等于均值的比值，Table 2 却把三列当成乘法恒等式来读，
+        # 于是 25-50 区间出现 mean(headroom) x mean(kappa) = -1.28 而 mean(gain) = +0.95
+        # 这种符号都对不上的情形。加权形式让 gain = headroom x kappa 精确成立，
+        # 也不再被 headroom 接近零的配置（分母极小、比值爆炸）带偏。
+        H = float(np.mean([r["headroom"] for r in s]))
+        G = float(np.mean([r["acc"] - r["psa"] for r in s]))
+        row = dict(band=lab, n=len(s), headroom=H, kappa=(G / H * 100 if H else float("nan")),
+                   gain=G)
         out["bins"].append(row)
         print(f"  {lab:12s}{row['n']:5d}{row['headroom']:+9.1f}pp{row['kappa']:+8.1f}%"
               f"{row['gain']:+8.2f}pp")
