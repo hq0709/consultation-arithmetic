@@ -1,19 +1,143 @@
 {
  "medagents|medxpertqa": {
-  "n": 79,
-  "psa": 17.72151898734177,
-  "acc": 10.126582278481013,
-  "oracle": 26.582278481012654,
-  "headroom": 8.860759493670884,
-  "kappa": -85.71428571428571,
-  "phi": 0.7924783096836868,
-  "n_agents": 5,
-  "neff": 1.1990657152178834
+  "n": 250,
+  "psa": 15.6,
+  "acc": 19.6,
+  "oracle": 21.6,
+  "headroom": 6.000000000000002,
+  "kappa": 66.66666666666667,
+  "phi": 0.8859879713422816,
+  "n_agents": 6,
+  "neff": 1.1049846146240456
+ },
+ "medagents|medagentsbench": {
+  "n": 250,
+  "psa": 20.4,
+  "acc": 22.400000000000002,
+  "oracle": 23.599999999999998,
+  "headroom": 3.1999999999999993,
+  "kappa": 62.50000000000012,
+  "phi": 0.8029033916647534,
+  "n_agents": 6,
+  "neff": 1.196526016337505
+ },
+ "medagents|medqa": {
+  "n": 250,
+  "psa": 66.0,
+  "acc": 77.2,
+  "oracle": 72.0,
+  "headroom": 6.0,
+  "kappa": 186.6666666666667,
+  "phi": 0.8898225352576148,
+  "n_agents": 6,
+  "neff": 1.1010967026079537
+ },
+ "mdagents|medxpertqa": {
+  "n": 250,
+  "psa": 15.6,
+  "acc": 18.4,
+  "oracle": 21.55688622754491,
+  "headroom": 5.956886227544912,
+  "kappa": 47.00442299959788,
+  "phi": 0.8582350686019385,
+  "n_agents": 3,
+  "neff": 1.1043743713258585
+ },
+ "mdagents|medagentsbench": {
+  "n": 250,
+  "psa": 20.4,
+  "acc": 19.2,
+  "oracle": 18.803418803418804,
+  "headroom": -1.5965811965811945,
+  "kappa": NaN,
+  "phi": 0.8519385770855751,
+  "n_agents": 2,
+  "neff": 1.0799494242122392
+ },
+ "mdagents|medqa": {
+  "n": 250,
+  "psa": 66.0,
+  "acc": 68.0,
+  "oracle": 68.51851851851852,
+  "headroom": 2.518518518518519,
+  "kappa": 79.41176470588233,
+  "phi": 0.8790713466027729,
+  "n_agents": 3,
+  "neff": 1.0876884678193952
+ },
+ "medagents|ALL": {
+  "n": 750,
+  "gain": 5.733333333333336,
+  "headroom": 5.066666666666666,
+  "kappa": 113.15789473684217,
+  "phi": 0.85957129942155,
+  "n_agents": 6,
+  "neff": 1.1325335073299116
+ },
+ "mdagents|ALL": {
+  "n": 750,
+  "gain": 1.2,
+  "headroom": 2.2929411831607456,
+  "kappa": 52.3345303757787,
+  "phi": 0.8630816640967621,
+  "n_agents": 2,
+  "neff": 1.0734902492691414
  },
  "consensus|medxpertqa": {
-  "n": 79,
-  "pct_reached": 100.0,
-  "pct_one_round": 93.67088607594937,
-  "acc_given_consensus": 10.126582278481013
+  "n": 250,
+  "pct_reached": 99.2,
+  "pct_one_round": 96.39999999999999,
+  "acc_given_consensus": 19.758064516129032
+ },
+ "consensus|medagentsbench": {
+  "n": 250,
+  "pct_reached": 96.39999999999999,
+  "pct_one_round": 92.0,
+  "acc_given_consensus": 22.40663900414938
+ },
+ "consensus|medqa": {
+  "n": 250,
+  "pct_reached": 98.4,
+  "pct_one_round": 95.6,
+  "acc_given_consensus": 76.82926829268293
+ },
+ "triage|medxpertqa": {
+  "n": 250,
+  "dist": {
+   "basic": 33.2,
+   "intermediate": 41.199999999999996,
+   "advanced": 25.6
+  },
+  "acc_by_level": {
+   "basic": 18.072289156626507,
+   "intermediate": 21.35922330097087,
+   "advanced": 14.0625
+  }
+ },
+ "triage|medagentsbench": {
+  "n": 250,
+  "dist": {
+   "basic": 53.2,
+   "advanced": 15.2,
+   "intermediate": 31.6
+  },
+  "acc_by_level": {
+   "basic": 17.293233082706767,
+   "advanced": 21.052631578947366,
+   "intermediate": 21.518987341772153
+  }
+ },
+ "triage|medqa": {
+  "n": 250,
+  "dist": {
+   "basic": 35.199999999999996,
+   "intermediate": 50.0,
+   "advanced": 14.799999999999999
+  },
+  "acc_by_level": {
+   "basic": 59.09090909090909,
+   "intermediate": 73.6,
+   "advanced": 70.27027027027027
+  }
  }
 }
