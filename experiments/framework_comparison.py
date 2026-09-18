@@ -78,6 +78,26 @@ def main():
             print(f"  {fw:<10}{b:<16}{len(eps):>5}{psa:>8.1f}{acc:>8.1f}{orc:>8.1f}"
                   f"{hd:>+10.1f}{kp:>+8.1f}{ph:>7.3f}{neff_n:>7.2f}")
 
+    # 跨 benchmark 汇总：与 ceiling_numbers 同一个加权口径
+    # （增益总和 / 可用空间总和，不是逐 benchmark 比值的均值）
+    print("\n" + "=" * 70)
+    print("跨三个 benchmark 汇总（加权，与主网格同口径）")
+    print("=" * 70)
+    for fw in ("medagents", "mdagents"):
+        ks = [v for k, v in out.items() if k.startswith(fw + "|")]
+        if not ks:
+            continue
+        n = sum(v["n"] for v in ks)
+        g = sum((v["acc"] - v["psa"]) * v["n"] for v in ks) / n
+        h = sum(v["headroom"] * v["n"] for v in ks) / n
+        ph = float(np.mean([v["phi"] for v in ks]))
+        na = int(np.mean([v["n_agents"] for v in ks]))
+        out[fw + "|ALL"] = dict(n=n, gain=g, headroom=h, kappa=(g / h * 100 if h > 0 else np.nan),
+                                phi=ph, n_agents=na, neff=na / (1 + (na - 1) * ph))
+        print(f"  {fw:<12}n={n:<5} 增益 {g:+.2f}pp · 可用空间 {h:+.2f}pp · "
+              f"kappa {g/h*100 if h>0 else float('nan'):+.1f}% · phi {ph:.3f} · "
+              f"N_eff({na}) {na/(1+(na-1)*ph):.2f}")
+
     # MedAgents 的共识循环
     print("\n" + "=" * 70)
     print("MedAgents 的共识循环：它的终止条件是「没人反对」")

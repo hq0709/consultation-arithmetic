@@ -59,7 +59,8 @@ def _letter(txt, valid):
     for pat in (r"Answer\s*[:：]\s*\(?\[?\s*([A-J])\b",
                 r"\(([A-J])\)",
                 r"Option\s*[:：]\s*\[?\(?\s*([A-J])\b",
-                r"(?:answer|Answer)\s*(?:is)?\s*[:：]?\s*\(?([A-J])\b"):
+                r"(?:answer|Answer)\s*(?:is)?\s*[:：]?\s*\(?([A-J])\b",
+                r"^\s*([A-J])\s*[.):]"):
         for m in re.finditer(pat, txt):
             if m.group(1) in valid:
                 return m.group(1)
@@ -123,7 +124,8 @@ def run(item, model, meter=None):
         for r in roles:
             t = _ask(model, sysmsg(r), "Now that you've interacted with other medical experts, "
                      "remind your expertise and the comments from other experts and make your "
-                     f"final answer to the given question:\n{qfull}\nAnswer: ", 400,
+                     f"final answer to the given question:\n{qfull}\n"
+                     "Respond with the option letter only, as 'Answer: X'.\nAnswer: ", 400,
                      meter, f"md_fin{n}")
             newops[r] = (_letter(t, valid), t)
         cur = newops
@@ -133,6 +135,8 @@ def run(item, model, meter=None):
     pred = collections.Counter(votes).most_common(1)[0][0] if votes else None
     return pred, {"level": level, "n_agents": len(roles), "rounds": rounds_run,
                   "roles": roles,
-                  "first_round": [{"agent": r, "answer": v[0]} for r, v in first.items()],
-                  "final_round": [{"agent": r, "answer": v[0]} for r, v in cur.items()],
+                  "first_round": [{"agent": r, "answer": v[0], "raw": v[1][:200]}
+                                  for r, v in first.items()],
+                  "final_round": [{"agent": r, "answer": v[0], "raw": v[1][:200]}
+                                  for r, v in cur.items()],
                   "calls": meter["calls"]}
