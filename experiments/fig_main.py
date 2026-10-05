@@ -171,9 +171,77 @@ def main():
         # 厂商标识只出现一次，作为整图总标题（不是每个面板都挂一个）
         fig_title_with_logo(fig, fams[0], FAMILY[fams[0]]["label"], y=0.998)
     for e in ("pdf", "png"):
-        fig.savefig(FIG / f"fig1_capability.{e}", dpi=200, bbox_inches="tight")
-    print(f"fig1_capability ok  ({nr} 家族 x {nc} benchmark)")
+        fig.savefig(FIG / f"fig1_capability_full.{e}", dpi=200, bbox_inches="tight")
+    print(f"fig1_capability_full ok  ({nr} 家族 x {nc} benchmark)")
 
+
+
+def capability_compact():
+    """正文版 Figure 3：一行三个 benchmark，八个模型按能力指数 I 排在同一根轴上。
+
+    完整的「厂商 x benchmark」网格有 12 格、7.1 英寸高，独占一页，正文里读者只需要
+    它的一个结论：每个模型、每种架构的增益都挤在零附近的一条窄带里。这里把四行
+    厂商压成一根能力轴，用灰色竖条画出四种架构的极差 —— 那条窄带本身就是要看的东西。
+    完整网格移到附录（fig1_capability_full）。
+    x 用等距类别位而不是 I 的数值：gemini-3.5-flash-lite (50.3) 与 gpt-5-nano (50.8)
+    只差 0.5，按数值放会叠在一起。
+    """
+    rcparams()
+    rows = load_main()
+    cells = collections.defaultdict(list)
+    for r in rows:
+        cells[(r["model"], r["bench"], r["arch"], r["N"])].append(r)
+    benches = [b for b in BENCH_ORDER if any(k[1] == b for k in cells)]
+    models = sorted({k[0] for k in cells if k[2] in MAS_ORDER and k[0] in CAPABILITY},
+                    key=lambda m: CAPABILITY[m])
+    acc = lambda v: sum(x["correct"] for x in v) / len(v) * 100
+    fig, axes = plt.subplots(1, len(benches), figsize=(TEXT_W, 2.45), sharey=True)
+    dodge = {a: (i - 1.5) * 0.13 for i, a in enumerate(MAS_ORDER)}
+    for ax, b in zip(axes, benches):
+        xs = list(range(len(models)))
+        for xi, m in zip(xs, models):
+            base = cells.get((m, b, "cot", 1))
+            if not base:
+                continue
+            p0 = acc(base)
+            gains = {}
+            for a in MAS_ORDER:
+                Ns = [k[3] for k in cells if k[:3] == (m, b, a)]
+                if Ns:
+                    gains[a] = max(acc(cells[(m, b, a, N)]) for N in Ns) - p0
+            if not gains:
+                continue
+            lo, hi = min(gains.values()), max(gains.values())
+            ax.plot([xi, xi], [lo, hi], color="#d6d6d6", lw=3.2, solid_capstyle="round",
+                    zorder=2)
+            for a, g in gains.items():
+                st = ARCH_MARKER[a]
+                ax.plot([xi + dodge[a]], [g], ls="none", marker=st["marker"],
+                        ms=st["ms"] * 0.86, mfc=arch_color(b, a), mec="white", mew=0.6,
+                        zorder=4)
+        ax.axhline(0, color=MUTED, lw=0.9, zorder=1)
+        clean(ax, grid_axis="y")
+        ax.set_xticks(xs)
+        ax.set_xticklabels([TICK_LABEL.get(m, m) for m in models], fontsize=6.6,
+                           rotation=40, ha="right", rotation_mode="anchor")
+        ax.set_xlim(-0.6, len(models) - 0.4)
+        ax.set_title(BENCH_LABEL.get(b, b), fontsize=9.6, pad=5)
+    axes[0].set_ylabel("Gain over single doctor (pp)", fontsize=8.6)
+    # 图例只画 marker：这张图没有连线，带虚线的图例会让人去找不存在的线。
+    from matplotlib.lines import Line2D
+    hs = [Line2D([], [], ls="none", marker=ARCH_MARKER[a]["marker"],
+                 ms=ARCH_MARKER[a]["ms"] * 0.86, mfc=arch_color(benches[0], a),
+                 mec="white", mew=0.6, label=ARCH_MARKER[a]["label"]) for a in MAS_ORDER]
+    hs.append(Line2D([], [], color="#d6d6d6", lw=3.2, solid_capstyle="round",
+                     label="range across architectures"))
+    fig.legend(handles=hs, loc="lower center", bbox_to_anchor=(0.5, 0.0), ncol=5,
+               columnspacing=1.3, handletextpad=0.45, handlelength=1.4, frameon=True,
+               framealpha=0.92, edgecolor="#c4c4c4", fancybox=False, fontsize=7.6)
+    fig.tight_layout(rect=[0, 0.10, 1, 1])
+    for e in ("pdf", "png"):
+        fig.savefig(FIG / f"fig1_capability.{e}", dpi=200, bbox_inches="tight")
+    print(f"fig1_capability ok  (精简版：{len(models)} 模型 x {len(benches)} benchmark，一行)")
 
 if __name__ == "__main__":
     main()
+    capability_compact()
