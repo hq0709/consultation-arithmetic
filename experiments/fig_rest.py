@@ -140,7 +140,7 @@ def fig_box(cells):
         data, cols, labs = [], [], []
         for a in ARCH_ORDER:
             if a == "cot":
-                vals = [acc(cells[(m, b, "cot", 1)]) for m in TIER_ORDER if (m, b, "cot", 1) in cells]
+                vals = [acc(cells[(m, b, "cot", 1)]) for m in MODEL_ORDER if (m, b, "cot", 1) in cells]
             else:
                 vals = [acc(v) for k, v in cells.items() if k[1] == b and k[2] == a]
             if vals:
