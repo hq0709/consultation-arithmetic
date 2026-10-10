@@ -82,7 +82,7 @@ CAPABILITY = {"gpt-4.1-nano": 34.0,
               "claude-haiku-4-5-20251001": 41.2,
               "gemini-3.5-flash-lite": 50.3,
               "gpt-5-nano": 50.8,
-              "qwen3.8-flash": 52.1,
+              "qwen3.8-flash": 52.0,
               "deepseek-v4-flash": 54.9,
               "qwen3.8-max": 56.9,
               "gpt-5-mini": 59.2,
@@ -90,7 +90,7 @@ CAPABILITY = {"gpt-4.1-nano": 34.0,
               "glm-5.3": 60.9,
               "glm-5.3-flash": 62.1,
               "claude-sonnet-5": 63.7,
-              "gemini-3.7-flash": 70.9}
+              "gemini-3.7-flash": 71.1}
 
 
 def rcparams():

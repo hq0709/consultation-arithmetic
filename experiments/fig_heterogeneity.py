@@ -49,8 +49,7 @@ def main():
             else:
                 cols.append(C_CYAN)
         xp = np.arange(len(names))
-        ax.bar(xp, accs, .62, color=cols, yerr=[los, his], capsize=3,
-               error_kw=dict(ecolor="#3a3a3a", lw=1.0), zorder=3, edgecolor="white", lw=.8)
+        ax.bar(xp, accs, .62, color=cols, zorder=3, edgecolor="white", lw=.8)
         for i, (n, a_) in enumerate(zip(names, accs)):
             if n == "homog-high" or np.isnan(base) or not base:
                 continue

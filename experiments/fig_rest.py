@@ -112,9 +112,9 @@ def fig_cost(cells):
                 acc_ = np.array([x["correct"] for x in v]) * 100
                 usd = np.array([x["cost"]["usd"] for x in v]) * 1000
                 xs.append(usd.mean()); ys.append(acc_.mean())
-                xe.append(usd.std() / np.sqrt(len(usd))); ye.append(acc_.std() / np.sqrt(len(acc_)))
+                xe.append(usd.std())
             if xs:
-                ax.errorbar(xs, ys, xerr=xe, yerr=ye, ls="none", marker=st["marker"],
+                ax.errorbar(xs, ys, xerr=xe, ls="none", marker=st["marker"],
                             ms=st["ms"], mfc=ARCH_SOLID[a], mec="white", mew=.9,
                             ecolor=ARCH_SOLID[a], elinewidth=1.0, capsize=2.2,
                             alpha=.95, zorder=3)

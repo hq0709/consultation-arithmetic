@@ -68,7 +68,7 @@ def main():
             continue
         psa = sum(x["correct"] for x in base if x["qid"] in ids) / len(ids)
         acc = sum(x["correct"] for x in v if x["qid"] in ids) / len(ids)
-        pl = phi(v, -1) if len((v[0].get("rounds") or [])) > 1 else None
+        pl = phi(v, -1) if a == "discussion" else None
         recs.append(dict(model=m, bench=b, arch=a, N=N, psa=psa, gain=acc - psa,
                          phi0=p0, phi_last=pl))
 
@@ -105,7 +105,8 @@ def main():
     if d:
         a0 = np.mean([r["phi0"] for r in d]); a1 = np.mean([r["phi_last"] for r in d])
         t, p = stats.ttest_rel([r["phi0"] for r in d], [r["phi_last"] for r in d])
-        print(f"  Decentralized: 讨论前 phi = {a0:.3f} -> 讨论后 phi = {a1:.3f} "
+        s0 = np.std([r["phi0"] for r in d]); s1 = np.std([r["phi_last"] for r in d])
+        print(f"  Decentralized: 讨论前 phi = {a0:.3f} (SD {s0:.3f}) -> 讨论后 phi = {a1:.3f} (SD {s1:.3f}) "
               f"({a1-a0:+.3f}, 配对 t={t:.2f}, p={p:.2e}, n={len(d)})")
 
     print("\n" + "=" * 74)

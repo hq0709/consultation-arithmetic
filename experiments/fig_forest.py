@@ -3,7 +3,7 @@
 三张图按目标视觉语言重做，关键改动：
   fig7  竖版 32 行→**横版双栏毛虫图**，按效应量排序，每行有名字；颜色只用两种
         （单医生 25–50% / 其余），显著性用实心/空心。原版 34% 的墨迹全是背景色带。
-  fig8  砍掉"半个面板放两个数字"的斜率图，换成 φ 等值线族 + 120 个配置的 φ 分布。
+  fig8  砍掉"半个面板放两个数字"的斜率图，换成 φ 等值线族 + 全部配置的 φ 分布。
   fig9  可靠性图的对角线跑出画布 → 改画**校准残差**（置信 − 准确率），零线永远可见。
 """
 import sys, pathlib, glob, json, collections
@@ -115,7 +115,7 @@ def forest(recs):
 # ------------------------------------------------------------------ fig8
 def slope():
     """(a) N_eff(N, φ) 等值线族 + 实测曲线：把实测放进整个可能空间里看。
-    (b) 120 个配置的 φ 分布 —— φ≈0.73 不是某一格的巧合，是全网格的常数。"""
+    (b) 全部配置的 φ 分布 —— φ≈0.76 不是某一格的巧合，是全网格的常数。"""
     rcparams()
     ind = json.loads((ROOT / "results/independence.json").read_text())
     fig, axes = plt.subplots(1, 2, figsize=(6.30, 2.45),
@@ -181,7 +181,7 @@ def slope():
     ax.set_ylim(-0.6, len(rows) - 0.35)
     ax.set_xlim(0.35, 1.02)
     ax.set_xlabel("Error correlation $\\varphi$ between panel members")
-    ax.set_title("(b)  $\\varphi$ across all 120 configurations", loc="left",
+    ax.set_title(f"(b)  $\\varphi$ across all {len(ind)} configurations", loc="left",
                  fontsize=9.4, pad=5)
     clean(ax, grid_axis="x")
     fig.tight_layout()

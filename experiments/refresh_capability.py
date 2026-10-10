@@ -17,8 +17,15 @@ def capability_from_results():
     files = [f for f in sorted(glob.glob(str(ROOT / "results/*.jsonl")))
              if re.search(r"/(G|GEM|CLA|OPEN|OR)_", f) and "generic" not in f]
     acc = collections.defaultdict(lambda: collections.defaultdict(list))
-    for r in load(files):
+    # 主网格里有的 (model, bench) 只用主网格：refresh 曾把 gemini-3.7-flash 的
+    # OPEN_ 与 OR_ 两次 MedQA 运行合并成 95.8，而 tab:main 与全部分析用的是 OR_ 的 96.4。
+    from experiments.grid_files import load_main
+    main = set()
+    for r in load_main():
         if r.get("arch") == "cot" and r.get("N") == 1:
+            acc[r["model"]][r["bench"]].append(r["correct"]); main.add((r["model"], r["bench"]))
+    for r in load(files):
+        if r.get("arch") == "cot" and r.get("N") == 1 and (r["model"], r["bench"]) not in main:
             acc[r["model"]][r["bench"]].append(r["correct"])
     out = {}
     for m, d in acc.items():
