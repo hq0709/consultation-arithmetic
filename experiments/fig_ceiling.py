@@ -45,7 +45,7 @@ def main():
                 arrowprops=dict(arrowstyle="-", color=MUTED, lw=1.0))
     for yy in (ys[1], ys[2]):
         ax.plot([pao + 5.6, pao + 6.2], [yy, yy], color=MUTED, lw=1.0, zorder=4)
-    ax.annotate(f"the specialty roster\nis worth {pao-sco:+.2f} pp",
+    ax.annotate(f"specialty prompts\nadd {pao-sco:+.2f} pp",
                 xy=(pao + 6.2, (ys[1] + ys[2]) / 2), xytext=(4, 0),
                 textcoords="offset points", va="center", ha="left",
                 fontsize=7.8, color=C_ROSE, fontweight="bold", linespacing=1.25)
@@ -78,7 +78,7 @@ def main():
         ax.annotate(f"{v:+.1f}", xy=(v, j), xytext=xy, textcoords="offset points",
                     va=va, ha=ha, fontsize=7.8, color=INK, fontweight="bold")
     ax.axvline(0, color="#4a4a4a", lw=1.0, zorder=4)
-    ax.text(0, len(order) + .10, " random member", ha="left", va="bottom",
+    ax.text(0, len(order) + .10, " single doctor", ha="left", va="bottom",
             fontsize=7.4, color="#4a4a4a")
     ax.axvline(100, color=GAIN_NEG, ls="--", lw=1.1, zorder=4)
     ax.text(100, len(order) + .10, "oracle ", ha="right", va="bottom",
