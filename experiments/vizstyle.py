@@ -30,20 +30,20 @@ C_GRAY   = "#8c8c8c"
 
 # 颜色 = 架构（与目标图 FastV/DivPrune/PruMerge/Ours 的角色一一对应）
 ARCH_SOLID = {
-    "cot":          C_GRAY,
-    "independent":  C_ORANGE,
-    "centralized":  C_ROSE,
-    "discussion":   C_PURPLE,
-    "tiered":       C_CYAN,
+    "cot":          "#1F1F1F",   # single doctor
+    "independent":  "#7A86B8",
+    "centralized":  "#454F91",
+    "discussion":   "#C0587A",
+    "tiered":       "#98AEE0",
 }
 
 # 形状 = 架构（目标图：o / s / ^ / D）
 ARCH_MARKER = {
     "cot":          dict(label="Single doctor",     marker="o", ms=5.2, ls="--"),
-    "independent":  dict(label="MAS-Independent",   marker="o", ms=5.2, ls="--"),
-    "centralized":  dict(label="MAS-Centralized",   marker="s", ms=5.0, ls="--"),
-    "discussion":   dict(label="MAS-Decentralized", marker="^", ms=5.6, ls="--"),
-    "tiered":       dict(label="MAS-Hybrid",        marker="D", ms=4.8, ls="--"),
+    "independent":  dict(label="Independent",   marker="o", ms=5.2, ls="--"),
+    "centralized":  dict(label="Centralized",   marker="s", ms=5.0, ls="--"),
+    "discussion":   dict(label="Decentralized", marker="^", ms=5.6, ls="--"),
+    "tiered":       dict(label="Hybrid",        marker="D", ms=4.8, ls="--"),
 }
 ARCH_ORDER = ["cot", "centralized", "discussion", "independent", "tiered"]
 MAS_ORDER = ["independent", "centralized", "discussion", "tiered"]
@@ -51,12 +51,12 @@ MAS_ORDER = ["independent", "centralized", "discussion", "tiered"]
 INK = "#1a1a1a"; MUTED = "#7a7a7a"; FAINT = "#e5e5e5"
 LINE = "#b8b8b8"; LINE_SAS = "#9a9a9a"
 GRID = "#e3e3e3"; FRAME = "#3a3a3a"
-GAIN_POS = "#2e8b57"; GAIN_NEG = "#c0392b"
+GAIN_POS = "#2E9E44"; GAIN_NEG = "#E53935"
 
 # 兼容旧接口：颜色不再由 benchmark 决定，但保留符号避免上游报错。
 BENCH_RAMP = {b: [ARCH_SOLID[a] for a in ARCH_ORDER]
               for b in ("medxpertqa", "medagentsbench", "medqa")}
-BENCH_COLOR = {"medxpertqa": C_ROSE, "medagentsbench": C_PURPLE, "medqa": C_ORANGE}
+BENCH_COLOR = {"medxpertqa": "#C0587A", "medagentsbench": "#454F91", "medqa": "#7A86B8"}
 
 
 def arch_color(bench, arch):
@@ -95,10 +95,11 @@ CAPABILITY = {"gpt-4.1-nano": 34.0,
 
 def rcparams():
     plt.rcParams.update({
-        # 衬线，与正文 Times 一致
-        "font.family": "serif",
-        "font.serif": ["STIXGeneral", "DejaVu Serif"],
-        "mathtext.fontset": "stix",
+        # 无衬线，与按 nature-figure 重绘的图一致(Arial 栈)
+        "font.family": "sans-serif",
+        "font.sans-serif": ["Arial", "Helvetica", "Liberation Sans", "DejaVu Sans"],
+        "mathtext.fontset": "dejavusans",
+        "svg.fonttype": "none",
         "font.size": 9.5,
         "axes.labelsize": 10.5, "axes.titlesize": 11.5, "axes.titleweight": "normal",
         "xtick.labelsize": 9.0, "ytick.labelsize": 9.0, "legend.fontsize": 8.4,

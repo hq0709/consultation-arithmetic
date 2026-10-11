@@ -107,12 +107,13 @@ def main():
                 # 首行框外上方是 benchmark 列标题的位置，那一行放框内
                 inside = (ri == 0)
                 ax.text(0.02, (0.955 if inside else 1.015),
-                        f"best panel {y1:+.1f} pp", transform=ax.transAxes,
+                        f"best panel {y1:+.1f} pp".replace("-", "\u2212"), transform=ax.transAxes,
                         ha="left", va=("top" if inside else "bottom"),
                         # 负增益必须用负色：绿色的 "-2.0 pp" 会被读成好消息
                         fontsize=8.0, fontweight="bold",
                         color=GAIN_POS if y1 >= 0 else GAIN_NEG)
             clean(ax)
+            ax.grid(False, axis="x")   # 竖向网格会穿过「best panel」标签
             if single:
                 ax.set_title(BENCH_LABEL.get(b, b), fontsize=10.0, pad=5)
                 if ri == 0:
