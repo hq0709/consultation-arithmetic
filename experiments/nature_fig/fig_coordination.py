@@ -24,12 +24,12 @@ mpl.rcParams['pdf.fonttype'] = 42
 mpl.rcParams.update({
     "svg.fonttype": "none",
     "pdf.fonttype": 42,
-    "font.size": 7,
-    "axes.labelsize": 7,
-    "axes.titlesize": 7,
-    "xtick.labelsize": 6,
-    "ytick.labelsize": 6,
-    "legend.fontsize": 6,
+    "font.size": 9,
+    "axes.labelsize": 9,
+    "axes.titlesize": 9,
+    "xtick.labelsize": 8.5,
+    "ytick.labelsize": 8.5,
+    "legend.fontsize": 8,
     "axes.linewidth": 0.8,
     "axes.spines.right": False,
     "axes.spines.top": False,
@@ -55,7 +55,6 @@ for p in (NF, REPO):
 from nf_style import (MM, PAL, ARCH, MAS_ORDER, BASE_PT, TICK_PT, LEGEND_PT,     # noqa: E402
                       ANNOT_PT, add_panel_label, add_panel_title)
 from audit_panel_alignment import require_matplotlib_panel_alignment               # noqa: E402
-from rest_helpers import place_text                                                # noqa: E402
 
 import numpy as np                                                                 # noqa: E402
 from matplotlib.lines import Line2D                                                # noqa: E402
@@ -72,7 +71,7 @@ BASE = str(OUT / "fig6_coordination")
 QBASE = str(QA / "fig6_coordination")
 
 width_mm = 160          # final printed width: \textwidth
-height_mm = 62
+height_mm = 68
 
 # ── data: identical computation to fig_rest.fig_coord (read-only) ──
 cells = build()
@@ -140,7 +139,7 @@ n_gen = np.linspace(1, 10, 80)                         # published law: the curr
 axA.plot(n_gen, GEN_A * (n_gen + 0.5) ** GEN_B, color=REF_C, lw=REF_LW, ls=REF_LS, zorder=4)
 axA.set_yscale("log")
 axA.set_xlim(0, 11)
-axA.set_ylim(0.75, 900)
+axA.set_ylim(0.75, 1600)       # headroom for the fit key above the dashed law
 axA.xaxis.set_major_locator(FixedLocator([1, 5, 10]))
 axA.yaxis.set_major_locator(FixedLocator([1, 10, 100]))
 axA.yaxis.set_major_formatter(FixedFormatter(["1", "10", "100"]))
@@ -176,11 +175,13 @@ handles = [Line2D([], [], ls="none", marker=ARCH[a]["marker"], ms=ms(a) * 1.1,
 fig.legend(handles=handles, loc="outside upper center", ncol=len(handles), fontsize=LEGEND_PT,
            handlelength=1.6, handletextpad=0.4, columnspacing=1.4, borderaxespad=0.2)
 
-# ── in-panel labels, placed in free space once the layout is final ──
-place_text(axA, "General domain\n$b$ = 1.72\n$a$ = 2.72\n$R$² = 0.97", prefer=(0.03, 0.97),
-           fontsize=ANNOT_PT, color=LABEL_C, ha="left", va="top")
-place_text(axA, "This study\n$b$ = %.2f\n$a$ = %.2f\n$R$² = %.2f" % (pl["exponent"], pl["a"], pl["r2"]),
-           prefer=(0.99, 0.36), fontsize=ANNOT_PT, color=PAL["ink"], ha="right", va="bottom")
+# ── the two fits, keyed by their own line styles in the free upper-left corner ──
+fit_key = [Line2D([], [], color=FIT_C, lw=FIT_LW,
+                  label="This study\n$b$ = %.2f, $a$ = %.2f, $R$² = %.2f" % (pl["exponent"], pl["a"], pl["r2"])),
+           Line2D([], [], color=REF_C, lw=REF_LW, ls=REF_LS,
+                  label="General domain\n$b$ = %.2f, $a$ = %.2f, $R$² = %.2f" % (GEN_B, GEN_A, GEN_R2))]
+axA.legend(handles=fit_key, loc="upper left", fontsize=ANNOT_PT, handlelength=2.0, handletextpad=0.5,
+           labelspacing=0.5, borderaxespad=0.3, labelcolor=[PAL["ink"], LABEL_C])
 fig.canvas.draw()
 for yi, c in zip(y, CLS):
     axC.text(ae_mean[c] + ae_sd[c] + 0.018, yi, f"{ae_mean[c]:.2f}", ha="left", va="center",

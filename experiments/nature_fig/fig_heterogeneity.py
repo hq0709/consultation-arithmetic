@@ -22,12 +22,12 @@ mpl.rcParams['pdf.fonttype'] = 42
 mpl.rcParams.update({
     "svg.fonttype": "none",
     "pdf.fonttype": 42,
-    "font.size": 7,
-    "axes.labelsize": 7,
-    "axes.titlesize": 7,
-    "xtick.labelsize": 6,
-    "ytick.labelsize": 6,
-    "legend.fontsize": 6,
+    "font.size": 9,
+    "axes.labelsize": 9,
+    "axes.titlesize": 9,
+    "xtick.labelsize": 8.5,
+    "ytick.labelsize": 8.5,
+    "legend.fontsize": 8,
     "axes.linewidth": 0.8,
     "axes.spines.right": False,
     "axes.spines.top": False,
@@ -45,8 +45,8 @@ REPO = NF.parents[1]
 for p in (NF, REPO):
     sys.path.insert(0, str(p))
 
-from nf_style import (MM, TEXT_W_MM, PAL, add_panel_label, add_panel_title,        # noqa: E402
-                      text_height_data, clear_of_lines, minus)
+from nf_style import (MM, TEXT_W_MM, PAL, ANNOT_PT, TICK_PT, add_panel_label,      # noqa: E402
+                      add_panel_title, text_height_data, clear_of_lines, minus)
 from audit_panel_alignment import require_matplotlib_panel_alignment               # noqa: E402
 
 import json                                                                         # noqa: E402
@@ -94,11 +94,11 @@ bases = [acc[names.index("homog-high")] for _, names, acc, _ in panels]
 top = max(float(acc.max()) for _, _, acc, _ in panels)
 
 fig = plt.figure(figsize=(width_mm * MM, height_mm * MM), layout="constrained")
-gs = fig.add_gridspec(1, 2, width_ratios=[5, 3])
+gs = fig.add_gridspec(1, 2, width_ratios=[5.6, 3])
 axes = [fig.add_subplot(gs[0, i]) for i in range(2)]
 for ax in axes:
     ax.set_ylim(0, 56)
-th = text_height_data(axes[0], 6)            # one 6-pt text line in data units (same scale both panels)
+th = text_height_data(axes[0], ANNOT_PT)     # one annotation line in data units (same scale both panels)
 pad = 0.35 * th
 row_y = clear_of_lines(top + pad, th, bases, 0.6 * th)  # one change row, clear above every bar and line
 for ax in axes:
@@ -110,17 +110,17 @@ for k, (ax, (arch, names, acc, ns)) in enumerate(zip(axes, panels)):
     ax.axhline(base, ls=(0, (3, 2)), lw=0.7, color=PAL["neutral_dark"], zorder=4)
     for i, (n, a) in enumerate(zip(names, acc)):
         dark = n in DECISIVE
-        ax.text(i, a - pad, f"{a:.1f}", ha="center", va="top", fontsize=6, zorder=5,
+        ax.text(i, a - pad, f"{a:.1f}", ha="center", va="top", fontsize=ANNOT_PT, zorder=5,
                 color="white" if dark else PAL["ink"])
         if n == "homog-high":
-            ax.text(i, row_y, "ref.", ha="center", va="bottom", fontsize=6, color=PAL["neutral_dark"])
+            ax.text(i, row_y, "ref.", ha="center", va="bottom", fontsize=ANNOT_PT, color=PAL["neutral_dark"])
         else:
             rel = (a - base) / base * 100
-            ax.text(i, row_y, minus(f"{rel:+.0f}%"), ha="center", va="bottom", fontsize=6,
+            ax.text(i, row_y, minus(f"{rel:+.0f}%"), ha="center", va="bottom", fontsize=ANNOT_PT,
                     color=PAL["delta_down"] if dark else PAL["neutral_dark"],
                     fontweight="bold" if dark else "normal")
     ax.set_xticks(x)
-    ax.set_xticklabels([TICK[n] for n in names], fontsize=6)
+    ax.set_xticklabels([TICK[n] for n in names], fontsize=TICK_PT - 0.5)   # two-line labels, ~19 mm apart
     ax.tick_params(axis="x", length=0, pad=3)
     ax.set_xlim(-0.55, len(names) - 0.45)
     ax.set_yticks([0, 20, 40])

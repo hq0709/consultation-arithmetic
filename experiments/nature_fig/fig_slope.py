@@ -20,12 +20,12 @@ mpl.rcParams['pdf.fonttype'] = 42
 mpl.rcParams.update({
     "svg.fonttype": "none",
     "pdf.fonttype": 42,
-    "font.size": 7,
-    "axes.labelsize": 7,
-    "axes.titlesize": 7,
-    "xtick.labelsize": 6,
-    "ytick.labelsize": 6,
-    "legend.fontsize": 6,
+    "font.size": 9,
+    "axes.labelsize": 9,
+    "axes.titlesize": 9,
+    "xtick.labelsize": 8.5,
+    "ytick.labelsize": 8.5,
+    "legend.fontsize": 8,
     "axes.linewidth": 0.8,
     "axes.spines.right": False,
     "axes.spines.top": False,
@@ -53,7 +53,7 @@ REPO = NF.parents[1]
 for p in (NF, REPO):
     sys.path.insert(0, str(p))
 
-from nf_style import (MM, TEXT_W_MM, PAL, ARCH, LABEL_MATH_PT,                       # noqa: E402
+from nf_style import (MM, TEXT_W_MM, PAL, ARCH, LABEL_MATH_PT, ANNOT_PT, LEGEND_PT,  # noqa: E402
                       add_panel_label, add_panel_title)
 from audit_panel_alignment import require_matplotlib_panel_alignment               # noqa: E402
 
@@ -101,6 +101,12 @@ def at(ax, dx_pt=0.0, dy_pt=0.0):
     return ax.transData + ScaledTranslation(dx_pt / 72, dy_pt / 72, ax.figure.dpi_scale_trans)
 
 
+def right_edge(ax, dx_pt=0.0):
+    """x in axes fraction, y in data, shifted by a fixed physical offset."""
+    return (mpl.transforms.blended_transform_factory(ax.transAxes, ax.transData)
+            + ScaledTranslation(dx_pt / 72, 0, ax.figure.dpi_scale_trans))
+
+
 def header(ax, letter, title):
     """Letter at the left edge of the axis decorations, title right after it (pt offsets)."""
     fig_ = ax.figure
@@ -135,8 +141,8 @@ for phi in CURVES:
     neff = grid / (1 + (grid - 1) * phi)
     ax.plot(grid, neff, color=GREY, lw=0.8, ls=(0, (1, 1.6)), zorder=2)
     lab = r"$\varphi$ = 0, independent" if phi == 0 else f"{phi:g}"
-    ax.text(9, 9 / (1 + 8 * phi), lab, transform=at(ax, 4, 0), ha="left", va="center",
-            fontsize=6, color=DARK, clip_on=False)
+    ax.text(1.0, 9 / (1 + 8 * phi), lab, transform=right_edge(ax, 3), ha="left", va="center",
+            fontsize=ANNOT_PT, color=DARK, clip_on=False)
 ax.plot([0.6, 9.0], [1.0, 1.0], **EDGE, zorder=1)   # ends with the data, clear of the labels
 assert np.all(neff_meas > 0)            # strictly positive: safe on the log axis
 ax.plot(ns, neff_meas, color=MEAS["color"], lw=1.5, zorder=5)
@@ -144,7 +150,7 @@ ax.plot(ns, neff_meas, MEAS["marker"], ms=5.0, mfc=MEAS["color"], mec="white", m
         zorder=6)
 ax.set_yscale("log")
 ax.set_xlim(0.6, 9.4)
-ax.set_ylim(0.84, 11.0)
+ax.set_ylim(0.74, 11.0)            # room under the single-doctor line for its label
 ax.yaxis.set_major_locator(FixedLocator([1, 2, 5, 10]))
 ax.yaxis.set_minor_locator(NullLocator())
 ax.set_yticklabels(["1", "2", "5", "10"])
@@ -154,13 +160,13 @@ ax.set_ylabel(r"Effective opinions, $N_{\mathrm{eff}}$", fontsize=LABEL_MATH_PT)
 # the measured curve: identity in a one-entry key (the log axis leaves no room for an
 # inline label between neighbouring curves), its N = 9 value at the end of the curve
 key = [Line2D([], [], color=MEAS["color"], lw=1.5, marker=MEAS["marker"], ms=4.4,
-              mfc=MEAS["color"], mec="white", mew=0.5, label=r"Measured panels, $\varphi$ = " + f"{phibar:.2f}")]
+              mfc=MEAS["color"], mec="white", mew=0.5, label="Measured panels,\n" + r"$\varphi$ = " + f"{phibar:.2f}")]
 ax.legend(handles=key, loc="upper left", bbox_to_anchor=(0.0, 1.0), borderaxespad=0.2,
-          borderpad=0.2, handlelength=2.0, handletextpad=0.5, fontsize=6)
+          borderpad=0.2, handlelength=2.0, handletextpad=0.5, fontsize=LEGEND_PT)
 ax.text(ns[-1], neff_meas[-1], f"{neff_meas[-1]:.2f}", transform=at(ax, -4, 4.5), ha="right",
-        va="bottom", fontsize=6, color=INK)
+        va="bottom", fontsize=ANNOT_PT, color=INK)
 ax.text(1.05, 1.0, "single doctor", transform=at(ax, 0, -2.5), ha="left", va="top",
-        fontsize=6, color=DARK)
+        fontsize=ANNOT_PT, color=DARK)
 
 # ── b: phi of every configuration; first round for all architectures, then after discussion ──
 ax = ax_b
@@ -178,10 +184,10 @@ for y, (lab, vals, st) in zip(ys, rows):
                alpha=0.78, edgecolors="white", linewidths=0.25, zorder=3)
     med = float(np.median(vals))
     ax.plot([med, med], [y - 0.40, y + 0.40], color=INK, lw=1.3, solid_capstyle="butt", zorder=5)
-    ax.text(1.0, y, f"{med:.2f}", transform=at(ax, 9, 0), ha="left", va="center", fontsize=6,
+    ax.text(1.0, y, f"{med:.2f}", transform=at(ax, 9, 0), ha="left", va="center", fontsize=ANNOT_PT,
             color=INK, clip_on=False)
 ax.text(1.0, ys[0] + 0.62, "median", transform=at(ax, 9, 0), ha="left", va="bottom",
-        fontsize=6, color=DARK, clip_on=False)
+        fontsize=ANNOT_PT, color=DARK, clip_on=False)
 ax.set_yticks(ys)
 ax.set_yticklabels([r[0] for r in rows])
 ax.tick_params(axis="y", length=0, pad=4)

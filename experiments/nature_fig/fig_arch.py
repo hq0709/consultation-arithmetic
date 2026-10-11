@@ -22,12 +22,12 @@ mpl.rcParams['pdf.fonttype'] = 42
 mpl.rcParams.update({
     "svg.fonttype": "none",
     "pdf.fonttype": 42,
-    "font.size": 7,
-    "axes.labelsize": 7,
-    "axes.titlesize": 7,
-    "xtick.labelsize": 6,
-    "ytick.labelsize": 6,
-    "legend.fontsize": 6,
+    "font.size": 9,
+    "axes.labelsize": 9,
+    "axes.titlesize": 9,
+    "xtick.labelsize": 8.5,
+    "ytick.labelsize": 8.5,
+    "legend.fontsize": 8,
     "axes.linewidth": 0.8,
     "axes.spines.right": False,
     "axes.spines.top": False,
@@ -116,11 +116,11 @@ for cx, a in zip(COL, order):
     t = ax.text(0, Y_TITLE, ARCH[a]["label"], ha="left", va="center", fontsize=BASE_PT,
                 color=INK)
     w = t.get_window_extent(renderer).width / fig.dpi * 25.4
-    glyph_w, gap = 2.2, 1.3
+    glyph_w, gap = 2.6, 1.5
     x0 = cx - (glyph_w + gap + w) / 2
     t.set_x(x0 + glyph_w + gap)
     mk = ARCH[a]["marker"]
-    ax.plot([x0 + glyph_w / 2], [Y_TITLE], ls="none", marker=mk, ms=5.6 * MS_SCALE[mk],
+    ax.plot([x0 + glyph_w / 2], [Y_TITLE], ls="none", marker=mk, ms=7.0 * MS_SCALE[mk],
             mfc=ARCH[a]["color"], mec="white", mew=0.4, zorder=5)
 
 # ── a: single doctor ──
@@ -189,8 +189,8 @@ entries.append(("spec", "Specialists"))
 entries.append(("line", "Message channel"))
 entries.append(("dash", "Only if the panel has no majority"))
 entries.append(("arrow", "Referral"))
-widths = {"lead": 2.6, "spec": 10.4, "line": 5.0, "dash": 5.0, "arrow": 5.0}
-gap_glyph, gap_item = 1.2, 4.2
+widths = {"lead": 2.6, "spec": 10.4, "line": 4.6, "dash": 4.6, "arrow": 4.6}
+gap_glyph, gap_item = 1.2, 3.0
 texts = []
 for kind, s in entries:
     t, w = key_text(0, s)

@@ -11,14 +11,15 @@ MM = 1 / 25.4                    # inches per millimetre
 TEXT_W_MM = 160.0                # ACL \textwidth  (6.30 in)
 COL_W_MM = 80.0                  # ACL \columnwidth (3.15 in)
 
-# Font sizes at final physical size (pt). Mathtext scripts shrink to ~0.7x, so any
-# label that contains a sub/superscript uses LABEL_MATH_PT (0.7 x 7.5 = 5.25 pt).
-BASE_PT = 7.0
-TICK_PT = 6.0
-LEGEND_PT = 6.0
-LABEL_MATH_PT = 7.5
-PANEL_LABEL_PT = 8.0
-ANNOT_PT = 6.0
+# Font sizes at final physical size (pt), matched to the figures that keep the original
+# layout (experiments/vizstyle.py prints titles and axis labels at ~9-10 pt, ticks at ~9,
+# legends at ~8, in-plot values at ~7.5-8). Mathtext scripts shrink to ~0.7x: 0.7 x 9 = 6.3 pt.
+BASE_PT = 9.0
+TICK_PT = 8.5
+LEGEND_PT = 8.0
+LABEL_MATH_PT = 9.0
+PANEL_LABEL_PT = 10.0
+ANNOT_PT = 7.5
 
 # NMI-pastel-derived unified family (nature-figure api.md), with two reserved
 # directional colours. Lightness steps are separated for grey-scale print, and
