@@ -4,6 +4,7 @@ import argparse, json, math, pathlib, sys, collections
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
+from common.llm import PRICING, OPENROUTER_PRICING
 
 
 def wilson(k, n, z=1.96):
@@ -29,6 +30,17 @@ def mcnemar(a: dict, b: dict):
     return b10, b01, min(1.0, p)
 
 
+def _reprice(r):
+    """episode 计量器（panels/architectures.py）以前只查 PRICING，只在 OpenRouter 上有价的
+    模型（deepseek-v4-flash 等）因此记成 $0，token 数是对的。按存档 token 重新计价，
+    与计量器同一公式；已有价格的 episode 不动。"""
+    c, m = r.get("cost"), r.get("model")
+    if not c or c.get("usd") or m in PRICING or m not in OPENROUTER_PRICING:
+        return
+    pi, po = OPENROUTER_PRICING[m]
+    c["usd"] = round(c["in_tok"] / 1e6 * pi + c["out_tok"] / 1e6 * po, 6)
+
+
 def load(paths, dedup=True):
     """读取 episode。默认按 (qid, cfg_hash) 去重。
 
@@ -51,6 +63,7 @@ def load(paths, dedup=True):
                 if k in seen:
                     continue
                 seen.add(k)
+            _reprice(r)
             rows.append(r)
     return rows
 

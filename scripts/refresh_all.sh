@@ -21,11 +21,14 @@ if [ "${1:-}" != "--figs-only" ]; then
 fi
 
 echo; echo "=== 图 ==="
-for s in fig_main fig_rest fig_forest fig_ceiling fig_diversity \
-         fig_benchmark_dynamics fig_heterogeneity fig_arch; do
-  printf "  %-22s " "$s"
-  if python3 "experiments/$s.py" >"/tmp/refresh_$s.log" 2>&1; then echo ok
-  else echo "失败 —— 见 /tmp/refresh_$s.log"; fi
+# 架构图、φ、协调、分布、异质性由 nature_fig/ 生成；同名的旧脚本已删除，免得把新图覆盖回旧版。
+for s in fig_main fig_rest fig_ceiling fig_benchmark_dynamics \
+         nature_fig/fig_arch nature_fig/fig_slope nature_fig/fig_coordination \
+         nature_fig/fig_distribution nature_fig/fig_heterogeneity; do
+  log="/tmp/refresh_${s//\//_}.log"
+  printf "  %-30s " "$s"
+  if python3 "experiments/$s.py" >"$log" 2>&1; then echo ok
+  else echo "失败 —— 见 $log"; fi
 done
 
 echo; echo "=== 表 ==="

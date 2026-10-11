@@ -5088,9 +5088,9 @@
    "arch": "independent",
    "N": 1,
    "gain": -3.6000000000000014,
-   "extra_usd_per_1k": 0.0,
+   "extra_usd_per_1k": -0.03491599999999999,
    "pp_per_dollar": null,
-   "mult": null
+   "mult": 0.8092480496492647
   },
   {
    "model": "deepseek-v4-flash",
@@ -5098,9 +5098,9 @@
    "arch": "independent",
    "N": 3,
    "gain": -2.3999999999999986,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.227968,
+   "pp_per_dollar": -10.527793374508697,
+   "mult": 2.245427328948231
   },
   {
    "model": "deepseek-v4-flash",
@@ -5108,9 +5108,9 @@
    "arch": "independent",
    "N": 5,
    "gain": -2.3999999999999986,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.505648,
+   "pp_per_dollar": -4.746384836882572,
+   "mult": 3.762439632001049
   },
   {
    "model": "deepseek-v4-flash",
@@ -5118,9 +5118,9 @@
    "arch": "independent",
    "N": 7,
    "gain": -2.8000000000000043,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.786976,
+   "pp_per_dollar": -3.557922986215595,
+   "mult": 5.29938156945871
   },
   {
    "model": "deepseek-v4-flash",
@@ -5128,9 +5128,9 @@
    "arch": "independent",
    "N": 9,
    "gain": -0.3999999999999986,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 1.063672,
+   "pp_per_dollar": -0.37605577659278294,
+   "mult": 6.811018115862852
   },
   {
    "model": "deepseek-v4-flash",
@@ -5138,9 +5138,9 @@
    "arch": "centralized",
    "N": 1,
    "gain": -1.6000000000000014,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.2878159999999999,
+   "pp_per_dollar": -5.559107207382501,
+   "mult": 2.572386967068027
   },
   {
    "model": "deepseek-v4-flash",
@@ -5148,9 +5148,9 @@
    "arch": "centralized",
    "N": 3,
    "gain": -0.7999999999999972,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.47898399999999997,
+   "pp_per_dollar": -1.6702019274130184,
+   "mult": 3.616769738423548
   },
   {
    "model": "deepseek-v4-flash",
@@ -5158,9 +5158,9 @@
    "arch": "centralized",
    "N": 5,
    "gain": -1.2000000000000028,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.7501999999999999,
+   "pp_per_dollar": -1.5995734470807825,
+   "mult": 5.098468127881821
   },
   {
    "model": "deepseek-v4-flash",
@@ -5168,9 +5168,9 @@
    "arch": "centralized",
    "N": 7,
    "gain": 0.8000000000000043,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 1.052456,
+   "pp_per_dollar": 0.760126789148434,
+   "mult": 6.7497432311356835
   },
   {
    "model": "deepseek-v4-flash",
@@ -5178,9 +5178,9 @@
    "arch": "centralized",
    "N": 9,
    "gain": 0.3999999999999986,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 1.34424,
+   "pp_per_dollar": 0.29756591084925205,
+   "mult": 8.343808046152839
   },
   {
    "model": "deepseek-v4-flash",
@@ -5188,9 +5188,9 @@
    "arch": "discussion",
    "N": 1,
    "gain": -3.6000000000000014,
-   "extra_usd_per_1k": 0.0,
+   "extra_usd_per_1k": -0.033624,
    "pp_per_dollar": null,
-   "mult": null
+   "mult": 0.816306461834313
   },
   {
    "model": "deepseek-v4-flash",
@@ -5198,9 +5198,9 @@
    "arch": "discussion",
    "N": 3,
    "gain": 0.3999999999999986,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.545172,
+   "pp_per_dollar": 0.7337133968729109,
+   "mult": 3.97836585738948
   },
   {
    "model": "deepseek-v4-flash",
@@ -5208,9 +5208,9 @@
    "arch": "discussion",
    "N": 5,
    "gain": 1.1999999999999957,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 1.2560719999999999,
+   "pp_per_dollar": 0.9553592469221477,
+   "mult": 7.862131509363868
   },
   {
    "model": "deepseek-v4-flash",
@@ -5218,9 +5218,9 @@
    "arch": "discussion",
    "N": 7,
    "gain": 1.1999999999999957,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 1.9707600000000003,
+   "pp_per_dollar": 0.6089021494245852,
+   "mult": 11.766591639168725
   },
   {
    "model": "deepseek-v4-flash",
@@ -5228,9 +5228,9 @@
    "arch": "discussion",
    "N": 9,
    "gain": -0.3999999999999986,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 2.5821120000000004,
+   "pp_per_dollar": -0.15491194804872851,
+   "mult": 15.106509910185531
   },
   {
    "model": "deepseek-v4-flash",
@@ -5238,9 +5238,9 @@
    "arch": "tiered",
    "N": 1,
    "gain": -8.400000000000002,
-   "extra_usd_per_1k": 0.0,
+   "extra_usd_per_1k": -0.057500000000000016,
    "pp_per_dollar": null,
-   "mult": null
+   "mult": 0.6858678787613907
   },
   {
    "model": "deepseek-v4-flash",
@@ -5248,9 +5248,9 @@
    "arch": "tiered",
    "N": 3,
    "gain": -8.8,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.06565200000000003,
+   "pp_per_dollar": -134.04009017242424,
+   "mult": 1.3586678612792555
   },
   {
    "model": "deepseek-v4-flash",
@@ -5258,9 +5258,9 @@
    "arch": "tiered",
    "N": 5,
    "gain": -7.600000000000001,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.18842800000000004,
+   "pp_per_dollar": -40.33370836606024,
+   "mult": 2.029413692882586
   },
   {
    "model": "deepseek-v4-flash",
@@ -5268,9 +5268,9 @@
    "arch": "tiered",
    "N": 7,
    "gain": -7.600000000000001,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.33006800000000003,
+   "pp_per_dollar": -23.02555836979047,
+   "mult": 2.8032167129214836
   },
   {
    "model": "deepseek-v4-flash",
@@ -5278,9 +5278,9 @@
    "arch": "tiered",
    "N": 9,
    "gain": -7.600000000000001,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.41555600000000004,
+   "pp_per_dollar": -18.288750493314982,
+   "mult": 3.2702519612770704
   },
   {
    "model": "deepseek-v4-flash",
@@ -5288,9 +5288,9 @@
    "arch": "sc",
    "N": 1,
    "gain": -3.200000000000003,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.14871600000000001,
+   "pp_per_dollar": -21.517523333064382,
+   "mult": 1.8124603920368874
   },
   {
    "model": "deepseek-v4-flash",
@@ -5298,9 +5298,9 @@
    "arch": "sc",
    "N": 3,
    "gain": 0.0,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.44022399999999995,
+   "pp_per_dollar": 0.0,
+   "mult": 3.4050173728720963
   },
   {
    "model": "deepseek-v4-flash",
@@ -5308,9 +5308,9 @@
    "arch": "sc",
    "N": 5,
    "gain": -0.3999999999999986,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.7315119999999999,
+   "pp_per_dollar": -0.5468126291844817,
+   "mult": 4.99637245689561
   },
   {
    "model": "deepseek-v4-flash",
@@ -5318,9 +5318,9 @@
    "arch": "sc",
    "N": 9,
    "gain": 0.0,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 1.5009919999999999,
+   "pp_per_dollar": 0.0,
+   "mult": 9.200170450820567
   },
   {
    "model": "deepseek-v4-flash",
@@ -5328,9 +5328,9 @@
    "arch": "sc",
    "N": 15,
    "gain": -2.0,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 2.384192,
+   "pp_per_dollar": -0.8388586154135237,
+   "mult": 14.025239833045609
   },
   {
    "model": "deepseek-v4-flash",
@@ -5338,9 +5338,9 @@
    "arch": "independent",
    "N": 1,
    "gain": 1.6000000000000085,
-   "extra_usd_per_1k": 0.0,
+   "extra_usd_per_1k": -0.02256799999999999,
    "pp_per_dollar": null,
-   "mult": null
+   "mult": 0.8242093784078517
   },
   {
    "model": "deepseek-v4-flash",
@@ -5348,9 +5348,9 @@
    "arch": "independent",
    "N": 3,
    "gain": 4.0,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.169796,
+   "pp_per_dollar": 23.557680981884143,
+   "mult": 2.322604767097679
   },
   {
    "model": "deepseek-v4-flash",
@@ -5358,9 +5358,9 @@
    "arch": "independent",
    "N": 5,
    "gain": 4.0,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.35854400000000003,
+   "pp_per_dollar": 11.15623187112321,
+   "mult": 3.792833774731267
   },
   {
    "model": "deepseek-v4-flash",
@@ -5368,9 +5368,9 @@
    "arch": "independent",
    "N": 7,
    "gain": 5.200000000000003,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.5393199999999999,
+   "pp_per_dollar": 9.641771119187132,
+   "mult": 5.20096588253622
   },
   {
    "model": "deepseek-v4-flash",
@@ -5378,9 +5378,9 @@
    "arch": "independent",
    "N": 9,
    "gain": 4.800000000000011,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.727632,
+   "pp_per_dollar": 6.596741209842354,
+   "mult": 6.667798722542453
   },
   {
    "model": "deepseek-v4-flash",
@@ -5388,9 +5388,9 @@
    "arch": "centralized",
    "N": 1,
    "gain": 0.0,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.161148,
+   "pp_per_dollar": 0.0,
+   "mult": 2.2552422495715847
   },
   {
    "model": "deepseek-v4-flash",
@@ -5398,9 +5398,9 @@
    "arch": "centralized",
    "N": 3,
    "gain": 1.6000000000000085,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.35290800000000005,
+   "pp_per_dollar": 4.533759506726989,
+   "mult": 3.748932855584983
   },
   {
    "model": "deepseek-v4-flash",
@@ -5408,9 +5408,9 @@
    "arch": "centralized",
    "N": 5,
    "gain": 3.6000000000000085,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.5465120000000001,
+   "pp_per_dollar": 6.587229557630954,
+   "mult": 5.256987069637016
   },
   {
    "model": "deepseek-v4-flash",
@@ -5418,9 +5418,9 @@
    "arch": "centralized",
    "N": 7,
    "gain": 4.0,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.727148,
+   "pp_per_dollar": 5.500943411795123,
+   "mult": 6.664028664901076
   },
   {
    "model": "deepseek-v4-flash",
@@ -5428,9 +5428,9 @@
    "arch": "centralized",
    "N": 9,
    "gain": 6.3999999999999915,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.9443079999999998,
+   "pp_per_dollar": 6.77744973038457,
+   "mult": 8.355569403333853
   },
   {
    "model": "deepseek-v4-flash",
@@ -5438,9 +5438,9 @@
    "arch": "discussion",
    "N": 1,
    "gain": 2.4000000000000057,
-   "extra_usd_per_1k": 0.0,
+   "extra_usd_per_1k": -0.021291999999999985,
    "pp_per_dollar": null,
-   "mult": null
+   "mult": 0.8341486212805734
   },
   {
    "model": "deepseek-v4-flash",
@@ -5448,9 +5448,9 @@
    "arch": "discussion",
    "N": 3,
    "gain": 4.400000000000006,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.25789999999999996,
+   "pp_per_dollar": 17.060876308646787,
+   "mult": 3.008879887832996
   },
   {
    "model": "deepseek-v4-flash",
@@ -5458,9 +5458,9 @@
    "arch": "discussion",
    "N": 5,
    "gain": 6.3999999999999915,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.5759120000000001,
+   "pp_per_dollar": 11.112808901359914,
+   "mult": 5.485994703224802
   },
   {
    "model": "deepseek-v4-flash",
@@ -5468,9 +5468,9 @@
    "arch": "discussion",
    "N": 7,
    "gain": 6.3999999999999915,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.932436,
+   "pp_per_dollar": 6.863741854668836,
+   "mult": 8.263093939866023
   },
   {
    "model": "deepseek-v4-flash",
@@ -5478,9 +5478,9 @@
    "arch": "discussion",
    "N": 9,
    "gain": 6.0,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 1.1609880000000001,
+   "pp_per_dollar": 5.168012072476201,
+   "mult": 10.043371241626424
   },
   {
    "model": "deepseek-v4-flash",
@@ -5488,9 +5488,9 @@
    "arch": "tiered",
    "N": 1,
    "gain": 0.4000000000000057,
-   "extra_usd_per_1k": 0.0,
+   "extra_usd_per_1k": -0.036059999999999974,
    "pp_per_dollar": null,
-   "mult": null
+   "mult": 0.7191151269668175
   },
   {
    "model": "deepseek-v4-flash",
@@ -5498,9 +5498,9 @@
    "arch": "tiered",
    "N": 3,
    "gain": 0.4000000000000057,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.004648000000000027,
+   "pp_per_dollar": 86.05851979346028,
+   "mult": 1.0362050163576884
   },
   {
    "model": "deepseek-v4-flash",
@@ -5508,9 +5508,9 @@
    "arch": "tiered",
    "N": 5,
    "gain": 0.7999999999999972,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.054328,
+   "pp_per_dollar": 14.725371815638292,
+   "mult": 1.4231811808692942
   },
   {
    "model": "deepseek-v4-flash",
@@ -5518,9 +5518,9 @@
    "arch": "tiered",
    "N": 7,
    "gain": 0.7999999999999972,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.107816,
+   "pp_per_dollar": 7.420048972323191,
+   "mult": 1.8398192864932232
   },
   {
    "model": "deepseek-v4-flash",
@@ -5528,9 +5528,9 @@
    "arch": "tiered",
    "N": 9,
    "gain": 0.4000000000000057,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.17208800000000005,
+   "pp_per_dollar": 2.324392171447199,
+   "mult": 2.340458015267176
   },
   {
    "model": "deepseek-v4-flash",
@@ -5538,9 +5538,9 @@
    "arch": "sc",
    "N": 1,
    "gain": 1.2000000000000028,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.15799599999999997,
+   "pp_per_dollar": 7.5951289906073765,
+   "mult": 2.23069013865088
   },
   {
    "model": "deepseek-v4-flash",
@@ -5548,9 +5548,9 @@
    "arch": "sc",
    "N": 3,
    "gain": 4.800000000000011,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.337744,
+   "pp_per_dollar": 14.211947510540561,
+   "mult": 3.6308147686555543
   },
   {
    "model": "deepseek-v4-flash",
@@ -5558,9 +5558,9 @@
    "arch": "sc",
    "N": 5,
    "gain": 5.200000000000003,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.517468,
+   "pp_per_dollar": 10.048930561889822,
+   "mult": 5.030752453653217
   },
   {
    "model": "deepseek-v4-flash",
@@ -5568,9 +5568,9 @@
    "arch": "sc",
    "N": 9,
    "gain": 6.0,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 1.070476,
+   "pp_per_dollar": 5.604983203733666,
+   "mult": 9.338339305187723
   },
   {
    "model": "deepseek-v4-flash",
@@ -5578,9 +5578,9 @@
    "arch": "sc",
    "N": 15,
    "gain": 6.0,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 1.600124,
+   "pp_per_dollar": 3.7497093975216917,
+   "mult": 13.46396634989874
   },
   {
    "model": "deepseek-v4-flash",
@@ -5588,9 +5588,9 @@
    "arch": "independent",
    "N": 1,
    "gain": -0.4000000000000057,
-   "extra_usd_per_1k": 0.0,
+   "extra_usd_per_1k": -0.05776399999999994,
    "pp_per_dollar": null,
-   "mult": null
+   "mult": 0.7472565938008648
   },
   {
    "model": "deepseek-v4-flash",
@@ -5598,9 +5598,9 @@
    "arch": "independent",
    "N": 3,
    "gain": 4.399999999999999,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.27705600000000014,
+   "pp_per_dollar": 15.881265881265868,
+   "mult": 2.212244255036142
   },
   {
    "model": "deepseek-v4-flash",
@@ -5608,9 +5608,9 @@
    "arch": "independent",
    "N": 5,
    "gain": 3.200000000000003,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.6135200000000001,
+   "pp_per_dollar": 5.215803885773899,
+   "mult": 3.6844251535782426
   },
   {
    "model": "deepseek-v4-flash",
@@ -5618,9 +5618,9 @@
    "arch": "independent",
    "N": 7,
    "gain": 2.799999999999997,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.933388,
+   "pp_per_dollar": 2.999824296005517,
+   "mult": 5.083991109088682
   },
   {
    "model": "deepseek-v4-flash",
@@ -5628,9 +5628,9 @@
    "arch": "independent",
    "N": 9,
    "gain": 4.799999999999997,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 1.2768559999999998,
+   "pp_per_dollar": 3.7592336175731624,
+   "mult": 6.586817648809004
   },
   {
    "model": "deepseek-v4-flash",
@@ -5638,9 +5638,9 @@
    "arch": "centralized",
    "N": 1,
    "gain": 3.5999999999999943,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.2828760000000002,
+   "pp_per_dollar": 12.7264242989861,
+   "mult": 2.237709365209935
   },
   {
    "model": "deepseek-v4-flash",
@@ -5648,9 +5648,9 @@
    "arch": "centralized",
    "N": 3,
    "gain": 7.199999999999996,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.5336000000000001,
+   "pp_per_dollar": 13.493253373313333,
+   "mult": 3.3347393107793555
   },
   {
    "model": "deepseek-v4-flash",
@@ -5658,9 +5658,9 @@
    "arch": "centralized",
    "N": 5,
    "gain": 6.0,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.9006760000000001,
+   "pp_per_dollar": 6.661663017555702,
+   "mult": 4.940861438297427
   },
   {
    "model": "deepseek-v4-flash",
@@ -5668,9 +5668,9 @@
    "arch": "centralized",
    "N": 7,
    "gain": 5.599999999999994,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 1.1871399999999996,
+   "pp_per_dollar": 4.717219536027761,
+   "mult": 6.194269912666048
   },
   {
    "model": "deepseek-v4-flash",
@@ -5678,9 +5678,9 @@
    "arch": "centralized",
    "N": 9,
    "gain": 4.399999999999999,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 1.5401680000000002,
+   "pp_per_dollar": 2.8568312028298197,
+   "mult": 7.73892573988834
   },
   {
    "model": "deepseek-v4-flash",
@@ -5688,9 +5688,9 @@
    "arch": "discussion",
    "N": 1,
    "gain": -0.4000000000000057,
-   "extra_usd_per_1k": 0.0,
+   "extra_usd_per_1k": -0.05776399999999994,
    "pp_per_dollar": null,
-   "mult": null
+   "mult": 0.7472565938008648
   },
   {
    "model": "deepseek-v4-flash",
@@ -5698,9 +5698,9 @@
    "arch": "discussion",
    "N": 3,
    "gain": 6.0,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.61382,
+   "pp_per_dollar": 9.774852562640513,
+   "mult": 3.685737788123283
   },
   {
    "model": "deepseek-v4-flash",
@@ -5708,9 +5708,9 @@
    "arch": "discussion",
    "N": 5,
    "gain": 7.199999999999996,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 1.324792,
+   "pp_per_dollar": 5.434815427629391,
+   "mult": 6.7965591473126
   },
   {
    "model": "deepseek-v4-flash",
@@ -5718,9 +5718,9 @@
    "arch": "discussion",
    "N": 7,
    "gain": 6.0,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 2.071808,
+   "pp_per_dollar": 2.896021252934635,
+   "mult": 10.065089171640095
   },
   {
    "model": "deepseek-v4-flash",
@@ -5728,9 +5728,9 @@
    "arch": "discussion",
    "N": 9,
    "gain": 6.799999999999997,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 2.8176680000000007,
+   "pp_per_dollar": 2.4133432327726316,
+   "mult": 13.3285611775207
   },
   {
    "model": "deepseek-v4-flash",
@@ -5738,9 +5738,9 @@
    "arch": "tiered",
    "N": 1,
    "gain": -2.000000000000007,
-   "extra_usd_per_1k": 0.0,
+   "extra_usd_per_1k": -0.04396399999999996,
    "pp_per_dollar": null,
-   "mult": null
+   "mult": 0.8076377828727446
   },
   {
    "model": "deepseek-v4-flash",
@@ -5748,9 +5748,9 @@
    "arch": "tiered",
    "N": 3,
    "gain": -1.2000000000000028,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.12250400000000006,
+   "pp_per_dollar": -9.795598511069045,
+   "mult": 1.5360099410189547
   },
   {
    "model": "deepseek-v4-flash",
@@ -5758,9 +5758,9 @@
    "arch": "tiered",
    "N": 5,
    "gain": -2.000000000000007,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.278212,
+   "pp_per_dollar": -7.188762526418728,
+   "mult": 2.2173022734830323
   },
   {
    "model": "deepseek-v4-flash",
@@ -5768,9 +5768,9 @@
    "arch": "tiered",
    "N": 7,
    "gain": -4.0,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.5051080000000001,
+   "pp_per_dollar": -7.919098489827916,
+   "mult": 3.210074032588341
   },
   {
    "model": "deepseek-v4-flash",
@@ -5778,9 +5778,9 @@
    "arch": "tiered",
    "N": 9,
    "gain": -4.399999999999999,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.6342479999999999,
+   "pp_per_dollar": -6.937349427984005,
+   "mult": 3.775119449743599
   },
   {
    "model": "deepseek-v4-flash",
@@ -5788,9 +5788,9 @@
    "arch": "sc",
    "N": 1,
    "gain": -0.8000000000000043,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.1749040000000001,
+   "pp_per_dollar": -4.573937702968507,
+   "mult": 1.7652834415527596
   },
   {
    "model": "deepseek-v4-flash",
@@ -5798,9 +5798,9 @@
    "arch": "sc",
    "N": 3,
    "gain": 2.3999999999999986,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.541188,
+   "pp_per_dollar": 4.434688130557216,
+   "mult": 3.367940213871922
   },
   {
    "model": "deepseek-v4-flash",
@@ -5808,9 +5808,9 @@
    "arch": "sc",
    "N": 5,
    "gain": 4.399999999999999,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 0.9074519999999999,
+   "pp_per_dollar": 4.848741310835172,
+   "mult": 4.970509477221415
   },
   {
    "model": "deepseek-v4-flash",
@@ -5818,9 +5818,9 @@
    "arch": "sc",
    "N": 9,
    "gain": 3.999999999999993,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 1.849064,
+   "pp_per_dollar": 2.1632566530958326,
+   "mult": 9.090484274638152
   },
   {
    "model": "deepseek-v4-flash",
@@ -5828,9 +5828,9 @@
    "arch": "sc",
    "N": 15,
    "gain": 2.799999999999997,
-   "extra_usd_per_1k": 0.0,
-   "pp_per_dollar": null,
-   "mult": null
+   "extra_usd_per_1k": 2.8961760000000005,
+   "pp_per_dollar": 0.9667920734099021,
+   "mult": 13.672068887060927
   },
   {
    "model": "gemini-3.7-flash",

@@ -1,12 +1,10 @@
-"""fig6_coordination — candidate A: panels coordinate in few turns and still discard correct answers.
+"""fig6_coordination (paper Fig. 7): panels coordinate in few turns and still discard correct answers.
 
-Nature-figure skill, Python backend. Same metrics, fit and inclusion as
-fig_rest.py::fig_coord, rebuilt to the skill's standard:
-  a  reasoning turns T vs number of agents n, with the existing log-log fit
-     (fitted over all 600 configurations, self-consistency included, so those
-     points are drawn too) and the published general-domain law;
-  b  accuracy vs message density c, with the published plateau c* = 0.39;
-  c  mean error amplification A_e per architecture, SD across configurations.
+Nature-figure skill, Python backend. Same metrics as the former fig_rest.py::fig_coord:
+  a  reasoning turns T vs number of agents n for the 480 multi-agent configurations,
+     their log-log fit and the published general-domain law. Self-consistency is left
+     out of the points and the fit: its samples never exchange messages;
+  b  mean error amplification A_e per architecture, SD across configurations.
 """
 import sys
 import pathlib
@@ -90,8 +88,10 @@ for (m, b, a, N), v in cells.items():
         r.update(arch=a, cls=NMI_CLASS.get(a, a), model=m, bench=b)
         md.append(r)
 assert len(md) == 600, len(md)                     # 480 multi-agent + 120 self-consistency
-pl = fit_turn_powerlaw([(r["n_agents"], r["turns"]) for r in md])   # the figure's own fit
-assert (round(pl["a"], 2), round(pl["exponent"], 2), round(pl["r2"], 2)) == (0.84, 0.78, 0.33)
+mas = [r for r in md if r["arch"] != "sc"]
+assert len(mas) == 480, len(mas)
+pl = fit_turn_powerlaw([(r["n_agents"], r["turns"]) for r in mas])  # appendix: a = 0.72, b = 1.002
+assert (round(pl["a"], 2), round(pl["exponent"], 3), round(pl["r2"], 3)) == (0.72, 1.002, 0.499)
 GEN_A, GEN_B, GEN_R2 = 2.72, 1.724, 0.97           # published general-domain law
 C_STAR = 0.39                                      # published message-density plateau
 CLS = ["Independent", "Centralized", "Decentralized", "Hybrid"]
@@ -109,9 +109,9 @@ POINT_ALPHA = 0.85
 REF_C, REF_LW, REF_LS = PAL["neutral_mid"], 0.8, (0, (3, 2))
 FIT_C, FIT_LW = PAL["ink"], 1.3
 LABEL_C = PAL["neutral_dark"]
-PT_KEYS = MAS_ORDER + ["sc"]                           # drawing order in panel a
+PT_KEYS = MAS_ORDER                                    # drawing order in panel a
 # horizontal offset (agents) per architecture so coincident configurations stay visible
-DODGE = {"independent": -0.32, "sc": 0.0, "discussion": 0.32,
+DODGE = {"independent": -0.32, "discussion": 0.32,
          "centralized": -0.22, "tiered": 0.22}
 
 def ms(a):
@@ -127,21 +127,21 @@ gs = fig.add_gridspec(1, 2)
 axA, axC = (fig.add_subplot(gs[0, i]) for i in range(2))   # author kept panels a and c
 
 # ── a: turn scaling ──
-turns = np.array([r["turns"] for r in md])
+turns = np.array([r["turns"] for r in mas])
 if np.any(turns <= 0):
     raise ValueError("log axis needs strictly positive turn counts")
 for a in PT_KEYS:
-    sub = [r for r in md if r["arch"] == a]
+    sub = [r for r in mas if r["arch"] == a]
     scatter_points(axA, [r["n_agents"] + DODGE[a] for r in sub], [r["turns"] for r in sub], a)
-n_fit = np.linspace(1, 15, 120)                        # this study: the data's n range
+n_fit = np.linspace(1, 10, 120)                        # this study: the data's n range
 axA.plot(n_fit, pl["a"] * (n_fit + 0.5) ** pl["exponent"], color=FIT_C, lw=FIT_LW, zorder=5,
          solid_capstyle="round")
 n_gen = np.linspace(1, 10, 80)                         # published law: the current figure's range
 axA.plot(n_gen, GEN_A * (n_gen + 0.5) ** GEN_B, color=REF_C, lw=REF_LW, ls=REF_LS, zorder=4)
 axA.set_yscale("log")
-axA.set_xlim(0, 16)
+axA.set_xlim(0, 11)
 axA.set_ylim(0.75, 900)
-axA.xaxis.set_major_locator(FixedLocator([1, 5, 10, 15]))
+axA.xaxis.set_major_locator(FixedLocator([1, 5, 10]))
 axA.yaxis.set_major_locator(FixedLocator([1, 10, 100]))
 axA.yaxis.set_major_formatter(FixedFormatter(["1", "10", "100"]))
 axA.yaxis.set_minor_locator(NullLocator())
@@ -172,7 +172,7 @@ add_panel_title(axC, "Information discarded")
 # ── shared legend strip ──
 handles = [Line2D([], [], ls="none", marker=ARCH[a]["marker"], ms=ms(a) * 1.1,
                   mfc=ARCH[a]["color"], mec="white", mew=0.35, label=ARCH[a]["label"])
-           for a in MAS_ORDER + ["sc"]]
+           for a in MAS_ORDER]
 fig.legend(handles=handles, loc="outside upper center", ncol=len(handles), fontsize=LEGEND_PT,
            handlelength=1.6, handletextpad=0.4, columnspacing=1.4, borderaxespad=0.2)
 

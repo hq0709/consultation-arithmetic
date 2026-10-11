@@ -9,7 +9,7 @@ from __future__ import annotations
 import json, re, collections, random, threading
 from dataclasses import dataclass, field
 
-from common.llm import chat, PRICING, is_reasoning
+from common.llm import chat, PRICING, OPENROUTER_PRICING, is_reasoning
 from panels.base import (Opinion, user_prompt, render_question, parse_opinion, majority,
                          conf_weighted, has_majority, entropy, unanimous, ANSWER_JSON)
 from panels.roles import route, role_system
@@ -98,7 +98,8 @@ class Meter:
     def add(self, r, n_charged=None, out_frac=1.0):
         n = len(r["texts"]) if n_charged is None else n_charged
         inp = r["input_tokens"]; out = int(round(r["output_tokens"] * out_frac))
-        pi, po = PRICING.get(r["model"], (0.0, 0.0))
+        # 只在 OpenRouter 上有价的模型（deepseek-v4-flash 等）不在 PRICING 里，以前因此记成 $0
+        pi, po = PRICING.get(r["model"]) or OPENROUTER_PRICING.get(r["model"], (0.0, 0.0))
         with self._lock:
             self.calls += 1; self.samples += n
             self.inp += inp; self.out += out; self.rsn += r.get("reasoning_tokens", 0)
