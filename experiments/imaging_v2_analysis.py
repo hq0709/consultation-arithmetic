@@ -103,13 +103,14 @@ def cells(rows):
 
 
 # ---------------------------------------------------------------- statistics
-rng = np.random.default_rng(0)
-
-
 def boot(fn, units, b=B):
-    """fn(list of units) -> float; percentile bootstrap over units. -> [est, lo, hi]."""
+    """fn(list of units) -> float; percentile bootstrap over units. -> [est, lo, hi]. Each call draws
+    from its own generator (seed 0), so an interval does not depend on which analyses ran before it."""
+    rng = np.random.default_rng(0)
+    if not units:
+        return None
     est = fn(units)
-    if est is None or not units:
+    if est is None:
         return None
     vals = []
     for _ in range(b):
@@ -117,6 +118,8 @@ def boot(fn, units, b=B):
         v = fn(s)
         if v is not None:
             vals.append(v)
+    if not vals:
+        return None
     lo, hi = np.percentile(vals, [2.5, 97.5])
     return [round(float(est), 4), round(float(lo), 4), round(float(hi), 4)]
 
@@ -193,6 +196,52 @@ def by_qid(eps):
     return {e["qid"]: e for e in eps}
 
 
+def conformity(dis, blank):
+    """Readers correct in round 0 who end the discussion wrong, split by whether their round-0
+    answer differed from the same reader's answer on the gray image (image-dependent) or not
+    (prior-consistent); and the reverse, readers wrong in round 0 who end right."""
+    D, Bk = by_qid(dis), by_qid(blank)
+    units = []                                     # per item: [(group, round-0 correct, final correct)]
+    for q in sorted(set(D) & set(Bk)):
+        e = D[q]
+        r0, rf, b0 = e["rounds"][0], e["rounds"][-1], Bk[q]["rounds"][0]
+        maj = collections.Counter(o.get("answer") for o in r0).most_common(1)[0][0]
+        units.append([("image_dependent" if o0.get("answer") != ob.get("answer") else "prior_consistent",
+                       o0.get("answer") == e["gold"], of.get("answer") == e["gold"], o0.get("answer") == maj)
+                      for o0, of, ob in zip(r0, rf, b0)])
+    if not units:
+        return None
+
+    def rate(us, grp, start, side=None):
+        v = [int(c0 and not cf) if start else int(cf and not c0) for u in us for g_, c0, cf, mj in u
+             if g_ == grp and c0 == start and (side is None or mj == side)]
+        return float(np.mean(v)) * 100 if v else None
+
+    def diff(us, start, side=None):
+        a, b_ = rate(us, "image_dependent", start, side), rate(us, "prior_consistent", start, side)
+        return None if a is None or b_ is None else a - b_
+    out = {"n_items": len(units)}
+    for start, lab in ((True, "right_to_wrong"), (False, "wrong_to_right")):
+        for grp in ("image_dependent", "prior_consistent"):
+            out[f"{lab}_{grp}"] = boot(lambda us: rate(us, grp, start), units)
+            out[f"n_{lab.split('_')[0]}_{grp}"] = sum(1 for u in units for g_, c0, _, _ in u if g_ == grp and c0 == start)
+        out[f"{lab}_difference"] = boot(lambda us: diff(us, start), units)
+    # the same split within the round-0 majority and within the minority: does an image-dependent
+    # correct answer fail because it is in the minority, or also when it is in the majority?
+    for side, lab in ((True, "majority"), (False, "minority")):
+        for grp in ("image_dependent", "prior_consistent"):
+            out[f"right_to_wrong_{lab}_{grp}"] = boot(lambda us: rate(us, grp, True, side), units)
+            out[f"n_right_{lab}_{grp}"] = sum(1 for u in units for g_, c0, _, mj in u if g_ == grp and c0 and mj == side)
+        out[f"right_to_wrong_{lab}_difference"] = boot(lambda us: diff(us, True, side), units)
+    out["image_dependent_correct_in_minority_pct"] = boot(
+        lambda us: (lambda v: float(np.mean(v)) * 100 if v else None)(
+            [int(not mj) for u in us for g_, c0, _, mj in u if g_ == "image_dependent" and c0]), units)
+    out["prior_consistent_correct_in_minority_pct"] = boot(
+        lambda us: (lambda v: float(np.mean(v)) * 100 if v else None)(
+            [int(not mj) for u in us for g_, c0, _, mj in u if g_ == "prior_consistent" and c0]), units)
+    return out
+
+
 # ---------------------------------------------------------------- experiment A
 def experiment_A(rows):
     C = cells(rows)
@@ -221,6 +270,7 @@ def experiment_A(rows):
             if dis9:
                 d["discussion"] = {"acc3": boot(acc, g("discussion", "discussion", 3, "real")), "acc9": boot(acc, dis9),
                                    "phi_last": boot(lambda x: phi(x, -1), dis9, b=500), "unanimity_final": unanimity(dis9, -1)}
+                d["discussion"]["conformity"] = conformity(dis9, g("panel", "independent", 9, "blank"))
             # prior decomposition: the same reader slot with the real and the blank image
             R, Bk = by_qid(g("panel", "independent", 9, "real")), by_qid(g("panel", "independent", 9, "blank"))
             qs = sorted(set(R) & set(Bk))
@@ -374,7 +424,9 @@ def experiment_B(rows):
 
 # ---------------------------------------------------------------- experiment C: independence budget
 def reader_slots(C, s):
-    """-> (qids, E items x slots error matrix, attrs list). One column per reader slot."""
+    """-> (qids, E items x slots error matrix, attrs list). One column per reader slot.
+    perceiver: the model that looked at the image; reasoner: the model that chose the answer;
+    channel: what the reasoner read, the image itself or a findings report of it."""
     cols, attrs = [], []
 
     def add(eps, attr_fn, slots=range(9)):
@@ -385,55 +437,87 @@ def reader_slots(C, s):
             cols.append({k: int(v["rounds"][0][i].get("answer") != v["gold"]) for k, v in q.items() if len(v["rounds"][0]) > i})
             attrs.append(attr_fn(i))
     for m in MODELS:
-        add(C.get((m, s, "panel", "independent", 9, "real", None, None, None)),
-            lambda i, m=m: dict(perceiver=m, reasoner=m, render="orig", role=f"spec{i}", memory="none", report=None))
-        add(C.get((m, s, "generic", "independent", 9, "real", None, None, None)),
-            lambda i, m=m: dict(perceiver=m, reasoner=m, render="orig", role="generic", memory="none", report=None))
+        img = dict(perceiver=m, reasoner=m, channel="image", render="orig", role="generic", memory="none", report=None)
+        add(C.get((m, s, "panel", "independent", 9, "real", None, None, None)), lambda i, img=img: dict(img, role=f"spec{i}"))
+        add(C.get((m, s, "generic", "independent", 9, "real", None, None, None)), lambda i, img=img: dict(img))
         add(C.get((m, s, "render", "independent", 9, "real", None, None, None)),
-            lambda i, m=m: dict(perceiver=m, reasoner=m, render=RENDER[i] or "orig", role="generic", memory="none", report=None),
+            lambda i, img=img: dict(img, render=RENDER[i] or "orig"),
             slots=range(3, 9))                      # slots 0-2 are the generic panel's own calls (cached)
         for mem in ("shared-image", "private-image", "shared-text", "private-text"):
             add(C.get((m, s, "memory", "independent", 9, "real", mem, None, None)),
-                lambda i, m=m, mem=mem: dict(perceiver=m, reasoner=m, render="orig", role="generic",
-                                             memory=f"{mem.split('-')[1]}:{0 if mem.startswith('shared') else i}", report=None))
+                lambda i, img=img, mem=mem: dict(img, memory=f"{mem.split('-')[1]}:{0 if mem.startswith('shared') else i}"))
         for p_ in MODELS[:3]:
             for shared in (False, True):
                 add(C.get((m, s, "report", "report", 9, "real", None, p_, shared)),
-                    lambda i, m=m, p_=p_, shared=shared: dict(perceiver=p_, reasoner=m, render="orig", role="report-reader",
-                                                              memory="none", report=f"{p_}:{0 if shared else i}"))
+                    lambda i, m=m, p_=p_, shared=shared: dict(perceiver=p_, reasoner=m, channel="report", render="orig",
+                                                              role="generic", memory="none",
+                                                              report=f"{p_}:{0 if shared else i}"))
     qids = sorted(set.intersection(*[set(c) for c in cols])) if cols else []
     E = np.array([[c[q] for c in cols] for q in qids], float)
     return qids, E, attrs
 
 
+COMPONENTS = ["different perceiver", "image vs report", "different rendering", "different role",
+              "different reference cases", "different report"]
+
+
 def pair_design(attrs):
-    """Indicators for each reader pair: which shared component differs."""
-    P, X = [], []
+    """One row per reader pair. Columns: one intercept per reasoner pair (for a same-model pair, the
+    phi of two readers that share everything; for a cross-model pair, the phi at the same perceiver),
+    then one indicator per component the two readers do not share. Coding fixed on 2026-10-19,
+    before any report-pathway data (docs/IMAGING_PROTOCOL.md section 12)."""
+    P, X, pair_models = [], [], []
     for i, j in itertools.combinations(range(len(attrs)), 2):
         a, b = attrs[i], attrs[j]
-        if a == b and a["role"] != "generic":
-            continue
         P.append((i, j))
-        X.append([1.0,
-                  float(a["perceiver"] != b["perceiver"]),                 # different eyes (who produced the evidence)
-                  float(a["reasoner"] != b["reasoner"]),                   # different judge
-                  float(a["render"] != b["render"]),
-                  float(a["role"] != b["role"]),
-                  float(a["memory"] != b["memory"]),
-                  float((a["report"] is None) != (b["report"] is None) or (a["report"] != b["report"]))])
-    return P, np.array(X)
+        pair_models.append("~".join(sorted((a["reasoner"], b["reasoner"]))))
+        X.append([a["perceiver"] != b["perceiver"],                # who looked at the image
+                  a["channel"] != b["channel"],                    # one read the image, the other a report
+                  a["render"] != b["render"],
+                  a["role"] != b["role"],
+                  a["memory"] != b["memory"],
+                  a["channel"] == b["channel"] == "report" and a["report"] != b["report"]])
+    keys = sorted(set(pair_models))
+    F = np.array([[pm == k for k in keys] for pm in pair_models], float)
+    return P, np.hstack([F, np.array(X, float)]), keys, pair_models
 
 
-TERMS_C = ["sampling only (intercept)", "different perceiver", "different reasoner", "different rendering",
-           "different role", "different reference cases", "different evidence text"]
+def pair_phi(E, P):
+    with np.errstate(invalid="ignore", divide="ignore"):
+        R = np.corrcoef(E.T)
+    return np.array([R[i, j] for i, j in P])
 
 
-def budget_fit(E, P, X):
-    R = np.corrcoef(E.T)
-    y = np.array([R[i, j] for i, j in P])
+def budget_fit(y, X):
     ok = np.isfinite(y)
     beta, *_ = np.linalg.lstsq(X[ok], y[ok], rcond=None)
     return beta
+
+
+def reasoner_effect(beta, keys):
+    """Cross-model intercept minus the mean of the two same-model intercepts, per model pair and
+    averaged over pairs: the change in phi when the two readers' answers come from different models."""
+    a = dict(zip(keys, beta))
+    out = {}
+    for k in keys:
+        m1, m2 = k.split("~")
+        if m1 != m2 and f"{m1}~{m1}" in a and f"{m2}~{m2}" in a:
+            out[k] = a[k] - (a[f"{m1}~{m1}"] + a[f"{m2}~{m2}"]) / 2
+    if out:
+        out["mean"] = float(np.mean(list(out.values())))
+    return out
+
+
+def pattern_means(y, X, pair_models, k0):
+    """Mean pairwise phi for each reasoner pair and combination of non-shared components: the raw
+    cells the regression summarizes."""
+    out, keys = {}, collections.defaultdict(list)
+    for r, (pm, row) in enumerate(zip(pair_models, X[:, k0:])):
+        keys[pm + "|" + ("+".join(t for t, v in zip(COMPONENTS, row) if v) or "sampling only")].append(r)
+    for k, rs in keys.items():
+        v = y[rs]; v = v[np.isfinite(v)]
+        out[k] = (float(np.mean(v)) if len(v) else None, len(v))
+    return out
 
 
 def experiment_C(rows, b=300):
@@ -445,19 +529,30 @@ def experiment_C(rows, b=300):
             continue
         keep = E.std(0) > 1e-9
         E, attrs = E[:, keep], [a for a, k in zip(attrs, keep) if k]
-        P, X = pair_design(attrs)
-        beta = budget_fit(E, P, X)
-        boots = []
+        P, X, keys, pm = pair_design(attrs)
+        k0 = len(keys)
+        y = pair_phi(E, P)
+        beta, pats = budget_fit(y, X), pattern_means(y, X, pm, k0)
+        reff = reasoner_effect(beta[:k0], keys)
+        boots, rboots, pboots = [], collections.defaultdict(list), collections.defaultdict(list)
+        rng_c = np.random.default_rng(0)
         for _ in range(b):
-            idx = rng.integers(0, len(qids), len(qids))
-            Eb = E[idx]
-            if (Eb.std(0) < 1e-9).any():
-                continue
-            boots.append(budget_fit(Eb, P, X))
+            yb = pair_phi(E[rng_c.integers(0, len(qids), len(qids))], P)
+            bb = budget_fit(yb, X)
+            boots.append(bb)
+            for k, v in reasoner_effect(bb[:k0], keys).items():
+                rboots[k].append(v)
+            for k, (v, _n) in pattern_means(yb, X, pm, k0).items():
+                if v is not None:
+                    pboots[k].append(v)
         boots = np.array(boots)
+        ci = lambda v, bs: [round(float(v), 4), round(float(np.percentile(bs, 2.5)), 4), round(float(np.percentile(bs, 97.5)), 4)]
         out[s] = {"n_items": len(qids), "n_slots": len(attrs), "n_pairs": len(P),
-                  "terms": {t: [round(float(beta[k]), 4), round(float(np.percentile(boots[:, k], 2.5)), 4),
-                                round(float(np.percentile(boots[:, k], 97.5)), 4)] for k, t in enumerate(TERMS_C)}}
+                  "intercepts": {k: ci(beta[i], boots[:, i]) for i, k in enumerate(keys)},
+                  "different_reasoner": {k: ci(v, rboots[k]) for k, v in reff.items()},
+                  "terms": {t: ci(beta[k0 + k], boots[:, k0 + k]) for k, t in enumerate(COMPONENTS)},
+                  "patterns": {k: {"phi": ci(v, pboots[k]) if v is not None and pboots[k] else None, "n_pairs": n}
+                               for k, (v, n) in sorted(pats.items())}}
         # the discussion transcript, separately: first-round vs final-round phi of Decentralized N = 9
         dis = {}
         for m in MODELS:
