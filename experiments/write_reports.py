@@ -50,6 +50,7 @@ def main():
             return len(write_report(a.perceiver, j[1], j[0], a.temp, cnt).split())
         except Exception as e:  # noqa: BLE001  a failed slot is written later by the B run itself
             err[type(e).__name__] += 1
+            print(f"[reports] {a.perceiver} slot {j[1]} {j[0]}: {type(e).__name__}: {str(e)[:300]}", flush=True)
             return None
     words = [w for w in pmap(one, jobs, workers=a.workers) if w is not None]
     print(f"[reports] {a.perceiver}: {dict(cnt.c)} errors={dict(err)} words median="

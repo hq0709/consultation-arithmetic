@@ -65,6 +65,9 @@ def planned(m):
 LABELS = {h: lab for m in MODELS for h, lab in planned(m).items()}
 
 
+PAIR_OPTS = {json.loads(l)["qid"]: json.loads(l)["options"] for l in open(ROOT / "data/slake_pairs_200.jsonl")}
+
+
 def bench_of(r):
     b = r["bench"]
     return "mxqa_mm_rad" if b.startswith("mxqa") else b
@@ -196,49 +199,74 @@ def by_qid(eps):
     return {e["qid"]: e for e in eps}
 
 
+def paired_diff(a, b):
+    """Accuracy of a minus accuracy of b on the items both answered, percentage points, item bootstrap."""
+    A, Bq = by_qid(a), by_qid(b)
+    qs = sorted(set(A) & set(Bq))
+    return boot(lambda u: float(np.mean(u)) * 100, [A[q]["correct"] - Bq[q]["correct"] for q in qs]) if qs else None
+
+
+def boot_ratio(num, den, b=B):
+    """Ratio of sums over items (x100), percentile bootstrap over items. num, den: arrays, or tuples of
+    two arrays each for a difference of two ratios. -> [est, lo, hi]."""
+    rng = np.random.default_rng(0)
+    pair = isinstance(num, tuple)
+    nums, dens = (num, den) if pair else ((num,), (den,))
+    if any(d.sum() == 0 for d in dens):
+        return None
+    n = len(dens[0])
+    idx = rng.integers(0, n, (b, n))
+    est = [x.sum() / d.sum() * 100 for x, d in zip(nums, dens)]
+    with np.errstate(invalid="ignore", divide="ignore"):
+        bs = [x[idx].sum(1) / d[idx].sum(1) * 100 for x, d in zip(nums, dens)]
+    e, v = (est[0] - est[1], bs[0] - bs[1]) if pair else (est[0], bs[0])
+    v = v[np.isfinite(v)]
+    lo, hi = np.percentile(v, [2.5, 97.5])
+    return [round(float(e), 4), round(float(lo), 4), round(float(hi), 4)]
+
+
 def conformity(dis, blank):
     """Readers correct in round 0 who end the discussion wrong, split by whether their round-0
     answer differed from the same reader's answer on the gray image (image-dependent) or not
-    (prior-consistent); and the reverse, readers wrong in round 0 who end right."""
+    (prior-consistent); the same split within the round-0 majority and minority; and the reverse,
+    readers wrong in round 0 who end right. Ratios of reader counts, item bootstrap."""
     D, Bk = by_qid(dis), by_qid(blank)
-    units = []                                     # per item: [(group, round-0 correct, final correct)]
+    rows = []                                      # per item: Counter over (group, start correct, side, end correct)
     for q in sorted(set(D) & set(Bk)):
         e = D[q]
         r0, rf, b0 = e["rounds"][0], e["rounds"][-1], Bk[q]["rounds"][0]
         maj = collections.Counter(o.get("answer") for o in r0).most_common(1)[0][0]
-        units.append([("image_dependent" if o0.get("answer") != ob.get("answer") else "prior_consistent",
-                       o0.get("answer") == e["gold"], of.get("answer") == e["gold"], o0.get("answer") == maj)
-                      for o0, of, ob in zip(r0, rf, b0)])
-    if not units:
+        c = collections.Counter()
+        for o0, of, ob in zip(r0, rf, b0):
+            grp = "image_dependent" if o0.get("answer") != ob.get("answer") else "prior_consistent"
+            c[(grp, o0.get("answer") == e["gold"], o0.get("answer") == maj, of.get("answer") == e["gold"])] += 1
+        rows.append(c)
+    if not rows:
         return None
 
-    def rate(us, grp, start, side=None):
-        v = [int(c0 and not cf) if start else int(cf and not c0) for u in us for g_, c0, cf, mj in u
-             if g_ == grp and c0 == start and (side is None or mj == side)]
-        return float(np.mean(v)) * 100 if v else None
-
-    def diff(us, start, side=None):
-        a, b_ = rate(us, "image_dependent", start, side), rate(us, "prior_consistent", start, side)
-        return None if a is None or b_ is None else a - b_
-    out = {"n_items": len(units)}
+    def arr(fn):
+        return np.array([sum(v for k, v in c.items() if fn(*k)) for c in rows], float)
+    out = {"n_items": len(rows)}
+    G = ("image_dependent", "prior_consistent")
     for start, lab in ((True, "right_to_wrong"), (False, "wrong_to_right")):
-        for grp in ("image_dependent", "prior_consistent"):
-            out[f"{lab}_{grp}"] = boot(lambda us: rate(us, grp, start), units)
-            out[f"n_{lab.split('_')[0]}_{grp}"] = sum(1 for u in units for g_, c0, _, _ in u if g_ == grp and c0 == start)
-        out[f"{lab}_difference"] = boot(lambda us: diff(us, start), units)
-    # the same split within the round-0 majority and within the minority: does an image-dependent
-    # correct answer fail because it is in the minority, or also when it is in the majority?
+        num = {g: arr(lambda g_, c0, mj, cf, g=g: g_ == g and c0 == start and cf != start) for g in G}
+        den = {g: arr(lambda g_, c0, mj, cf, g=g: g_ == g and c0 == start) for g in G}
+        for g in G:
+            out[f"{lab}_{g}"] = boot_ratio(num[g], den[g])
+            out[f"n_{lab.split('_')[0]}_{g}"] = int(den[g].sum())
+        out[f"{lab}_difference"] = boot_ratio((num[G[0]], num[G[1]]), (den[G[0]], den[G[1]]))
+    # within the round-0 majority and within the minority: does an image-dependent correct answer
+    # fail because it is in the minority, or also when it is in the majority?
     for side, lab in ((True, "majority"), (False, "minority")):
-        for grp in ("image_dependent", "prior_consistent"):
-            out[f"right_to_wrong_{lab}_{grp}"] = boot(lambda us: rate(us, grp, True, side), units)
-            out[f"n_right_{lab}_{grp}"] = sum(1 for u in units for g_, c0, _, mj in u if g_ == grp and c0 and mj == side)
-        out[f"right_to_wrong_{lab}_difference"] = boot(lambda us: diff(us, True, side), units)
-    out["image_dependent_correct_in_minority_pct"] = boot(
-        lambda us: (lambda v: float(np.mean(v)) * 100 if v else None)(
-            [int(not mj) for u in us for g_, c0, _, mj in u if g_ == "image_dependent" and c0]), units)
-    out["prior_consistent_correct_in_minority_pct"] = boot(
-        lambda us: (lambda v: float(np.mean(v)) * 100 if v else None)(
-            [int(not mj) for u in us for g_, c0, _, mj in u if g_ == "prior_consistent" and c0]), units)
+        num = {g: arr(lambda g_, c0, mj, cf, g=g: g_ == g and c0 and mj == side and not cf) for g in G}
+        den = {g: arr(lambda g_, c0, mj, cf, g=g: g_ == g and c0 and mj == side) for g in G}
+        for g in G:
+            out[f"right_to_wrong_{lab}_{g}"] = boot_ratio(num[g], den[g])
+            out[f"n_right_{lab}_{g}"] = int(den[g].sum())
+        out[f"right_to_wrong_{lab}_difference"] = boot_ratio((num[G[0]], num[G[1]]), (den[G[0]], den[G[1]]))
+    for g in G:
+        out[f"{g}_correct_in_minority_pct"] = boot_ratio(arr(lambda g_, c0, mj, cf, g=g: g_ == g and c0 and not mj),
+                                                        arr(lambda g_, c0, mj, cf, g=g: g_ == g and c0))
     return out
 
 
@@ -271,6 +299,13 @@ def experiment_A(rows):
                 d["discussion"] = {"acc3": boot(acc, g("discussion", "discussion", 3, "real")), "acc9": boot(acc, dis9),
                                    "phi_last": boot(lambda x: phi(x, -1), dis9, b=500), "unanimity_final": unanimity(dis9, -1)}
                 d["discussion"]["conformity"] = conformity(dis9, g("panel", "independent", 9, "blank"))
+            # paired differences (same items): panels against the single reader, image against gray image
+            d["paired"] = {
+                "panel9_minus_single": paired_diff(g("panel", "independent", 9, "real"), g("single", "cot", 1, "real")),
+                "disc9_minus_single": paired_diff(dis9, g("single", "cot", 1, "real")),
+                "disc9_minus_panel9": paired_diff(dis9, g("panel", "independent", 9, "real")),
+                "single_real_minus_blank": paired_diff(g("single", "cot", 1, "real"), g("single", "cot", 1, "blank")),
+                "panel9_real_minus_blank": paired_diff(g("panel", "independent", 9, "real"), g("panel", "independent", 9, "blank"))}
             # prior decomposition: the same reader slot with the real and the blank image
             R, Bk = by_qid(g("panel", "independent", 9, "real")), by_qid(g("panel", "independent", 9, "blank"))
             qs = sorted(set(R) & set(Bk))
@@ -291,7 +326,8 @@ def experiment_A(rows):
                     "image_misleads_prior": tab[(True, False)] / tot * 100,
                     "prior_wrong_stays_wrong": tab[(False, False)] / tot * 100,
                     "consensus_errors": len(cons),
-                    "consensus_errors_matching_blank_majority_pct": float(np.mean(cons)) * 100 if cons else None}
+                    "consensus_errors_matching_blank_majority_pct": float(np.mean(cons)) * 100 if cons else None,
+                    "consensus_errors_matching_blank_majority": boot(lambda u: float(np.mean(u)) * 100, cons) if cons else None}
             out[f"{m}|{s}"] = d
     # A2: region occlusion (SLAKE-target)
     for m in MODELS:
@@ -339,14 +375,16 @@ def experiment_A(rows):
             pairs[pid][side] = q
         full = [v for v in pairs.values() if "a" in v and "b" in v]
         res = {"n_pairs": len(full)}
+        # option order is randomized per item, so the two answers are compared as option text, not letters
+        txt = lambda q, letter: PAIR_OPTS[q].get(letter) if letter else None
         for lvl, src in (("single", S), ("panel9", P)):
             units = [(src[v["a"]], src[v["b"]]) for v in full if v["a"] in src and v["b"] in src]
             res[f"{lvl}_both_correct"] = boot(lambda u: float(np.mean([a["correct"] and b_["correct"] for a, b_ in u])) * 100, units)
-            res[f"{lvl}_answers_differ"] = boot(lambda u: float(np.mean([a["meta_pred"] != b_["meta_pred"] if False else
-                                                                          a["pred"] != b_["pred"] for a, b_ in u])) * 100, units)
+            res[f"{lvl}_answers_differ"] = boot(lambda u: float(np.mean([txt(a["qid"], a["pred"]) != txt(b_["qid"], b_["pred"])
+                                                                          for a, b_ in u])) * 100, units)
         # reader level: each slot answers both images
         units = [(P[v["a"]], P[v["b"]]) for v in full if v["a"] in P and v["b"] in P]
-        res["reader_answers_differ"] = boot(lambda u: float(np.mean([np.mean([x.get("answer") != y.get("answer")
+        res["reader_answers_differ"] = boot(lambda u: float(np.mean([np.mean([txt(a["qid"], x.get("answer")) != txt(b_["qid"], y.get("answer"))
                                                                               for x, y in zip(a["rounds"][0], b_["rounds"][0])])
                                                                      for a, b_ in u])) * 100, units)
         out[f"{m}|slake_pairs"] = res
@@ -645,6 +683,20 @@ def experiment_D(rows=None):
                     d["flip_control"] = boot(lambda u: float(np.mean([a != c for a, _, c in u])) * 100, trip)
                     d["region_dependence_flip"] = boot(lambda u: float(np.mean([(a != b_) - (a != c) for a, b_, c in u])) * 100, trip)
             out[f"{m}|{s}"] = d
+    # SLAKE-pairs: the same question on two images with opposite reference answers
+    for m in models:
+        P = {q: ow[(mm, q)]["real"] for (mm, q) in ow if mm == m and setof(q) == "slake_pairs" and "real" in ow[(mm, q)]}
+        pairs = collections.defaultdict(dict)
+        for q in P:
+            pid, side = q.split("/")[1].split("-")
+            pairs[pid][side] = q
+        units = [(P[v["a"]], P[v["b"]]) for v in pairs.values() if "a" in v and "b" in v]
+        if units:
+            out[f"{m}|slake_pairs"] = {
+                "n_pairs": len(units),
+                "both_correct": boot(lambda u: float(np.mean([a["correct"] and b_["correct"] for a, b_ in u])) * 100, units),
+                "answers_differ": boot(lambda u: float(np.mean([items[a["qid"]]["options"][a["pred"]] !=
+                                                                 items[b_["qid"]]["options"][b_["pred"]] for a, b_ in u])) * 100, units)}
     # error correlation between models, by shared vision encoder
     pairs = {}
     for s in ("vqarad", "slake", "mxqa_mm_rad"):
