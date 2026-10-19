@@ -34,8 +34,17 @@ def main():
     ap.add_argument("--theta", type=float, default=None)
     ap.add_argument("--generic-roles", action="store_true")
     ap.add_argument("--no-router", action="store_true")
-    ap.add_argument("--image-mode", default=None, choices=["real", "blank", "none"],
-                    help="影像题：real 带原图，blank 换成同尺寸灰图（去图消融），none 不带图")
+    ap.add_argument("--image-mode", default=None,
+                    choices=["real", "blank", "none", "res256", "res128", "occ_target", "occ_control",
+                             "inv", "clahe", "gamma0.7"],
+                    help="影像题：real 原图；blank 同尺寸灰图；res256/res128 降分辨率；"
+                         "occ_target/occ_control 遮目标框/遮对照框（S4）；none 不带图")
+    ap.add_argument("--render", default=None,
+                    help="每名读者一种呈现，逗号分隔，空为原图，如 ',,,inv,inv,inv,clahe,clahe,clahe'")
+    ap.add_argument("--memory", default=None,
+                    choices=["shared-image", "private-image", "shared-text", "private-text"])
+    ap.add_argument("--perceiver", default=None, help="report 架构：写报告的模型")
+    ap.add_argument("--shared-report", action="store_true", help="report 架构：所有读者读同一份报告")
     ap.add_argument("--workers", type=int, default=6)
     ap.add_argument("--out", required=True)
     a = ap.parse_args()
@@ -68,6 +77,13 @@ def main():
             c["theta"] = a.theta
         if a.image_mode:
             c["image_mode"] = a.image_mode
+        if a.render:
+            c["render"] = a.render.split(",")
+        if a.memory:
+            c["memory"] = a.memory
+        if a.perceiver:
+            c["perceiver"] = a.perceiver
+            c["shared_report"] = a.shared_report
 
     outp = ROOT / "results" / a.out
     outp.parent.mkdir(exist_ok=True)
@@ -77,8 +93,10 @@ def main():
         keys = ("arch", "N", "k", "model", "seed", "temp", "effort", "theta",
                 "use_router", "generic_roles")
         d = {k: c.get(k) for k in keys}
-        if c.get("image_mode"):            # 只在影像实验里进键：文本网格的既有哈希不变
-            d["image_mode"] = c["image_mode"]
+        # 影像实验的设置只在出现时进键：文本网格与 pilot 的既有哈希不变
+        for k in ("image_mode", "render", "memory", "perceiver", "shared_report"):
+            if c.get(k) not in (None, False):
+                d[k] = c[k]
         return hashlib.sha256(json.dumps(d, sort_keys=True).encode()).hexdigest()[:12]
 
     done = set()

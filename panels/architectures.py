@@ -118,7 +118,7 @@ def _temp(model, t):
 
 
 def _ask(meter, model, system, user, seed, temp, effort, tag, max_tokens=MAX_TOK_OPINION,
-         sbase=None):
+         sbase=None, images=None):
     # R1 #4, round 2. Reasoning models reject the `seed` argument, so `_ask` nulls it BEFORE it
     # reaches the cache key -- which silently made every extra seed a cached clone of seed 1
     # (verified: 1000/1000 identical predictions across seeds 1-3 on gpt-5-nano). Encode the
@@ -127,9 +127,31 @@ def _ask(meter, model, system, user, seed, temp, effort, tag, max_tokens=MAX_TOK
         tag = f"{tag}|s{sbase}"
     r = chat(model, [{"role": "user", "content": user}], system=system,
              temperature=_temp(model, temp), seed=None if is_reasoning(model) else seed,
-             max_tokens=max_tokens, effort=effort, json_mode=True, tag=tag, images=meter.images)
+             max_tokens=max_tokens, effort=effort, json_mode=True, tag=tag,
+             images=meter.images if images is None else (images or None))
     meter.add(r)
     return r["text"]
+
+
+def _memory(item, cfg, i):
+    """Reader i's reference cases -> (prompt prefix, extra image specs, cache-tag suffix).
+    cfg["memory"] is "<shared|private>-<image|text>"; item["refs"] holds 9 sets of 3 cases."""
+    mem = (cfg or {}).get("memory")
+    if not mem:
+        return "", [], ""
+    share, content = mem.split("-")
+    s = 0 if share == "shared" else i
+    refs = item["refs"][s]
+    lines = [f"Reference case {k}: Q: {r['question']}  A: {r['answer']}" for k, r in enumerate(refs, 1)]
+    if content == "image":
+        head = ("Reference cases from the teaching file (different patients, for comparison only). "
+                "The first attached image is the case you must read; images 2-%d are reference cases "
+                "1-%d in order.\n" % (len(refs) + 1, len(refs)))
+        extra = [r["image"] for r in refs]
+    else:
+        head = "Reference cases from the teaching file (different patients; their images are not shown):\n"
+        extra = []
+    return head + "\n".join(lines) + "\n\n", extra, f"|m{mem}|s{s}"
 
 
 # ---------------------------------------------------------------- round-0 opinions (shared)
@@ -161,8 +183,13 @@ def round0_opinions(item, roster, n, model, seed_base, temp, effort, meter,
         # 因此保持原 tag 以复用既有缓存。
         if generic_roles:
             tg = f"{tg}|a{i}"
-        txt = _ask(meter, m_i, sysmsg, up, seed_base * 100 + i, temp, effort,
-                   tag=tg, sbase=seed_base, max_tokens=opinion_budget(m_i))
+        # 读者各看一种图像呈现（cfg["render"]：每人一个操作，空串为原图），或各带一组参考病例
+        op = ((cfg or {}).get("render") or [""] * n)[i]
+        pre, extra, msuf = _memory(item, cfg, i)
+        imgs = [f"{op}:{x}" if op else x for x in (meter.images or [])] + extra
+        tg = tg + (f"|r{op}" if op else "") + msuf
+        txt = _ask(meter, m_i, sysmsg, pre + up, seed_base * 100 + i, temp, effort,
+                   tag=tg, sbase=seed_base, max_tokens=opinion_budget(m_i), images=imgs)
         return parse_opinion(txt, valid, agent=f"{'generalist' if generic_roles else roster[i]}#{i}", rnd=0)
 
     from common.llm import pmap
@@ -431,9 +458,11 @@ def base_cot(item, cfg, meter):
     u = (render_question(item) + "\n\nThink through the case step by step (briefly), then give "
          'your final answer. Reply with JSON only: {"answer": "<option letter>", '
          '"confidence": <0-100>, "reason": "<your step-by-step reasoning, at most 150 words>"}')
-    txt = _ask(meter, cfg["model"], role_system(generalist(item), generic=True), u,
-               cfg["seed"] * 100 + 1, 0.3, cfg.get("effort"), tag="cot", max_tokens=baseline_budget(cfg["model"], 800),
-               sbase=cfg["seed"])
+    pre, extra, msuf = _memory(item, cfg, 0)
+    txt = _ask(meter, cfg["model"], role_system(generalist(item), generic=True), pre + u,
+               cfg["seed"] * 100 + 1, 0.3, cfg.get("effort"), tag="cot" + msuf,
+               max_tokens=baseline_budget(cfg["model"], 800), sbase=cfg["seed"],
+               images=(meter.images or []) + extra)
     o = parse_opinion(txt, valid, "single-cot")
     return {"pred": o.answer, "pred_cw": o.answer, "tie": False, "rounds": [[o.__dict__]], "n_rounds": 1}
 
@@ -468,12 +497,57 @@ def base_selfconsistency(item, cfg, meter, k):
             "entropy0": entropy(ops)}
 
 
+# ---------------------------------------------------------------- report pathway (imaging)
+REPORT_SYS = "You are an attending radiologist."
+REPORT_PROMPT = ("Write the Findings section of a radiology report for the attached image. State the "
+                 "modality and plane, the anatomy shown, and every abnormal or notable finding with its "
+                 "location. Do not speculate beyond the image. At most 120 words.")
+READER_SYS = ("You are an attending general radiologist on a hospital imaging panel. You cannot see the "
+              "image. Answer the multiple-choice question using only the radiology report provided. "
+              "Be concise and decisive.")
+
+
+def arch_report(item, cfg, meter):
+    """Seeing and judging split. cfg["perceiver"] writes question-blind findings reports of the image;
+    the reader (cfg["model"]) answers from a report alone, without the image. Independent reports:
+    reader i reads report i. Shared report (cfg["shared_report"]): every reader reads report 0.
+    Reports are keyed on the image only, so every question on the same image reuses them."""
+    from common.llm import pmap
+    valid = list(item["options"])
+    per, n, shared = cfg["perceiver"], cfg["N"], bool(cfg.get("shared_report"))
+
+    def write(i):
+        r = chat(per, [{"role": "user", "content": REPORT_PROMPT}], system=REPORT_SYS,
+                 temperature=_temp(per, cfg["temp"]), seed=None if is_reasoning(per) else 500 + i,
+                 max_tokens=opinion_budget(per), effort="low" if is_reasoning(per) else None,
+                 tag=f"report|a{i}", images=meter.images)
+        meter.add(r)
+        return r["text"].strip()
+    reports = pmap(write, list(range(1 if shared else n)))
+    opts = "\n".join(f"({k}) {v}" for k, v in item["options"].items())
+
+    def read(i):
+        rep = reports[0 if shared else i]
+        u = (f"Radiology report:\n{rep}\n\nQuestion about the same image:\n{item['stem']}\n\n"
+             f"Options:\n{opts}\n\n{ANSWER_JSON}")
+        txt = _ask(meter, cfg["model"], READER_SYS, u, cfg["seed"] * 100 + i, cfg["temp"],
+                   cfg.get("effort"), tag=f"repread|{per}|{'s' if shared else 'i'}|a{i}",
+                   max_tokens=opinion_budget(cfg["model"]), sbase=cfg["seed"], images=[])
+        return parse_opinion(txt, valid, agent=f"report-reader#{i}", rnd=0)
+    ops = pmap(read, list(range(n)))
+    pred, tie = majority(ops, valid)
+    return {"pred": pred, "pred_cw": conf_weighted(ops, valid), "tie": tie,
+            "rounds": [[o.__dict__ for o in ops]], "n_rounds": 1, "reports": reports,
+            "perceiver": per, "shared_report": shared}
+
+
 # NMI 2026 canonical taxonomy -> our clinical instantiations.
 ARCHES = {"independent": arch_independent,      # NMI Independent   (C = empty set)
           "centralized": arch_centralized,      # NMI Centralized   (star, attending physician)
           "discussion": arch_discussion,        # NMI Decentralized (fully connected, consensus)
           "tiered": arch_tiered,                # NMI Hybrid        (star + peer edges)
-          "debate": arch_debate}                # medicine-specific extra
+          "debate": arch_debate,                # medicine-specific extra
+          "report": arch_report}                # imaging: seeing and judging split
 NMI_CLASS = {"zeroshot": "SAS", "cot": "SAS", "sc": "SAS-repeated",
              "independent": "Independent", "centralized": "Centralized",
              "discussion": "Decentralized", "tiered": "Hybrid", "debate": "Decentralized+mod"}
@@ -483,7 +557,12 @@ def run_episode(item, cfg):
     """cfg: {arch, N, model, seed, temp, effort?, use_router?, generic_roles?, k?}"""
     mode = cfg.get("image_mode") or "real"
     imgs = item.get("images") or []
-    meter = Meter({"real": imgs, "blank": [f"blank:{x}" for x in imgs], "none": []}[mode] or None)
+    if mode in ("occ_target", "occ_control"):          # S4: one image per item, boxes in pixels
+        box = item["target_box" if mode == "occ_target" else "control_box"]
+        specs = [f"occ={','.join(f'{v:.0f}' for v in box)}:{imgs[0]}"] + imgs[1:]
+    else:
+        specs = {"real": imgs, "none": []}.get(mode) if mode in ("real", "none") else [f"{mode}:{x}" for x in imgs]
+    meter = Meter(specs or None)
     a = cfg["arch"]
     if a in ARCHES:
         res = ARCHES[a](item, cfg, meter)

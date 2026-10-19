@@ -89,6 +89,8 @@ ANTHROPIC_BASE = os.environ.get("ANTHROPIC_BASE_URL", "https://api.anthropic.com
 # phi 0.917(直连) vs 0.931(OpenRouter)。
 OPENROUTER_BASE = os.environ.get("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
 OPENROUTER_MAP = {
+    "gpt-5-mini": "openai/gpt-5-mini",
+    "gpt-4.1-nano": "openai/gpt-4.1-nano",
     "gemini-3.7-flash": "google/gemini-3.7-flash",
     "gemini-3.5-flash-lite": "google/gemini-3.5-flash-lite",
     "gemini-3.1-pro": "google/gemini-3.1-pro-preview",
@@ -115,6 +117,8 @@ OPENROUTER_ALWAYS = {"gemini-3.1-pro", "claude-opus-5",
 # 同一个模型走两条路单价不同（gemini-3.7-flash 直连 0.30/2.50，OpenRouter 0.75/3.75），
 # 计费必须跟着路由走，否则花费统计会系统性偏低。
 OPENROUTER_PRICING = {
+    "gpt-5-mini": (0.25, 2.00),
+    "gpt-4.1-nano": (0.10, 0.40),
     "gemini-3.7-flash": (0.75, 3.75),
     "gemini-3.5-flash-lite": (0.30, 2.50),
     "gemini-3.1-pro": (2.00, 12.00),
@@ -388,11 +392,49 @@ def _log_call(rec: dict):
 
 
 # ---- 影像输入 ---------------------------------------------------------------
-# images 里每一项是图像文件路径；"blank:<路径>" 表示同尺寸的纯灰图（去图消融：
-# 提示词与图像格式不变，只拿掉图像内容）。长边缩到 IMAGE_MAX_SIDE 以控制 token。
+# images 里每一项是 "<操作>:<操作>:...:<路径>"，没有操作就是原图。操作按固定顺序施加：
+#   occ=x0,y0,x1,y1  在原始像素坐标上用中灰矩形遮挡（先于缩放，坐标才准）
+#   res256 / res128  长边缩到该像素数（默认 IMAGE_MAX_SIDE）
+#   inv | clahe | gamma0.7   反相灰度 / 对比度受限自适应直方图均衡 / 亮度 γ 变换
+#   blank            换成同尺寸纯灰图（去图消融：提示词与图像格式不变，只拿掉内容）
 IMAGE_MAX_SIDE = int(os.environ.get("IMAGE_MAX_SIDE", "1024"))
 _img_cache: dict[str, tuple[str, str]] = {}
 _img_lock = threading.Lock()
+
+
+def _clahe(im):
+    import cv2, numpy as np
+    from PIL import Image
+    lab = cv2.cvtColor(np.asarray(im), cv2.COLOR_RGB2LAB)
+    lab[..., 0] = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8)).apply(lab[..., 0])
+    return Image.fromarray(cv2.cvtColor(lab, cv2.COLOR_LAB2RGB))
+
+
+def _render(im, ops):
+    from PIL import Image, ImageDraw, ImageOps
+    known = ("occ=", "res", "inv", "clahe", "gamma", "blank")
+    for op in ops:
+        if not op.startswith(known):
+            raise ValueError(f"unknown image op {op!r}")
+    for op in ops:
+        if op.startswith("occ="):
+            x0, y0, x1, y1 = (float(v) for v in op[4:].split(","))
+            ImageDraw.Draw(im).rectangle([x0, y0, x1, y1], fill=(128, 128, 128))
+    side = min([IMAGE_MAX_SIDE] + [int(op[3:]) for op in ops if op.startswith("res")])
+    if max(im.size) > side:
+        s = side / max(im.size)
+        im = im.resize((max(1, round(im.width * s)), max(1, round(im.height * s))), Image.LANCZOS)
+    for op in ops:
+        if op == "inv":
+            im = ImageOps.invert(im)
+        elif op == "clahe":
+            im = _clahe(im)
+        elif op.startswith("gamma"):
+            g = float(op[5:])
+            im = im.point(lambda v: round(255 * (v / 255) ** g))
+        elif op == "blank":
+            im = Image.new("RGB", im.size, (128, 128, 128))
+    return im
 
 
 def encode_image(spec: str) -> tuple[str, str]:
@@ -402,18 +444,11 @@ def encode_image(spec: str) -> tuple[str, str]:
             return _img_cache[spec]
     import base64, io
     from PIL import Image
-    blank = spec.startswith("blank:")
-    path = spec[len("blank:"):] if blank else spec
+    *ops, path = spec.split(":")
     if not os.path.isabs(path):             # 条目里存仓库相对路径，与运行目录无关
         path = str(_ROOT / path)
     with Image.open(path) as im:
-        im = im.convert("RGB")
-        if max(im.size) > IMAGE_MAX_SIDE:
-            s = IMAGE_MAX_SIDE / max(im.size)
-            im = im.resize((max(1, round(im.width * s)), max(1, round(im.height * s))),
-                           Image.LANCZOS)
-        if blank:
-            im = Image.new("RGB", im.size, (128, 128, 128))
+        im = _render(im.convert("RGB"), ops)
         buf = io.BytesIO()
         im.save(buf, format="JPEG", quality=90)
     raw = buf.getvalue()
