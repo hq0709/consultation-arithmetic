@@ -172,3 +172,4 @@ API 约 38 万次调用，按 OpenRouter 价格估计约 $650：gpt-5-mini ~$150
 - 2026-10-19：gemini-3.7-flash 的其余 C4 格子与 B 阶段与总控脚本并行运行（`scripts/run_gemini_parallel.sh`），各写入自己的文件（`_mem_p`、`_mem_s`、`_report_p`）。参数与路由与总控脚本相同，cfg_hash 与缓存键相同；总控脚本随后的调用命中缓存。
 - 2026-10-19 15:50：暂停 gemini 总控脚本的两个 C4 子 shell 与 qwen 的总控脚本（正在运行的格子不受影响），使其在并行格子完成前不进入同一批调用；并行任务结束后恢复，届时这些调用全部命中缓存。避免两个进程同时调用同一缓存键（重复付费，且缓存以后写者为准）。
 - 2026-10-19 16:40：gemini-3.7-flash 的吞吐受 OpenRouter 的模型级限流约束（429 "Rate limit exceeded: model_limit_rpm/google/gemini-3.7-flash"，约 300 次/分钟）。重试 8 次仍失败的 episode 记为 error（此时 78 条），由补跑填补；增加并发不提高吞吐，故保持不变。
+- 2026-10-19 18:26：全部 API 运行与补跑完成。gpt-5-mini、gemini-3.7-flash、claude-haiku-4.5 各 103 个格子，qwen3.8-flash 63 个格子，全部完整，共 94,800 个 episode；当日花费 $437。`scripts/refresh_radiology.sh` 由最终数据重建全部分析、图、数字清单与补充表。
