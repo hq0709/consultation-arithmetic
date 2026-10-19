@@ -91,7 +91,7 @@ for ax in axes:
 top = y_head["API models"] - 0.55
 ax_a.set_xlim(0, 52); ax_a.set_xlabel("Answers changed\nby occlusion (%)")
 ax_b.plot([0, 0], [lo_y, top], color=PAL["neutral_mid"], lw=0.7, ls=(0, (3, 2)), zorder=1)
-ax_b.set_xlim(-6, 32); ax_b.set_xlabel("Region dependence,\ntarget − control (pp)")
+ax_b.set_xlim(-6, 42); ax_b.set_xlabel("Region dependence,\ntarget − control (pp)")
 ax_b.xaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: minus(f"{v:+.0f}") if v else "0"))
 ax_c.set_xlim(0, 100); ax_c.set_xlabel("Same question,\ndifferent image (%)")
 for ax, h in ((ax_a, [("Target", True), ("Control", False)]),
