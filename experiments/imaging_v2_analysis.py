@@ -477,29 +477,32 @@ def reader_slots(C, s):
     channel: what the reasoner read, the image itself or a findings report of it."""
     cols, attrs = [], []
 
-    def add(eps, attr_fn, slots=range(9)):
+    def add(eps, attr_fn, cell, slots=range(9)):
         if not eps:
             return
         q = by_qid(eps)
         for i in slots:
             cols.append({k: int(v["rounds"][0][i].get("answer") != v["gold"]) for k, v in q.items() if len(v["rounds"][0]) > i})
-            attrs.append(attr_fn(i))
+            attrs.append(dict(attr_fn(i), cell=cell))
     for m in MODELS:
         img = dict(perceiver=m, reasoner=m, channel="image", render="orig", role="generic", memory="none", report=None)
-        add(C.get((m, s, "panel", "independent", 9, "real", None, None, None)), lambda i, img=img: dict(img, role=f"spec{i}"))
-        add(C.get((m, s, "generic", "independent", 9, "real", None, None, None)), lambda i, img=img: dict(img))
+        add(C.get((m, s, "panel", "independent", 9, "real", None, None, None)), lambda i, img=img: dict(img, role=f"spec{i}"),
+            "specialty")
+        add(C.get((m, s, "generic", "independent", 9, "real", None, None, None)), lambda i, img=img: dict(img), "generic")
         add(C.get((m, s, "render", "independent", 9, "real", None, None, None)),
-            lambda i, img=img: dict(img, render=RENDER[i] or "orig"),
+            lambda i, img=img: dict(img, render=RENDER[i] or "orig"), "render",
             slots=range(3, 9))                      # slots 0-2 are the generic panel's own calls (cached)
         for mem in ("shared-image", "private-image", "shared-text", "private-text"):
             add(C.get((m, s, "memory", "independent", 9, "real", mem, None, None)),
-                lambda i, img=img, mem=mem: dict(img, memory=f"{mem.split('-')[1]}:{0 if mem.startswith('shared') else i}"))
+                lambda i, img=img, mem=mem: dict(img, memory=f"{mem.split('-')[1]}:{0 if mem.startswith('shared') else i}"),
+                f"memory:{mem}")
         for p_ in MODELS[:3]:
             for shared in (False, True):
                 add(C.get((m, s, "report", "report", 9, "real", None, p_, shared)),
                     lambda i, m=m, p_=p_, shared=shared: dict(perceiver=p_, reasoner=m, channel="report", render="orig",
                                                               role="generic", memory="none",
-                                                              report=f"{p_}:{0 if shared else i}"))
+                                                              report=f"{p_}:{0 if shared else i}"),
+                    f"report:{p_}:{'shared' if shared else 'own'}")
     qids = sorted(set.intersection(*[set(c) for c in cols])) if cols else []
     E = np.array([[c[q] for c in cols] for q in qids], float)
     return qids, E, attrs
@@ -568,6 +571,72 @@ def pattern_means(y, X, pair_models, k0):
     return out
 
 
+def contrast_groups(attrs, P):
+    """Matched pair groups for the within-model contrasts: (group, model or model pair) -> pair indices."""
+    G = collections.defaultdict(list)
+    own = lambda c: c.startswith("report:") and c.endswith(":own")
+    for k, (i, j) in enumerate(P):
+        a, b = attrs[i], attrs[j]
+        ca, cb = a["cell"], b["cell"]
+        if a["reasoner"] == b["reasoner"]:
+            r = a["reasoner"]
+            if ca == cb == "generic":
+                G[("generic", r)].append(k)
+            if ca == cb == "specialty":
+                G[("specialty", r)].append(k)
+            if {ca, cb} <= {"generic", "render"} and a["render"] != b["render"]:
+                G[("render", r)].append(k)
+            if ca == cb and ca in ("memory:shared-image", "memory:shared-text"):
+                G[("memory_shared", r)].append(k)
+            if ca == cb and ca in ("memory:private-image", "memory:private-text"):
+                G[("memory_private", r)].append(k)
+            if ca == cb == f"report:{r}:shared":
+                G[("report_shared", r)].append(k)
+            if ca == cb == f"report:{r}:own":
+                G[("report_own_self", r)].append(k)
+            if ca == cb and own(ca):
+                G[("report_own", r)].append(k)
+            if ca != cb and own(ca) and own(cb):
+                G[("two_perceivers", r)].append(k)
+        else:
+            pm = "~".join(sorted((a["reasoner"], b["reasoner"])))
+            if ca == cb == "generic":
+                G[("two_models", pm)].append(k)
+            if a["channel"] == b["channel"] == "report" and a["report"] == b["report"]:
+                G[("same_report_two_reasoners", pm)].append(k)
+    return G
+
+
+def contrasts(y, G):
+    """Within-model contrasts of mean pairwise phi (no regression). -> {name: {key: value}}."""
+    mu = {}
+    for g, ks in G.items():
+        v = y[ks]; v = v[np.isfinite(v)]
+        if len(v):
+            mu[g] = float(np.mean(v))
+    out = collections.defaultdict(dict)
+    models = sorted({k for (_, k) in mu if "~" not in k})
+    pairs = sorted({k for (_, k) in mu if "~" in k})
+    for r in models:
+        g = lambda name: mu.get((name, r))
+        for name, a, b_ in (("role", "specialty", "generic"), ("rendering", "render", "generic"),
+                            ("reference cases", "memory_private", "memory_shared"),
+                            ("report", "report_own_self", "report_shared"), ("perceiver", "two_perceivers", "report_own")):
+            if g(a) is not None and g(b_) is not None:
+                out[name][r] = g(a) - g(b_)
+        if g("generic") is not None:
+            out["sampling only"][r] = g("generic")
+    for pm in pairs:
+        r1, r2 = pm.split("~")
+        for name, a, b_ in (("reasoner", "same_report_two_reasoners", "report_shared"), ("model", "two_models", "generic")):
+            if (a, pm) in mu and (b_, r1) in mu and (b_, r2) in mu:
+                out[name][pm] = mu[(a, pm)] - (mu[(b_, r1)] + mu[(b_, r2)]) / 2
+    for name, d in out.items():
+        if d and name != "sampling only":
+            d["mean"] = float(np.mean([v for k, v in d.items() if k != "mean"]))
+    return out
+
+
 def experiment_C(rows, b=300):
     C = cells(rows)
     out = {}
@@ -582,6 +651,8 @@ def experiment_C(rows, b=300):
         y = pair_phi(E, P)
         beta, pats = budget_fit(y, X), pattern_means(y, X, pm, k0)
         reff = reasoner_effect(beta[:k0], keys)
+        G = contrast_groups(attrs, P)
+        con, cboots = contrasts(y, G), collections.defaultdict(list)
         boots, rboots, pboots = [], collections.defaultdict(list), collections.defaultdict(list)
         rng_c = np.random.default_rng(0)
         for _ in range(b):
@@ -593,12 +664,18 @@ def experiment_C(rows, b=300):
             for k, (v, _n) in pattern_means(yb, X, pm, k0).items():
                 if v is not None:
                     pboots[k].append(v)
+            for name, d in contrasts(yb, G).items():
+                for k, v in d.items():
+                    cboots[(name, k)].append(v)
         boots = np.array(boots)
         ci = lambda v, bs: [round(float(v), 4), round(float(np.percentile(bs, 2.5)), 4), round(float(np.percentile(bs, 97.5)), 4)]
         out[s] = {"n_items": len(qids), "n_slots": len(attrs), "n_pairs": len(P),
                   "intercepts": {k: ci(beta[i], boots[:, i]) for i, k in enumerate(keys)},
                   "different_reasoner": {k: ci(v, rboots[k]) for k, v in reff.items()},
                   "terms": {t: ci(beta[k0 + k], boots[:, k0 + k]) for k, t in enumerate(COMPONENTS)},
+                  "contrasts": {name: {k: ci(v, cboots[(name, k)]) for k, v in d.items() if cboots[(name, k)]}
+                                for name, d in con.items()},
+                  "contrast_n_pairs": {f"{g}|{k}": len(ks) for (g, k), ks in sorted(G.items())},
                   "patterns": {k: {"phi": ci(v, pboots[k]) if v is not None and pboots[k] else None, "n_pairs": n}
                                for k, (v, n) in sorted(pats.items())}}
         # the discussion transcript, separately: first-round vs final-round phi of Decentralized N = 9
