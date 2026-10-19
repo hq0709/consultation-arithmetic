@@ -1,0 +1,1175 @@
+{
+ "vqarad": {
+  "gpt-5-mini": {
+   "direct": {
+    "panel_acc": [
+     73.6,
+     68.0,
+     78.8
+    ],
+    "reader_acc": [
+     72.5778,
+     67.6,
+     77.3333
+    ],
+    "phi": [
+     0.7409,
+     0.6827,
+     0.797
+    ]
+   },
+   "gpt-5-mini|own": {
+    "panel_acc": [
+     68.0,
+     62.4,
+     73.6
+    ],
+    "reader_acc": [
+     69.0222,
+     63.6878,
+     73.8689
+    ],
+    "panel_acc_minus_image": [
+     -5.6,
+     -11.6,
+     0.8
+    ],
+    "reader_acc_minus_image": [
+     -3.5556,
+     -8.4011,
+     1.3789
+    ],
+    "phi": [
+     0.8184,
+     0.77,
+     0.8662
+    ]
+   },
+   "gpt-5-mini|shared": {
+    "panel_acc": [
+     69.2,
+     63.2,
+     74.41
+    ],
+    "reader_acc": [
+     69.1111,
+     63.4211,
+     74.4
+    ],
+    "panel_acc_minus_image": [
+     -4.4,
+     -10.4,
+     1.6
+    ],
+    "reader_acc_minus_image": [
+     -3.4667,
+     -8.6667,
+     1.7789
+    ],
+    "phi": [
+     0.944,
+     0.9175,
+     0.9704
+    ]
+   },
+   "gemini-3.7-flash|own": {
+    "panel_acc": [
+     80.0,
+     74.8,
+     84.4
+    ],
+    "reader_acc": [
+     78.7111,
+     74.1333,
+     82.8
+    ],
+    "panel_acc_minus_image": [
+     6.4,
+     0.8,
+     12.0
+    ],
+    "reader_acc_minus_image": [
+     6.1333,
+     1.4211,
+     10.9344
+    ],
+    "phi": [
+     0.7438,
+     0.6875,
+     0.8029
+    ]
+   },
+   "claude-haiku-4-5-20251001|own": {
+    "panel_acc": [
+     62.0,
+     56.0,
+     68.0
+    ],
+    "reader_acc": [
+     61.6444,
+     56.3544,
+     66.7122
+    ],
+    "panel_acc_minus_image": [
+     -11.6,
+     -18.8,
+     -4.4
+    ],
+    "reader_acc_minus_image": [
+     -10.9333,
+     -16.8,
+     -5.0211
+    ],
+    "phi": [
+     0.7184,
+     0.6683,
+     0.7662
+    ]
+   }
+  },
+  "gemini-3.7-flash": {
+   "direct": {
+    "panel_acc": [
+     80.4,
+     75.2,
+     84.81
+    ],
+    "reader_acc": [
+     80.3111,
+     75.6,
+     84.5333
+    ],
+    "phi": [
+     0.7763,
+     0.7151,
+     0.8359
+    ]
+   },
+   "gpt-5-mini|own": {
+    "panel_acc": [
+     69.6,
+     63.6,
+     75.2
+    ],
+    "reader_acc": [
+     70.1778,
+     64.5767,
+     75.2
+    ],
+    "panel_acc_minus_image": [
+     -10.8,
+     -17.61,
+     -4.0
+    ],
+    "reader_acc_minus_image": [
+     -10.1333,
+     -16.1333,
+     -3.9556
+    ],
+    "phi": [
+     0.8378,
+     0.7923,
+     0.882
+    ]
+   },
+   "gemini-3.7-flash|own": {
+    "panel_acc": [
+     82.8,
+     78.0,
+     87.2
+    ],
+    "reader_acc": [
+     81.2889,
+     76.8878,
+     85.3789
+    ],
+    "panel_acc_minus_image": [
+     2.4,
+     -3.2,
+     8.0
+    ],
+    "reader_acc_minus_image": [
+     0.9778,
+     -4.0011,
+     5.9556
+    ],
+    "phi": [
+     0.7826,
+     0.7271,
+     0.8407
+    ]
+   },
+   "gemini-3.7-flash|shared": {
+    "panel_acc": [
+     80.0,
+     75.19,
+     84.8
+    ],
+    "reader_acc": [
+     80.0,
+     75.0222,
+     84.7122
+    ],
+    "panel_acc_minus_image": [
+     -0.4,
+     -6.0,
+     5.2
+    ],
+    "reader_acc_minus_image": [
+     -0.3111,
+     -5.4222,
+     4.9789
+    ],
+    "phi": [
+     0.9897,
+     0.9753,
+     1.0
+    ]
+   },
+   "claude-haiku-4-5-20251001|own": {
+    "panel_acc": [
+     64.4,
+     58.4,
+     70.4
+    ],
+    "reader_acc": [
+     63.6,
+     58.4,
+     68.6233
+    ],
+    "panel_acc_minus_image": [
+     -16.0,
+     -23.6,
+     -8.79
+    ],
+    "reader_acc_minus_image": [
+     -16.7111,
+     -23.3789,
+     -10.1333
+    ],
+    "phi": [
+     0.7369,
+     0.6826,
+     0.7872
+    ]
+   }
+  },
+  "claude-haiku-4-5-20251001": {
+   "direct": {
+    "panel_acc": [
+     62.0,
+     55.6,
+     68.0
+    ],
+    "reader_acc": [
+     62.5333,
+     56.6667,
+     68.0444
+    ],
+    "phi": [
+     0.8783,
+     0.8352,
+     0.9106
+    ]
+   },
+   "gpt-5-mini|own": {
+    "panel_acc": [
+     70.0,
+     64.4,
+     75.6
+    ],
+    "reader_acc": [
+     70.6222,
+     65.4211,
+     75.5556
+    ],
+    "panel_acc_minus_image": [
+     8.0,
+     0.4,
+     15.6
+    ],
+    "reader_acc_minus_image": [
+     8.0889,
+     1.4211,
+     14.9356
+    ],
+    "phi": [
+     0.7968,
+     0.7488,
+     0.8472
+    ]
+   },
+   "gemini-3.7-flash|own": {
+    "panel_acc": [
+     80.0,
+     75.2,
+     84.8
+    ],
+    "reader_acc": [
+     78.8444,
+     74.2211,
+     83.1122
+    ],
+    "panel_acc_minus_image": [
+     18.0,
+     10.8,
+     24.8
+    ],
+    "reader_acc_minus_image": [
+     16.3111,
+     9.8656,
+     22.6244
+    ],
+    "phi": [
+     0.7708,
+     0.7048,
+     0.8243
+    ]
+   },
+   "claude-haiku-4-5-20251001|own": {
+    "panel_acc": [
+     63.2,
+     57.2,
+     69.2
+    ],
+    "reader_acc": [
+     63.4667,
+     58.1322,
+     68.3556
+    ],
+    "panel_acc_minus_image": [
+     1.2,
+     -5.6,
+     8.0
+    ],
+    "reader_acc_minus_image": [
+     0.9333,
+     -5.3333,
+     6.7556
+    ],
+    "phi": [
+     0.7229,
+     0.6684,
+     0.7734
+    ]
+   },
+   "claude-haiku-4-5-20251001|shared": {
+    "panel_acc": [
+     63.2,
+     57.2,
+     69.2
+    ],
+    "reader_acc": [
+     62.9778,
+     57.02,
+     69.0667
+    ],
+    "panel_acc_minus_image": [
+     1.2,
+     -6.4,
+     8.4
+    ],
+    "reader_acc_minus_image": [
+     0.4444,
+     -6.9356,
+     7.3789
+    ],
+    "phi": [
+     0.9858,
+     0.9734,
+     0.998
+    ]
+   }
+  }
+ },
+ "slake": {
+  "gpt-5-mini": {
+   "direct": {
+    "panel_acc": [
+     78.4,
+     73.2,
+     83.6
+    ],
+    "reader_acc": [
+     79.1111,
+     74.5322,
+     83.6
+    ],
+    "phi": [
+     0.7997,
+     0.746,
+     0.8441
+    ]
+   },
+   "gpt-5-mini|own": {
+    "panel_acc": [
+     83.6,
+     78.8,
+     88.0
+    ],
+    "reader_acc": [
+     83.5111,
+     79.2878,
+     87.5122
+    ],
+    "panel_acc_minus_image": [
+     5.2,
+     1.2,
+     9.6
+    ],
+    "reader_acc_minus_image": [
+     4.4,
+     0.9322,
+     8.2222
+    ],
+    "phi": [
+     0.7768,
+     0.7112,
+     0.8418
+    ],
+    "errors_report_misses_target_pct": 29.78723404255319,
+    "all_reports_miss_target_pct": 26.48037258815702
+   },
+   "gpt-5-mini|shared": {
+    "panel_acc": [
+     83.6,
+     78.8,
+     88.4
+    ],
+    "reader_acc": [
+     83.7778,
+     79.11,
+     88.2667
+    ],
+    "panel_acc_minus_image": [
+     5.2,
+     0.4,
+     10.0
+    ],
+    "reader_acc_minus_image": [
+     4.6667,
+     0.5333,
+     8.9789
+    ],
+    "phi": [
+     0.9554,
+     0.9209,
+     0.9849
+    ],
+    "errors_report_misses_target_pct": 31.672597864768683,
+    "all_reports_miss_target_pct": 26.347305389221553
+   },
+   "gemini-3.7-flash|own": {
+    "panel_acc": [
+     87.2,
+     82.8,
+     91.2
+    ],
+    "reader_acc": [
+     87.4222,
+     83.6889,
+     90.9344
+    ],
+    "panel_acc_minus_image": [
+     8.8,
+     4.0,
+     13.6
+    ],
+    "reader_acc_minus_image": [
+     8.3111,
+     4.3556,
+     12.4011
+    ],
+    "phi": [
+     0.7411,
+     0.658,
+     0.8161
+    ],
+    "errors_report_misses_target_pct": 36.44859813084113,
+    "all_reports_miss_target_pct": 26.74650698602794
+   },
+   "claude-haiku-4-5-20251001|own": {
+    "panel_acc": [
+     78.8,
+     73.6,
+     83.6
+    ],
+    "reader_acc": [
+     78.7556,
+     74.3111,
+     82.8889
+    ],
+    "panel_acc_minus_image": [
+     0.4,
+     -5.2,
+     6.01
+    ],
+    "reader_acc_minus_image": [
+     -0.3556,
+     -4.9778,
+     4.5778
+    ],
+    "phi": [
+     0.7164,
+     0.6592,
+     0.7746
+    ],
+    "errors_report_misses_target_pct": 40.625,
+    "all_reports_miss_target_pct": 30.805056553559552
+   }
+  },
+  "gemini-3.7-flash": {
+   "direct": {
+    "panel_acc": [
+     90.0,
+     86.4,
+     93.6
+    ],
+    "reader_acc": [
+     89.7333,
+     86.2656,
+     93.0667
+    ],
+    "phi": [
+     0.8284,
+     0.7444,
+     0.8955
+    ]
+   },
+   "gpt-5-mini|own": {
+    "panel_acc": [
+     86.0,
+     81.6,
+     90.4
+    ],
+    "reader_acc": [
+     84.9333,
+     80.9767,
+     88.7122
+    ],
+    "panel_acc_minus_image": [
+     -4.0,
+     -8.4,
+     0.4
+    ],
+    "reader_acc_minus_image": [
+     -4.8,
+     -8.4889,
+     -1.2878
+    ],
+    "phi": [
+     0.7581,
+     0.6794,
+     0.8265
+    ],
+    "errors_report_misses_target_pct": 25.757575757575758,
+    "all_reports_miss_target_pct": 26.48037258815702
+   },
+   "gemini-3.7-flash|own": {
+    "panel_acc": [
+     87.6,
+     83.6,
+     91.6
+    ],
+    "reader_acc": [
+     88.1778,
+     84.6222,
+     91.6444
+    ],
+    "panel_acc_minus_image": [
+     -2.4,
+     -6.0,
+     1.2
+    ],
+    "reader_acc_minus_image": [
+     -1.5556,
+     -4.0444,
+     1.1567
+    ],
+    "phi": [
+     0.7714,
+     0.6871,
+     0.8396
+    ],
+    "errors_report_misses_target_pct": 33.64928909952607,
+    "all_reports_miss_target_pct": 26.74650698602794
+   },
+   "gemini-3.7-flash|shared": {
+    "panel_acc": [
+     87.2,
+     82.8,
+     91.2
+    ],
+    "reader_acc": [
+     87.2,
+     83.1111,
+     91.1567
+    ],
+    "panel_acc_minus_image": [
+     -2.8,
+     -6.01,
+     0.4
+    ],
+    "reader_acc_minus_image": [
+     -2.5333,
+     -5.3778,
+     0.4
+    ],
+    "phi": [
+     0.9647,
+     0.934,
+     0.9877
+    ],
+    "errors_report_misses_target_pct": 36.68122270742358,
+    "all_reports_miss_target_pct": 28.742514970059887
+   },
+   "claude-haiku-4-5-20251001|own": {
+    "panel_acc": [
+     81.6,
+     76.8,
+     86.01
+    ],
+    "reader_acc": [
+     80.2222,
+     75.9989,
+     84.3556
+    ],
+    "panel_acc_minus_image": [
+     -8.4,
+     -13.6,
+     -3.2
+    ],
+    "reader_acc_minus_image": [
+     -9.5111,
+     -13.9111,
+     -4.9333
+    ],
+    "phi": [
+     0.7006,
+     0.6336,
+     0.7658
+    ],
+    "errors_report_misses_target_pct": 39.13043478260869,
+    "all_reports_miss_target_pct": 30.805056553559552
+   }
+  },
+  "claude-haiku-4-5-20251001": {
+   "direct": {
+    "panel_acc": [
+     73.6,
+     68.0,
+     79.2
+    ],
+    "reader_acc": [
+     73.4222,
+     68.1333,
+     78.5333
+    ],
+    "phi": [
+     0.8819,
+     0.8375,
+     0.9217
+    ]
+   },
+   "gpt-5-mini|own": {
+    "panel_acc": [
+     82.4,
+     77.6,
+     87.2
+    ],
+    "reader_acc": [
+     80.9778,
+     76.7989,
+     85.0678
+    ],
+    "panel_acc_minus_image": [
+     8.8,
+     3.6,
+     14.0
+    ],
+    "reader_acc_minus_image": [
+     7.5556,
+     3.11,
+     12.1333
+    ],
+    "phi": [
+     0.7198,
+     0.6424,
+     0.7859
+    ],
+    "errors_report_misses_target_pct": 29.874213836477992,
+    "all_reports_miss_target_pct": 26.48037258815702
+   },
+   "gemini-3.7-flash|own": {
+    "panel_acc": [
+     84.4,
+     79.99,
+     88.81
+    ],
+    "reader_acc": [
+     84.3111,
+     80.3544,
+     88.09
+    ],
+    "panel_acc_minus_image": [
+     10.8,
+     5.2,
+     16.8
+    ],
+    "reader_acc_minus_image": [
+     10.8889,
+     6.4,
+     15.6889
+    ],
+    "phi": [
+     0.7124,
+     0.6394,
+     0.7799
+    ],
+    "errors_report_misses_target_pct": 47.05882352941176,
+    "all_reports_miss_target_pct": 26.74650698602794
+   },
+   "claude-haiku-4-5-20251001|own": {
+    "panel_acc": [
+     78.4,
+     73.19,
+     83.6
+    ],
+    "reader_acc": [
+     76.3111,
+     71.7756,
+     80.8444
+    ],
+    "panel_acc_minus_image": [
+     4.8,
+     -0.8,
+     10.4
+    ],
+    "reader_acc_minus_image": [
+     2.8889,
+     -1.5556,
+     7.3333
+    ],
+    "phi": [
+     0.7277,
+     0.6654,
+     0.7854
+    ],
+    "errors_report_misses_target_pct": 42.92803970223326,
+    "all_reports_miss_target_pct": 30.805056553559552
+   },
+   "claude-haiku-4-5-20251001|shared": {
+    "panel_acc": [
+     76.0,
+     70.79,
+     81.2
+    ],
+    "reader_acc": [
+     75.8222,
+     70.4889,
+     81.0667
+    ],
+    "panel_acc_minus_image": [
+     2.4,
+     -2.8,
+     7.6
+    ],
+    "reader_acc_minus_image": [
+     2.4,
+     -2.3111,
+     7.1122
+    ],
+    "phi": [
+     0.9694,
+     0.9429,
+     0.9897
+    ],
+    "errors_report_misses_target_pct": 38.19951338199513,
+    "all_reports_miss_target_pct": 27.544910179640713
+   }
+  }
+ },
+ "mxqa_mm_rad": {
+  "gpt-5-mini": {
+   "direct": {
+    "panel_acc": [
+     53.6,
+     47.2,
+     59.2
+    ],
+    "reader_acc": [
+     52.9333,
+     47.6889,
+     57.9556
+    ],
+    "phi": [
+     0.6921,
+     0.6421,
+     0.742
+    ]
+   },
+   "gpt-5-mini|own": {
+    "panel_acc": [
+     52.0,
+     45.99,
+     58.0
+    ],
+    "reader_acc": [
+     50.0889,
+     44.9778,
+     55.1567
+    ],
+    "panel_acc_minus_image": [
+     -1.6,
+     -7.2,
+     3.6
+    ],
+    "reader_acc_minus_image": [
+     -2.8444,
+     -6.9333,
+     1.0233
+    ],
+    "phi": [
+     0.6412,
+     0.5945,
+     0.6963
+    ]
+   },
+   "gpt-5-mini|shared": {
+    "panel_acc": [
+     51.6,
+     45.6,
+     57.6
+    ],
+    "reader_acc": [
+     49.7333,
+     44.4444,
+     55.2444
+    ],
+    "panel_acc_minus_image": [
+     -2.0,
+     -8.4,
+     4.0
+    ],
+    "reader_acc_minus_image": [
+     -3.2,
+     -7.9567,
+     1.6022
+    ],
+    "phi": [
+     0.8003,
+     0.7546,
+     0.8448
+    ]
+   },
+   "gemini-3.7-flash|own": {
+    "panel_acc": [
+     63.2,
+     56.8,
+     69.2
+    ],
+    "reader_acc": [
+     62.0,
+     56.71,
+     67.1556
+    ],
+    "panel_acc_minus_image": [
+     9.6,
+     2.8,
+     16.0
+    ],
+    "reader_acc_minus_image": [
+     9.0667,
+     3.4211,
+     14.3556
+    ],
+    "phi": [
+     0.6612,
+     0.6085,
+     0.7144
+    ]
+   },
+   "claude-haiku-4-5-20251001|own": {
+    "panel_acc": [
+     47.6,
+     41.2,
+     53.6
+    ],
+    "reader_acc": [
+     45.0222,
+     40.1333,
+     49.9122
+    ],
+    "panel_acc_minus_image": [
+     -6.0,
+     -12.8,
+     0.0
+    ],
+    "reader_acc_minus_image": [
+     -7.9111,
+     -12.6667,
+     -3.1989
+    ],
+    "phi": [
+     0.5883,
+     0.5338,
+     0.6451
+    ]
+   }
+  },
+  "gemini-3.7-flash": {
+   "direct": {
+    "panel_acc": [
+     85.2,
+     80.8,
+     89.6
+    ],
+    "reader_acc": [
+     83.7333,
+     79.4211,
+     87.8222
+    ],
+    "phi": [
+     0.8113,
+     0.7418,
+     0.8658
+    ]
+   },
+   "gpt-5-mini|own": {
+    "panel_acc": [
+     62.4,
+     56.4,
+     68.0
+    ],
+    "reader_acc": [
+     60.8444,
+     55.6,
+     65.8678
+    ],
+    "panel_acc_minus_image": [
+     -22.8,
+     -28.8,
+     -16.79
+    ],
+    "reader_acc_minus_image": [
+     -22.8889,
+     -28.3556,
+     -17.5111
+    ],
+    "phi": [
+     0.7248,
+     0.6745,
+     0.7752
+    ]
+   },
+   "gemini-3.7-flash|own": {
+    "panel_acc": [
+     74.8,
+     69.2,
+     80.0
+    ],
+    "reader_acc": [
+     74.4889,
+     69.6444,
+     79.0678
+    ],
+    "panel_acc_minus_image": [
+     -10.4,
+     -15.6,
+     -5.6
+    ],
+    "reader_acc_minus_image": [
+     -9.2444,
+     -13.3333,
+     -5.1978
+    ],
+    "phi": [
+     0.7145,
+     0.6545,
+     0.77
+    ]
+   },
+   "gemini-3.7-flash|shared": {
+    "panel_acc": [
+     74.8,
+     69.2,
+     80.0
+    ],
+    "reader_acc": [
+     74.2222,
+     69.0667,
+     79.2
+    ],
+    "panel_acc_minus_image": [
+     -10.4,
+     -15.2,
+     -5.6
+    ],
+    "reader_acc_minus_image": [
+     -9.5111,
+     -13.7778,
+     -5.3778
+    ],
+    "phi": [
+     0.8796,
+     0.8305,
+     0.9266
+    ]
+   },
+   "claude-haiku-4-5-20251001|own": {
+    "panel_acc": [
+     58.0,
+     52.0,
+     64.0
+    ],
+    "reader_acc": [
+     57.8222,
+     52.7111,
+     62.6667
+    ],
+    "panel_acc_minus_image": [
+     -27.2,
+     -33.21,
+     -20.79
+    ],
+    "reader_acc_minus_image": [
+     -25.9111,
+     -31.2456,
+     -20.4
+    ],
+    "phi": [
+     0.6734,
+     0.6222,
+     0.7199
+    ]
+   }
+  },
+  "claude-haiku-4-5-20251001": {
+   "direct": {
+    "panel_acc": [
+     30.8,
+     25.2,
+     36.4
+    ],
+    "reader_acc": [
+     31.7333,
+     26.3111,
+     37.2889
+    ],
+    "phi": [
+     0.9154,
+     0.8759,
+     0.9488
+    ]
+   },
+   "gpt-5-mini|own": {
+    "panel_acc": [
+     31.6,
+     25.6,
+     37.2
+    ],
+    "reader_acc": [
+     30.6222,
+     25.5989,
+     35.7333
+    ],
+    "panel_acc_minus_image": [
+     0.8,
+     -4.8,
+     6.4
+    ],
+    "reader_acc_minus_image": [
+     -1.1111,
+     -5.9111,
+     3.6
+    ],
+    "phi": [
+     0.7515,
+     0.6958,
+     0.8102
+    ]
+   },
+   "gemini-3.7-flash|own": {
+    "panel_acc": [
+     46.8,
+     40.79,
+     52.8
+    ],
+    "reader_acc": [
+     45.5556,
+     39.9989,
+     50.9333
+    ],
+    "panel_acc_minus_image": [
+     16.0,
+     9.2,
+     22.4
+    ],
+    "reader_acc_minus_image": [
+     13.8222,
+     7.7767,
+     19.4678
+    ],
+    "phi": [
+     0.7645,
+     0.719,
+     0.8061
+    ]
+   },
+   "claude-haiku-4-5-20251001|own": {
+    "panel_acc": [
+     28.4,
+     22.8,
+     34.0
+    ],
+    "reader_acc": [
+     27.3778,
+     22.5767,
+     32.1789
+    ],
+    "panel_acc_minus_image": [
+     -2.4,
+     -8.0,
+     2.8
+    ],
+    "reader_acc_minus_image": [
+     -4.3556,
+     -8.9778,
+     -0.0
+    ],
+    "phi": [
+     0.7014,
+     0.6439,
+     0.7585
+    ]
+   },
+   "claude-haiku-4-5-20251001|shared": {
+    "panel_acc": [
+     30.0,
+     24.4,
+     35.6
+    ],
+    "reader_acc": [
+     28.5778,
+     23.5544,
+     33.6
+    ],
+    "panel_acc_minus_image": [
+     -0.8,
+     -6.4,
+     4.8
+    ],
+    "reader_acc_minus_image": [
+     -3.1556,
+     -8.0889,
+     2.0
+    ],
+    "phi": [
+     0.8935,
+     0.8565,
+     0.9335
+    ]
+   }
+  }
+ }
+}

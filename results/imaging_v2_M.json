@@ -1,0 +1,524 @@
+{
+ "gpt-5-mini|vqarad": {
+  "single_none": [
+   72.0,
+   66.4,
+   77.2
+  ],
+  "panel_none": [
+   73.6,
+   68.0,
+   78.8
+  ],
+  "phi_none": [
+   0.7409,
+   0.6827,
+   0.797
+  ],
+  "single_shared-image": [
+   73.6,
+   68.0,
+   78.8
+  ],
+  "single_shared-text": [
+   75.6,
+   70.0,
+   80.41
+  ],
+  "panel_shared-image": [
+   74.8,
+   69.6,
+   80.4
+  ],
+  "reader_shared-image": [
+   74.3111,
+   69.6433,
+   79.0678
+  ],
+  "phi_shared-image": [
+   0.7508,
+   0.6942,
+   0.7993
+  ],
+  "panel_private-image": [
+   75.2,
+   69.6,
+   80.4
+  ],
+  "reader_private-image": [
+   74.0889,
+   69.4667,
+   78.4
+  ],
+  "phi_private-image": [
+   0.6682,
+   0.6075,
+   0.723
+  ],
+  "panel_shared-text": [
+   76.4,
+   71.2,
+   81.6
+  ],
+  "reader_shared-text": [
+   74.8889,
+   70.2656,
+   79.7333
+  ],
+  "phi_shared-text": [
+   0.7368,
+   0.6812,
+   0.7923
+  ],
+  "panel_private-text": [
+   74.8,
+   69.59,
+   80.0
+  ],
+  "reader_private-text": [
+   74.0,
+   69.3333,
+   78.7111
+  ],
+  "phi_private-text": [
+   0.7026,
+   0.6374,
+   0.7586
+  ]
+ },
+ "gpt-5-mini|slake": {
+  "single_none": [
+   80.8,
+   76.0,
+   85.6
+  ],
+  "panel_none": [
+   78.4,
+   73.2,
+   83.6
+  ],
+  "phi_none": [
+   0.7997,
+   0.746,
+   0.8441
+  ],
+  "single_shared-image": [
+   79.2,
+   74.4,
+   84.0
+  ],
+  "single_shared-text": [
+   81.6,
+   76.8,
+   86.4
+  ],
+  "panel_shared-image": [
+   81.6,
+   76.8,
+   86.4
+  ],
+  "reader_shared-image": [
+   81.4667,
+   77.0222,
+   85.6
+  ],
+  "phi_shared-image": [
+   0.7405,
+   0.6672,
+   0.8073
+  ],
+  "panel_private-image": [
+   84.0,
+   79.2,
+   88.4
+  ],
+  "reader_private-image": [
+   82.0889,
+   77.9556,
+   86.09
+  ],
+  "phi_private-image": [
+   0.6675,
+   0.6003,
+   0.7369
+  ],
+  "panel_shared-text": [
+   82.0,
+   77.2,
+   86.8
+  ],
+  "reader_shared-text": [
+   82.3111,
+   78.1322,
+   86.4444
+  ],
+  "phi_shared-text": [
+   0.7797,
+   0.7177,
+   0.8415
+  ],
+  "panel_private-text": [
+   81.6,
+   76.8,
+   86.4
+  ],
+  "reader_private-text": [
+   82.4,
+   78.2667,
+   86.3111
+  ],
+  "phi_private-text": [
+   0.6897,
+   0.6199,
+   0.752
+  ]
+ },
+ "gemini-3.7-flash|vqarad": {
+  "single_none": [
+   81.2,
+   76.4,
+   86.0
+  ],
+  "panel_none": [
+   80.4,
+   75.2,
+   84.81
+  ],
+  "phi_none": [
+   0.7763,
+   0.7151,
+   0.8359
+  ],
+  "single_shared-image": [
+   82.4,
+   77.2,
+   87.2
+  ],
+  "single_shared-text": [
+   83.6,
+   78.8,
+   88.0
+  ],
+  "panel_shared-image": [
+   82.8,
+   78.4,
+   87.2
+  ],
+  "reader_shared-image": [
+   82.8,
+   78.9333,
+   86.8456
+  ],
+  "phi_shared-image": [
+   0.7081,
+   0.6399,
+   0.7717
+  ],
+  "panel_private-image": [
+   82.0,
+   77.2,
+   86.4
+  ],
+  "reader_private-image": [
+   82.0889,
+   77.9978,
+   85.9556
+  ],
+  "phi_private-image": [
+   0.6735,
+   0.5993,
+   0.7441
+  ],
+  "panel_shared-text": [
+   84.4,
+   80.0,
+   88.8
+  ],
+  "reader_shared-text": [
+   83.4667,
+   79.3322,
+   87.3778
+  ],
+  "phi_shared-text": [
+   0.7426,
+   0.6577,
+   0.8155
+  ],
+  "panel_private-text": [
+   84.4,
+   79.6,
+   88.8
+  ],
+  "reader_private-text": [
+   82.5778,
+   78.5311,
+   86.3567
+  ],
+  "phi_private-text": [
+   0.6921,
+   0.6177,
+   0.763
+  ]
+ },
+ "gemini-3.7-flash|slake": {
+  "single_none": [
+   91.2,
+   87.6,
+   94.4
+  ],
+  "panel_none": [
+   90.0,
+   86.4,
+   93.6
+  ],
+  "phi_none": [
+   0.8284,
+   0.7444,
+   0.8955
+  ],
+  "single_shared-image": [
+   89.2,
+   85.2,
+   92.8
+  ],
+  "single_shared-text": [
+   90.8,
+   87.2,
+   94.4
+  ],
+  "panel_shared-image": [
+   89.2,
+   85.59,
+   92.8
+  ],
+  "reader_shared-image": [
+   89.5556,
+   86.1322,
+   92.8456
+  ],
+  "phi_shared-image": [
+   0.8362,
+   0.7612,
+   0.8941
+  ],
+  "panel_private-image": [
+   90.4,
+   86.8,
+   93.61
+  ],
+  "reader_private-image": [
+   90.6222,
+   87.3333,
+   93.6444
+  ],
+  "phi_private-image": [
+   0.7221,
+   0.6288,
+   0.7968
+  ],
+  "panel_shared-text": [
+   90.4,
+   86.4,
+   94.0
+  ],
+  "reader_shared-text": [
+   90.5333,
+   87.0211,
+   93.9111
+  ],
+  "phi_shared-text": [
+   0.8233,
+   0.7246,
+   0.8912
+  ],
+  "panel_private-text": [
+   92.0,
+   88.79,
+   95.2
+  ],
+  "reader_private-text": [
+   91.0667,
+   87.9111,
+   94.0444
+  ],
+  "phi_private-text": [
+   0.7158,
+   0.5992,
+   0.8037
+  ]
+ },
+ "claude-haiku-4-5-20251001|vqarad": {
+  "single_none": [
+   60.8,
+   54.4,
+   66.8
+  ],
+  "panel_none": [
+   62.0,
+   55.6,
+   68.0
+  ],
+  "phi_none": [
+   0.8783,
+   0.8352,
+   0.9106
+  ],
+  "single_shared-image": [
+   68.8,
+   63.2,
+   74.0
+  ],
+  "single_shared-text": [
+   61.2,
+   54.8,
+   67.2
+  ],
+  "panel_shared-image": [
+   65.2,
+   58.8,
+   71.2
+  ],
+  "reader_shared-image": [
+   64.7556,
+   58.8444,
+   70.4456
+  ],
+  "phi_shared-image": [
+   0.8898,
+   0.8494,
+   0.9276
+  ],
+  "panel_private-image": [
+   64.4,
+   58.79,
+   70.0
+  ],
+  "reader_private-image": [
+   64.2222,
+   59.3778,
+   69.0667
+  ],
+  "phi_private-image": [
+   0.6637,
+   0.6117,
+   0.7134
+  ],
+  "panel_shared-text": [
+   62.4,
+   56.0,
+   68.4
+  ],
+  "reader_shared-text": [
+   62.3111,
+   56.2667,
+   68.09
+  ],
+  "phi_shared-text": [
+   0.9123,
+   0.8784,
+   0.9418
+  ],
+  "panel_private-text": [
+   62.4,
+   56.0,
+   68.01
+  ],
+  "reader_private-text": [
+   62.9778,
+   57.2889,
+   67.7778
+  ],
+  "phi_private-text": [
+   0.6813,
+   0.6299,
+   0.7389
+  ]
+ },
+ "claude-haiku-4-5-20251001|slake": {
+  "single_none": [
+   72.4,
+   67.19,
+   78.0
+  ],
+  "panel_none": [
+   73.6,
+   68.0,
+   79.2
+  ],
+  "phi_none": [
+   0.8819,
+   0.8375,
+   0.9217
+  ],
+  "single_shared-image": [
+   67.6,
+   62.0,
+   73.2
+  ],
+  "single_shared-text": [
+   76.8,
+   71.6,
+   82.0
+  ],
+  "panel_shared-image": [
+   70.4,
+   64.8,
+   76.0
+  ],
+  "reader_shared-image": [
+   69.7778,
+   64.2656,
+   75.3344
+  ],
+  "phi_shared-image": [
+   0.9276,
+   0.8936,
+   0.9546
+  ],
+  "panel_private-image": [
+   68.8,
+   62.8,
+   74.8
+  ],
+  "reader_private-image": [
+   68.7111,
+   63.9544,
+   73.5567
+  ],
+  "phi_private-image": [
+   0.6551,
+   0.6077,
+   0.7083
+  ],
+  "panel_shared-text": [
+   78.0,
+   73.2,
+   83.2
+  ],
+  "reader_shared-text": [
+   77.4222,
+   72.5333,
+   82.4456
+  ],
+  "phi_shared-text": [
+   0.9414,
+   0.9072,
+   0.9701
+  ],
+  "panel_private-text": [
+   78.0,
+   73.19,
+   82.8
+  ],
+  "reader_private-text": [
+   77.2,
+   72.9778,
+   81.5122
+  ],
+  "phi_private-text": [
+   0.72,
+   0.6574,
+   0.7792
+  ]
+ }
+}
