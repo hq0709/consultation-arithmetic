@@ -34,6 +34,8 @@ def main():
     ap.add_argument("--theta", type=float, default=None)
     ap.add_argument("--generic-roles", action="store_true")
     ap.add_argument("--no-router", action="store_true")
+    ap.add_argument("--image-mode", default=None, choices=["real", "blank", "none"],
+                    help="影像题：real 带原图，blank 换成同尺寸灰图（去图消融），none 不带图")
     ap.add_argument("--workers", type=int, default=6)
     ap.add_argument("--out", required=True)
     a = ap.parse_args()
@@ -64,6 +66,8 @@ def main():
                   "use_router": not a.no_router, "generic_roles": a.generic_roles})
         if a.theta is not None:
             c["theta"] = a.theta
+        if a.image_mode:
+            c["image_mode"] = a.image_mode
 
     outp = ROOT / "results" / a.out
     outp.parent.mkdir(exist_ok=True)
@@ -72,8 +76,10 @@ def main():
     def cfg_hash(c):
         keys = ("arch", "N", "k", "model", "seed", "temp", "effort", "theta",
                 "use_router", "generic_roles")
-        return hashlib.sha256(json.dumps({k: c.get(k) for k in keys},
-                                         sort_keys=True).encode()).hexdigest()[:12]
+        d = {k: c.get(k) for k in keys}
+        if c.get("image_mode"):            # 只在影像实验里进键：文本网格的既有哈希不变
+            d["image_mode"] = c["image_mode"]
+        return hashlib.sha256(json.dumps(d, sort_keys=True).encode()).hexdigest()[:12]
 
     done = set()
     if outp.exists():

@@ -42,7 +42,35 @@ ROUTER_SYS = (
 )
 
 
+# 影像题（item["domain"] == "radiology"）用放射科亚专科组成读片小组，路由器同样只看题干。
+RADIOLOGY_ROSTER = [
+    "neuroradiology", "head and neck radiology", "thoracic radiology", "cardiovascular radiology",
+    "abdominal radiology", "genitourinary radiology", "musculoskeletal radiology", "breast imaging",
+    "pediatric radiology", "nuclear medicine", "interventional radiology", "emergency radiology",
+]
+_RAD_NORM = {s.lower(): s for s in RADIOLOGY_ROSTER}
+
+ROUTER_SYS_RAD = (
+    "You triage imaging questions to a radiology reading panel. Given a question about a medical "
+    "image, rank the 9 most relevant radiology subspecialties, most relevant first, choosing ONLY "
+    "from this list:\n" + ", ".join(RADIOLOGY_ROSTER) +
+    '\nReply with JSON only: {"specialties": ["...", ... 9 items ...]}'
+)
+
+
+def is_radiology(item) -> bool:
+    return item.get("domain") == "radiology"
+
+
+def generalist(item) -> str:
+    """The single reader's specialty: a general internist for text items, a general radiologist
+    for imaging items (role_system turns it into the generic prompt)."""
+    return "radiology" if is_radiology(item) else "internal medicine"
+
+
 def _fallback(item) -> list[str]:
+    if is_radiology(item):
+        return RADIOLOGY_ROSTER[:9]
     seed = _BY_SYSTEM.get(item.get("meta", {}).get("body_system"), [])
     out = list(seed)
     for s in _DEFAULT_TAIL:
@@ -56,15 +84,18 @@ def route(item, use_router=True, model=ROUTER_MODEL) -> list[str]:
     if not use_router:
         return _fallback(item)
     q = item["stem"][:2500]
+    rad = is_radiology(item)
     try:
-        r = chat(model, [{"role": "user", "content": f"Question:\n{q}"}], system=ROUTER_SYS,
+        r = chat(model, [{"role": "user", "content": f"Question:\n{q}"}],
+                 system=ROUTER_SYS_RAD if rad else ROUTER_SYS,
                  temperature=0.0, seed=7, max_tokens=200, json_mode=True, tag="router")
         got = json.loads(r["text"]).get("specialties", [])
     except Exception:
         got = []
     out = []
+    norm = _RAD_NORM if rad else _NORM
     for s in got:
-        s2 = _NORM.get(str(s).strip().lower())
+        s2 = norm.get(str(s).strip().lower())
         if s2 and s2 not in out:
             out.append(s2)
     for s in _fallback(item):
@@ -76,6 +107,12 @@ def route(item, use_router=True, model=ROUTER_MODEL) -> list[str]:
 
 
 def role_system(specialty: str, generic: bool = False) -> str:
+    if specialty == "radiology" or specialty in _RAD_NORM.values():
+        who = ("attending general radiologist" if generic
+               else f"attending radiologist specializing in {specialty}")
+        return (f"You are an {who} on a hospital imaging reading panel. "
+                "Answer the multiple-choice question about the attached image using your expertise. "
+                "Be concise and decisive.")
     who = "attending general internist" if generic else f"attending {specialty} physician"
     return (f"You are an {who} on a hospital diagnostic panel. "
             "Answer the multiple-choice clinical question using your specialty expertise. "

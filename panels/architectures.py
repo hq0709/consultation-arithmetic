@@ -12,7 +12,7 @@ from dataclasses import dataclass, field
 from common.llm import chat, PRICING, OPENROUTER_PRICING, is_reasoning
 from panels.base import (Opinion, user_prompt, render_question, parse_opinion, majority,
                          conf_weighted, has_majority, entropy, unanimous, ANSWER_JSON)
-from panels.roles import route, role_system
+from panels.roles import route, role_system, generalist
 
 # Claude 5 系列自适应思考常开，思考与输出共用 max_tokens：MedXpertQA 的长题目下 400 会被
 # 思考吃光、返回空串（2026-08-31 实测 sonnet-5 有 28/250 空输出，out_tok 正好顶到 400）。
@@ -90,7 +90,10 @@ class Meter:
     """Per-episode NOMINAL cost/token accounting (counts cached calls at list price too --
     the paper's economics axis must not be discounted by our cache)."""
 
-    def __init__(self):
+    def __init__(self, images=None):
+        # 影像题：本 episode 每一次调用都带上这些图（含讨论轮与 orchestrator），
+        # 由 run_episode 按 cfg["image_mode"] 设置。文本题为 None，调用与缓存完全不变。
+        self.images = images
         self.calls = 0; self.samples = 0
         self.inp = 0; self.out = 0; self.rsn = 0; self.usd = 0.0
         self._lock = threading.Lock()          # R1 #8: pmap calls add() from many threads
@@ -124,7 +127,7 @@ def _ask(meter, model, system, user, seed, temp, effort, tag, max_tokens=MAX_TOK
         tag = f"{tag}|s{sbase}"
     r = chat(model, [{"role": "user", "content": user}], system=system,
              temperature=_temp(model, temp), seed=None if is_reasoning(model) else seed,
-             max_tokens=max_tokens, effort=effort, json_mode=True, tag=tag)
+             max_tokens=max_tokens, effort=effort, json_mode=True, tag=tag, images=meter.images)
     meter.add(r)
     return r["text"]
 
@@ -249,7 +252,7 @@ def arch_tiered(item, cfg, meter, roster=None, theta=None):
     roster = roster or route(item, cfg.get("use_router", True))
     # 分诊的全科医生：漏传 max_tokens 会吃默认的 400，推理模型的思考直接把它吃光
     # 而输出为空 —— 2026-09-02 deepseek-v4-pro 在这里触发了 98 次加倍重试。
-    gen_txt = _ask(meter, cfg["model"], role_system("internal medicine", generic=True),
+    gen_txt = _ask(meter, cfg["model"], role_system(generalist(item), generic=True),
                    user_prompt(item), cfg["seed"] * 100 + 90, 0.3, cfg.get("effort"), tag="gen",
                    max_tokens=opinion_budget(cfg["model"]), sbase=cfg["seed"])
     gen = parse_opinion(gen_txt, valid, agent="generalist", rnd=0)
@@ -416,7 +419,7 @@ def arch_debate(item, cfg, meter, roster=None, rounds=DEBATE_ROUNDS):
 def base_zeroshot(item, cfg, meter):
     valid = list(item["options"])
     u = render_question(item) + '\n\nAnswer immediately, with no explanation. Reply with JSON only: {"answer": "<option letter>"}'
-    txt = _ask(meter, cfg["model"], role_system("internal medicine", generic=True), u,
+    txt = _ask(meter, cfg["model"], role_system(generalist(item), generic=True), u,
                cfg["seed"] * 100 + 0, 0.3, cfg.get("effort"), tag="zs", max_tokens=baseline_budget(cfg["model"], 30),
                sbase=cfg["seed"])
     o = parse_opinion(txt, valid, "single-zs")
@@ -428,7 +431,7 @@ def base_cot(item, cfg, meter):
     u = (render_question(item) + "\n\nThink through the case step by step (briefly), then give "
          'your final answer. Reply with JSON only: {"answer": "<option letter>", '
          '"confidence": <0-100>, "reason": "<your step-by-step reasoning, at most 150 words>"}')
-    txt = _ask(meter, cfg["model"], role_system("internal medicine", generic=True), u,
+    txt = _ask(meter, cfg["model"], role_system(generalist(item), generic=True), u,
                cfg["seed"] * 100 + 1, 0.3, cfg.get("effort"), tag="cot", max_tokens=baseline_budget(cfg["model"], 800),
                sbase=cfg["seed"])
     o = parse_opinion(txt, valid, "single-cot")
@@ -447,14 +450,14 @@ def base_selfconsistency(item, cfg, meter, k):
     n_chunks = (min(k, SC_POOL) + SC_CHUNK - 1) // SC_CHUNK
     for c in range(n_chunks):
         r = chat(cfg["model"], [{"role": "user", "content": u}],
-                 system=role_system("internal medicine", generic=True),
+                 system=role_system(generalist(item), generic=True),
                  temperature=_temp(cfg["model"], 0.7),
                  seed=None if is_reasoning(cfg["model"]) else cfg["seed"] * 1000 + c,
                  n=SC_CHUNK, max_tokens=opinion_budget(cfg["model"]), effort=cfg.get("effort"),
                  json_mode=True,
                  # R1 #4: seed MUST be in the cache tag, else "3 seeds" of SC are one
                  # cached sample set replayed three times.
-                 tag=f"sc{c}s{cfg['seed']}")
+                 tag=f"sc{c}s{cfg['seed']}", images=meter.images)
         take = min(SC_CHUNK, k - len(texts))
         meter.add(r, n_charged=take, out_frac=take / max(1, len(r["texts"])))
         texts.extend(r["texts"][:take])
@@ -478,7 +481,9 @@ NMI_CLASS = {"zeroshot": "SAS", "cot": "SAS", "sc": "SAS-repeated",
 
 def run_episode(item, cfg):
     """cfg: {arch, N, model, seed, temp, effort?, use_router?, generic_roles?, k?}"""
-    meter = Meter()
+    mode = cfg.get("image_mode") or "real"
+    imgs = item.get("images") or []
+    meter = Meter({"real": imgs, "blank": [f"blank:{x}" for x in imgs], "none": []}[mode] or None)
     a = cfg["arch"]
     if a in ARCHES:
         res = ARCHES[a](item, cfg, meter)
@@ -497,4 +502,6 @@ def run_episode(item, cfg):
                 "correct": int(res.get("pred") == gold),
                 "correct_cw": int(res.get("pred_cw") == gold),
                 "abstain": int(res.get("pred") is None), "cost": meter.asdict()})
+    if imgs:
+        res["image_mode"] = mode
     return res

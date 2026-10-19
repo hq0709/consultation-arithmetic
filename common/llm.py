@@ -387,10 +387,62 @@ def _log_call(rec: dict):
             f.write(json.dumps(rec, ensure_ascii=False) + "\n")
 
 
-def _cache_key(model, system, messages, temperature, max_tokens, seed, n, effort, jsonmode, tag) -> str:
-    payload = json.dumps({"model": model, "sys": system, "msgs": messages, "t": temperature,
-                          "mt": max_tokens, "seed": seed, "n": n, "e": effort,
-                          "j": jsonmode, "x": tag}, sort_keys=True, ensure_ascii=False)
+# ---- 影像输入 ---------------------------------------------------------------
+# images 里每一项是图像文件路径；"blank:<路径>" 表示同尺寸的纯灰图（去图消融：
+# 提示词与图像格式不变，只拿掉图像内容）。长边缩到 IMAGE_MAX_SIDE 以控制 token。
+IMAGE_MAX_SIDE = int(os.environ.get("IMAGE_MAX_SIDE", "1024"))
+_img_cache: dict[str, tuple[str, str]] = {}
+_img_lock = threading.Lock()
+
+
+def encode_image(spec: str) -> tuple[str, str]:
+    """-> (data URL, sha256 of the encoded bytes). Deterministic for a given spec."""
+    with _img_lock:
+        if spec in _img_cache:
+            return _img_cache[spec]
+    import base64, io
+    from PIL import Image
+    blank = spec.startswith("blank:")
+    path = spec[len("blank:"):] if blank else spec
+    if not os.path.isabs(path):             # 条目里存仓库相对路径，与运行目录无关
+        path = str(_ROOT / path)
+    with Image.open(path) as im:
+        im = im.convert("RGB")
+        if max(im.size) > IMAGE_MAX_SIDE:
+            s = IMAGE_MAX_SIDE / max(im.size)
+            im = im.resize((max(1, round(im.width * s)), max(1, round(im.height * s))),
+                           Image.LANCZOS)
+        if blank:
+            im = Image.new("RGB", im.size, (128, 128, 128))
+        buf = io.BytesIO()
+        im.save(buf, format="JPEG", quality=90)
+    raw = buf.getvalue()
+    out = ("data:image/jpeg;base64," + base64.b64encode(raw).decode(), hashlib.sha256(raw).hexdigest())
+    with _img_lock:
+        _img_cache[spec] = out
+    return out
+
+
+def _with_images(messages: list[dict], images: Sequence[str]) -> list[dict]:
+    """Attach the images to the last user message as OpenAI-style content parts."""
+    msgs = [dict(m) for m in messages]
+    for m in reversed(msgs):
+        if m.get("role") == "user":
+            text = m["content"] if isinstance(m["content"], str) else ""
+            m["content"] = ([{"type": "text", "text": text}]
+                            + [{"type": "image_url", "image_url": {"url": encode_image(s)[0]}}
+                               for s in images])
+            break
+    return msgs
+
+
+def _cache_key(model, system, messages, temperature, max_tokens, seed, n, effort, jsonmode, tag,
+               images=None) -> str:
+    d = {"model": model, "sys": system, "msgs": messages, "t": temperature,
+         "mt": max_tokens, "seed": seed, "n": n, "e": effort, "j": jsonmode, "x": tag}
+    if images:
+        d["img"] = [encode_image(s)[1] for s in images]
+    payload = json.dumps(d, sort_keys=True, ensure_ascii=False)
     return hashlib.sha256(payload.encode()).hexdigest()
 
 
@@ -404,10 +456,12 @@ def chat(model: str, messages: list[dict], system: str | None = None,
          temperature: float | None = None, max_tokens: int = 1200,
          seed: int | None = None, n: int = 1, effort: str | None = None,
          json_mode: bool = False, use_cache: bool = True,
-         max_retries: int = 8, tag: str = "") -> dict:
+         max_retries: int = 8, tag: str = "", images: Sequence[str] | None = None) -> dict:
     """Returns {'texts': [str]*n, 'text': texts[0], 'input_tokens', 'output_tokens',
     'reasoning_tokens', 'model', 'cached'}."""
-    key = _cache_key(model, system, messages, temperature, max_tokens, seed, n, effort, json_mode, tag)
+    images = list(images or [])
+    key = _cache_key(model, system, messages, temperature, max_tokens, seed, n, effort, json_mode, tag,
+                     images=images)
     cp = _cache_path(key)
     if use_cache and cp.exists():
         try:
@@ -430,7 +484,8 @@ def chat(model: str, messages: list[dict], system: str | None = None,
             raise BudgetExceeded(
                 f"{ven} cumulative spend ${vs:.2f} exceeds cap ${cap:.2f}")
 
-    msgs = ([{"role": "system", "content": system}] if system else []) + messages
+    msgs = ([{"role": "system", "content": system}] if system else []) + (
+        _with_images(messages, images) if images else messages)
     last_err = None
     _grow = 0          # 因思考挤掉输出而加倍预算的次数
     for attempt in range(max_retries):
@@ -510,7 +565,7 @@ def chat(model: str, messages: list[dict], system: str | None = None,
             pi, po = ((OPENROUTER_PRICING.get(model) if is_openrouter(model) else None)
                       or PRICING.get(model, (0.0, 0.0)))
             _log_call({"ts": round(t0, 1), "model": model, "tag": tag, "n": n, "seed": seed,
-                       "effort": effort, "in": inp, "out": out, "rsn": rtok,
+                       "effort": effort, "in": inp, "out": out, "rsn": rtok, "img": len(images),
                        "usd": round(inp / 1e6 * pi + out / 1e6 * po, 6),
                        "latency": round(time.time() - t0, 2)})
             return r

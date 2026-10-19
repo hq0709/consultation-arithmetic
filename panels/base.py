@@ -10,7 +10,8 @@ ANSWER_JSON = ('Reply with JSON only, no other text:\n'
 
 def render_question(item) -> str:
     opts = "\n".join(f"({k}) {v}" for k, v in item["options"].items())
-    return f"Clinical question:\n{item['stem']}\n\nOptions:\n{opts}"
+    head = "Imaging question (the image is attached):" if item.get("images") else "Clinical question:"
+    return f"{head}\n{item['stem']}\n\nOptions:\n{opts}"
 
 
 def user_prompt(item) -> str:
