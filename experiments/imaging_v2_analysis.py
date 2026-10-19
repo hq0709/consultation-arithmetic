@@ -230,6 +230,42 @@ def boot_ratio(num, den, b=B):
     return [round(float(e), 4), round(float(lo), 4), round(float(hi), 4)]
 
 
+def paired_reader_vs(panel, single):
+    """Mean accuracy of the panel's readers minus the single reader's accuracy, same items (pp)."""
+    P, S = by_qid(panel), by_qid(single)
+    qs = sorted(set(P) & set(S))
+    return boot(lambda u: float(np.mean(u)) * 100,
+                [float(np.mean([o.get("answer") == P[q]["gold"] for o in P[q]["rounds"][0]])) - S[q]["correct"] for q in qs]) if qs else None
+
+
+def aggregation_gain(panel):
+    """Majority-vote accuracy minus the mean accuracy of the same readers (pp, item bootstrap)."""
+    return boot(lambda u: float(np.mean(u)) * 100,
+                [e["correct"] - float(np.mean([o.get("answer") == e["gold"] for o in e["rounds"][0]])) for e in panel]) if panel else None
+
+
+def panel_arithmetic(C):
+    """Every 9-reader panel on yes/no items: observed majority accuracy against the beta-binomial
+    prediction from the readers' mean accuracy and their error correlation (intraclass correlation phi)."""
+    from scipy.stats import betabinom
+    out = []
+    for k, eps in C.items():
+        m, s, cond, arch, n, mode, mem, per, sh = k
+        if n != 9 or arch not in ("independent", "report") or s == "mxqa_mm_rad" or len(eps) < 150:
+            continue
+        R = np.array([[o.get("answer") == e["gold"] for o in e["rounds"][0]] for e in eps if len(e["rounds"][0]) == 9], float)
+        pbar, ph = float(R.mean()), phi_from_matrix(1 - R)
+        if ph is None or ph <= 0:
+            continue
+        a_, b_ = pbar * (1 - ph) / ph, (1 - pbar) * (1 - ph) / ph
+        out.append({"model": m, "set": s, "cond": cond, "image_mode": mode, "memory": mem, "perceiver": per, "shared": sh,
+                    "reader_mean": pbar * 100, "phi": ph, "majority": float(np.mean(R.sum(1) >= 5)) * 100,
+                    "predicted": float(1 - betabinom.cdf(4, 9, a_, b_)) * 100})
+    d = np.array([c["majority"] - c["predicted"] for c in out])
+    return {"n_cells": len(out), "observed_minus_predicted_mean": float(d.mean()), "observed_minus_predicted_sd": float(d.std()),
+            "observed_minus_predicted_max_abs": float(np.abs(d).max()), "cells": out}
+
+
 def paired_reader_diff(a, b):
     """Mean reader accuracy of a minus that of b on the items both answered (pp, item bootstrap)."""
     A, Bq = by_qid(a), by_qid(b)
@@ -323,7 +359,11 @@ def experiment_A(rows):
                 "disc9_minus_single": paired_diff(dis9, g("single", "cot", 1, "real")),
                 "disc9_minus_panel9": paired_diff(dis9, g("panel", "independent", 9, "real")),
                 "single_real_minus_blank": paired_diff(g("single", "cot", 1, "real"), g("single", "cot", 1, "blank")),
-                "panel9_real_minus_blank": paired_diff(g("panel", "independent", 9, "real"), g("panel", "independent", 9, "blank"))}
+                "panel9_real_minus_blank": paired_diff(g("panel", "independent", 9, "real"), g("panel", "independent", 9, "blank")),
+                # the panel's gain over the single reader = its readers' own accuracy + aggregation by majority
+                "reader_mean_minus_single": paired_reader_vs(g("panel", "independent", 9, "real"), g("single", "cot", 1, "real")),
+                "panel9_minus_reader_mean": aggregation_gain(g("panel", "independent", 9, "real"))}
+            d["real"]["reader_mean"] = boot(reader_acc, g("panel", "independent", 9, "real"))
             # prior decomposition: the same reader slot with the real and the blank image
             R, Bk = by_qid(g("panel", "independent", 9, "real")), by_qid(g("panel", "independent", 9, "blank"))
             qs = sorted(set(R) & set(Bk))
@@ -347,6 +387,7 @@ def experiment_A(rows):
                     "consensus_errors_matching_blank_majority_pct": float(np.mean(cons)) * 100 if cons else None,
                     "consensus_errors_matching_blank_majority": boot(lambda u: float(np.mean(u)) * 100, cons) if cons else None}
             out[f"{m}|{s}"] = d
+    out["panel_arithmetic"] = panel_arithmetic(C)
     # A2: region occlusion (SLAKE-target)
     for m in MODELS:
         g = lambda cond, arch, n, mode: C.get((m, "slake_target", cond, arch, n, mode, None, None, None), [])
