@@ -57,6 +57,6 @@ ax_b.text(0.2, 21.5, "Curves: mean reader accuracy", fontsize=ANNOT_PT, color=PA
 fig.legend(handles=[Line2D([], [], marker=MODEL[m]["marker"], ms=3.6, lw=0, color=MODEL[m]["color"], label=MODEL[m]["label"])
                     for m in MODELS], loc="upper center", ncol=4, bbox_to_anchor=(0.53, 1.0), handletextpad=0.2,
            columnspacing=1.2, fontsize=LEGEND_PT)
-add_panel_label(ax_a, "a", x_offset_pt=-34, y_offset_pt=6)
-add_panel_label(ax_b, "b", x_offset_pt=-38, y_offset_pt=6)
+add_panel_label(ax_a, "d", x_offset_pt=-34, y_offset_pt=6)        # Fig. 2d-e, under fig2_panels (a-c)
+add_panel_label(ax_b, "e", x_offset_pt=-38, y_offset_pt=6)
 print(save(fig, "fig_arithmetic"))
