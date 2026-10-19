@@ -195,6 +195,11 @@ def unanimity(eps, rnd=-1):
             "wrong_given_unanimous": (1 - float(np.mean(una))) * 100 if una else None}
 
 
+def reader_acc(eps, rnd=0):
+    """Mean accuracy of the individual readers (round rnd), percent."""
+    return float(np.mean([o.get("answer") == e["gold"] for e in eps for o in (e.get("rounds") or [[]])[rnd]])) * 100 if eps else None
+
+
 def by_qid(eps):
     return {e["qid"]: e for e in eps}
 
@@ -264,6 +269,11 @@ def conformity(dis, blank):
             out[f"right_to_wrong_{lab}_{g}"] = boot_ratio(num[g], den[g])
             out[f"n_right_{lab}_{g}"] = int(den[g].sum())
         out[f"right_to_wrong_{lab}_difference"] = boot_ratio((num[G[0]], num[G[1]]), (den[G[0]], den[G[1]]))
+    for side, lab in ((True, "majority"), (False, "minority")):        # pooled over the two groups
+        num = arr(lambda g_, c0, mj, cf, side=side: c0 and mj == side and not cf)
+        den = arr(lambda g_, c0, mj, cf, side=side: c0 and mj == side)
+        out[f"right_to_wrong_{lab}"] = boot_ratio(num, den)
+        out[f"n_right_{lab}"] = int(den.sum())
     for g in G:
         out[f"{g}_correct_in_minority_pct"] = boot_ratio(arr(lambda g_, c0, mj, cf, g=g: g_ == g and c0 and not mj),
                                                         arr(lambda g_, c0, mj, cf, g=g: g_ == g and c0))
@@ -436,14 +446,14 @@ def experiment_B(rows):
         mat = {}
         for r_ in MODELS[:3]:
             direct = C.get((r_, s, "generic", "independent", 9, "real", None, None, None), [])
-            row = {"direct": {"panel_acc": boot(acc, direct), "phi": boot(lambda x: phi(x, 0), direct, b=500)} if direct else None}
+            row = {"direct": {"panel_acc": boot(acc, direct), "reader_acc": boot(reader_acc, direct),
+                              "phi": boot(lambda x: phi(x, 0), direct, b=500)} if direct else None}
             for p_ in MODELS[:3]:
                 for shared in (False, True):
                     eps = C.get((r_, s, "report", "report", 9, "real", None, p_, shared), [])
                     if not eps:
                         continue
-                    ent = {"panel_acc": boot(acc, eps),
-                           "reader_acc": boot(lambda x: float(np.mean([o.get("answer") == e["gold"] for e in x for o in e["rounds"][0]])) * 100, eps),
+                    ent = {"panel_acc": boot(acc, eps), "reader_acc": boot(reader_acc, eps),
                            "phi": boot(lambda x: phi(x, 0), eps, b=500)}
                     if s == "slake":
                         wrong = [(e, i) for e in eps for i, o in enumerate(e["rounds"][0]) if o.get("answer") != e["gold"]]

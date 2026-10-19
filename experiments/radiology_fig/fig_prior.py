@@ -27,8 +27,8 @@ ypos = {(s, m): -(si * (len(MODELS) + GAP) + mi) for si, s in enumerate(SETS) fo
 y_head = {s: -(si * (len(MODELS) + GAP)) + 0.95 for si, s in enumerate(SETS)}
 H = 0.62                                                     # bar height in row units
 
-fig = plt.figure(figsize=(TEXT_W_MM * MM, 78 * MM))
-gs = fig.add_gridspec(1, 2, width_ratios=[2.15, 1], left=0.205, right=0.985, bottom=0.2, top=0.94, wspace=0.08)
+fig = plt.figure(figsize=(TEXT_W_MM * MM, 88 * MM))
+gs = fig.add_gridspec(1, 2, width_ratios=[2.15, 1], left=0.205, right=0.975, bottom=0.27, top=0.945, wspace=0.08)
 ax_a = fig.add_subplot(gs[0, 0])
 ax_b = fig.add_subplot(gs[0, 1], sharey=ax_a)
 
@@ -46,8 +46,8 @@ for (s, m), y in ypos.items():
     ce = pdq.get("consensus_errors_matching_blank_majority")
     if ce:
         est, lo, hi = ce
-        ax_b.plot([lo, hi], [y, y], color=PAL["ink"], lw=0.9, solid_capstyle="butt", zorder=3)
-        ax_b.plot([est], [y], marker=MODEL[m]["marker"], ms=3.4, color=PAL["ink"], lw=0, zorder=4)
+        ax_b.plot([lo, hi], [y, y], color=MODEL[m]["color"], lw=0.9, solid_capstyle="butt", zorder=3)
+        ax_b.plot([est], [y], marker=MODEL[m]["marker"], ms=3.4, color=MODEL[m]["color"], lw=0, zorder=4)
         ax_b.text(103, y, f"{pdq['consensus_errors']}", ha="left", va="center", fontsize=ANNOT_PT, color=PAL["neutral_dark"])
 
 ax_a.set_yticks([ypos[k] for k in ypos], [MODEL[k[1]]["label"] for k in ypos], fontsize=TICK_PT)
@@ -77,7 +77,7 @@ fig.legend(handles=[Patch(color=C_WRONG_BOTH, label="Wrong with and without imag
            loc="lower left", bbox_to_anchor=(0.205, 0.0), ncol=2, handlelength=1.1, handleheight=0.8,
            handletextpad=0.4, columnspacing=1.2, labelspacing=0.3, fontsize=LEGEND_PT)
 
-ax_b.set_xlim(0, 112)
+ax_b.set_xlim(0, 118)
 ax_b.set_xticks([0, 50, 100])
 ax_b.set_xlabel("Same as gray-image\nmajority (%)")
 ax_b.text(103, y_head["vqarad"], "n", ha="left", va="center", fontsize=ANNOT_PT, color=PAL["neutral_dark"])

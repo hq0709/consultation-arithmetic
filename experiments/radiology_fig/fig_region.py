@@ -27,12 +27,12 @@ OW_LABEL = {"medgemma-4b": "MedGemma 4B", "qwen3-vl-8b": "Qwen3-VL 8B", "qwen2-v
 OW_STYLE = {"color": PAL["neutral_dark"], "marker": "o"}
 GROUPS = [("API models", API), ("Open-weight models", OW)]
 GAP = 1.6
-ypos, y_head, y = {}, {}, 0.0
+ypos, y_head, start = {}, {}, 0.0
 for g, ms in GROUPS:
-    y_head[g] = y + 0.95
-    for m in ms:
-        ypos[m] = y; y -= 1
-    y -= GAP - 1
+    y_head[g] = start + 0.95
+    for i, m in enumerate(ms):
+        ypos[m] = start - i
+    start -= len(ms) + GAP
 
 
 def rates(m):
@@ -46,8 +46,8 @@ def rates(m):
             p.get("both_correct"), p.get("answers_differ"))
 
 
-fig = plt.figure(figsize=(TEXT_W_MM * MM, 58 * MM))
-gs = fig.add_gridspec(1, 3, width_ratios=[1.1, 1, 1.1], left=0.215, right=0.985, bottom=0.2, top=0.9, wspace=0.12)
+fig = plt.figure(figsize=(TEXT_W_MM * MM, 68 * MM))
+gs = fig.add_gridspec(1, 3, width_ratios=[1.12, 0.78, 1.12], left=0.25, right=0.965, bottom=0.2, top=0.915, wspace=0.2)
 axes = [fig.add_subplot(gs[0, 0])]
 axes += [fig.add_subplot(gs[0, i], sharey=axes[0]) for i in (1, 2)]
 ax_a, ax_b, ax_c = axes
@@ -89,13 +89,13 @@ for ax in axes:
     ax.axhline(y_head["Open-weight models"] + 0.75, color=PAL["neutral_light"], lw=0.6, zorder=0)
 
 top = y_head["API models"] - 0.55
-ax_a.set_xlim(0, 52); ax_a.set_xlabel("Answers changed (%)")
+ax_a.set_xlim(0, 52); ax_a.set_xlabel("Answers changed\nby occlusion (%)")
 ax_b.plot([0, 0], [lo_y, top], color=PAL["neutral_mid"], lw=0.7, ls=(0, (3, 2)), zorder=1)
-ax_b.set_xlim(-6, 32); ax_b.set_xlabel("Target minus control (pp)")
+ax_b.set_xlim(-6, 32); ax_b.set_xlabel("Region dependence,\ntarget − control (pp)")
 ax_b.xaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: minus(f"{v:+.0f}") if v else "0"))
-ax_c.set_xlim(0, 100); ax_c.set_xlabel("Image pairs (%)")
-for ax, h in ((ax_a, [("Target box", True), ("Control box", False)]),
-              (ax_c, [("Both correct", True), ("Answers differ", False)])):
+ax_c.set_xlim(0, 100); ax_c.set_xlabel("Same question,\ndifferent image (%)")
+for ax, h in ((ax_a, [("Target", True), ("Control", False)]),
+              (ax_c, [("Both correct", True), ("Differ", False)])):
     ax.legend(handles=[Line2D([], [], marker="o", ms=3.4, lw=0, color=PAL["ink"], mfc=PAL["ink"] if f else "white",
                               label=l) for l, f in h],
               loc="center left", bbox_to_anchor=(-0.02, y_head["API models"]), bbox_transform=ax.get_yaxis_transform(),
