@@ -143,3 +143,10 @@ API 约 38 万次调用，按 OpenRouter 价格估计约 $650：gpt-5-mini ~$150
 | V6 | 选项字母读法下，LLaVA 系把 96–100% 的概率放在 "A"，与图像无关 | 是非题改为直接读 "yes"/"no" 词元的概率，多选题仍读字母；视觉依赖度：是非题取对数几率差的绝对值，多选题取 KL(p_原图 ‖ p_灰图)（TV 在概率饱和时不敏感） |
 | V6 | S1+S2 合并准确率（各 50 题）：MedGemma 84%、HuatuoGPT-Vision 79%、Qwen3-VL 78%、Qwen2-VL 74%、LLaVA-1.5 55%、LLaVA-Med 53% | "S1/S2 准确率 ≥ 55%"按两集合并的 100 题计。剔除 LLaVA-Med；共用 CLIP 编码器组保留 HuatuoGPT-Vision 与 LLaVA-1.5（后者在 VQA-RAD 上接近随机，文中注明），不同编码器组为 Qwen3-VL、Qwen2-VL、MedGemma |
 | 吞吐 | qwen3.8-flash 每次调用推理 250–6400 token、耗时 6–77 s，并发 8 时约 8 次调用/分钟 | qwen 只跑 A0、A1、C1、C2（足够进入厂商与呈现两项预算），并发提高到 24；不跑 A2、A3、C4，也不在 B 中 |
+
+## 12. 运行记录（全量运行中）
+
+- 2026-10-19：claude-haiku-4.5 在灰图条件下常拒绝作答（"the image appears to be completely blank…"）。VQA-RAD 单读者 41/250（16%）、SLAKE 12/250、MedXpertQA-MM 35/250 无法解析。
+  - 按第 7 节，未解析的答案记为答错，并另报各条件的拒答率（结果行中的 `abstain`）。
+  - 输出质量中止（`BAD_OUTPUT_ABORT`，默认 15%）是为发现配置错误而设，拒答属于模型行为，因此灰图条件关闭该中止。被它中途截断的格子写入 `IMG2_<model>_<set>_fix.jsonl` 补齐；分析时与主文件合并并去重。
+  - 先验分解中，灰图下拒答的读者视为"先验错"（与"未解析记为答错"一致）。
