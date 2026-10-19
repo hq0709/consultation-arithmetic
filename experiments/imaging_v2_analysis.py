@@ -304,7 +304,7 @@ def experiment_A(rows):
 
 
 # ---------------------------------------------------------------- experiment B
-# Target terms for report coverage on SLAKE (locked 2026-10-20, before any report-pathway data):
+# Target terms for report coverage on SLAKE (locked 2026-10-19, before any report-pathway data):
 # the organ or finding a question names, and the words a findings report would use for it.
 TERMS = {
     "liver": ["liver", "hepatic"], "lung": ["lung", "pulmonary", "lobe"], "heart": ["heart", "cardiac", "cardio"],

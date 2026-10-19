@@ -507,6 +507,18 @@ READER_SYS = ("You are an attending general radiologist on a hospital imaging pa
               "Be concise and decisive.")
 
 
+def write_report(per, i, images, temp, meter=None):
+    """Findings report i of perceiver `per` for `images`. Question-blind, so the cache key depends on
+    the perceiver, the image and the slot only (experiments/write_reports.py fills it in advance)."""
+    r = chat(per, [{"role": "user", "content": REPORT_PROMPT}], system=REPORT_SYS,
+             temperature=_temp(per, temp), seed=None if is_reasoning(per) else 500 + i,
+             max_tokens=opinion_budget(per), effort="low" if is_reasoning(per) else None,
+             tag=f"report|a{i}", images=images)
+    if meter is not None:
+        meter.add(r)
+    return r["text"].strip()
+
+
 def arch_report(item, cfg, meter):
     """Seeing and judging split. cfg["perceiver"] writes question-blind findings reports of the image;
     the reader (cfg["model"]) answers from a report alone, without the image. Independent reports:
@@ -515,15 +527,8 @@ def arch_report(item, cfg, meter):
     from common.llm import pmap
     valid = list(item["options"])
     per, n, shared = cfg["perceiver"], cfg["N"], bool(cfg.get("shared_report"))
-
-    def write(i):
-        r = chat(per, [{"role": "user", "content": REPORT_PROMPT}], system=REPORT_SYS,
-                 temperature=_temp(per, cfg["temp"]), seed=None if is_reasoning(per) else 500 + i,
-                 max_tokens=opinion_budget(per), effort="low" if is_reasoning(per) else None,
-                 tag=f"report|a{i}", images=meter.images)
-        meter.add(r)
-        return r["text"].strip()
-    reports = pmap(write, list(range(1 if shared else n)))
+    reports = pmap(lambda i: write_report(per, i, meter.images, cfg["temp"], meter),
+                   list(range(1 if shared else n)))
     opts = "\n".join(f"({k}) {v}" for k, v in item["options"].items())
 
     def read(i):
