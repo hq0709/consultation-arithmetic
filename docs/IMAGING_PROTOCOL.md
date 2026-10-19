@@ -169,3 +169,4 @@ API 约 38 万次调用，按 OpenRouter 价格估计约 $650：gpt-5-mini ~$150
   - 区间：与回归相同的题目 bootstrap（300 次，seed 0），各对比在同一次重抽样内计算。
 - 2026-10-19：qwen3.8-flash 的 C1、C2 与其 A1 并行运行（`scripts/run_qwen_c_parallel.sh`），写入 `IMG2_qwen3.8-flash_<set>_c.jsonl`。参数、路由与总控脚本完全相同，cfg_hash 因而相同；分析读取全部 `IMG2_*` 文件并按（题目, cfg_hash, 模型）去重。总控脚本随后的 C1、C2 阶段命中缓存，只补缺失的 episode。
 - 2026-10-19：gpt-5-mini 与 claude-haiku-4.5 全部阶段完成后各补跑一次（所有 run_grid 调用均可续跑；灰图阶段关闭输出质量中止）。两者 103 个格子全部完整。
+- 2026-10-19：gemini-3.7-flash 的其余 C4 格子与 B 阶段与总控脚本并行运行（`scripts/run_gemini_parallel.sh`），各写入自己的文件（`_mem_p`、`_mem_s`、`_report_p`）。参数与路由与总控脚本相同，cfg_hash 与缓存键相同；总控脚本随后的调用命中缓存。
