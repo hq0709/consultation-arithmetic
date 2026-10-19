@@ -230,6 +230,14 @@ def boot_ratio(num, den, b=B):
     return [round(float(e), 4), round(float(lo), 4), round(float(hi), 4)]
 
 
+def paired_reader_diff(a, b):
+    """Mean reader accuracy of a minus that of b on the items both answered (pp, item bootstrap)."""
+    A, Bq = by_qid(a), by_qid(b)
+    qs = sorted(set(A) & set(Bq))
+    ra = lambda e: float(np.mean([o.get("answer") == e["gold"] for o in e["rounds"][0]]))
+    return boot(lambda u: float(np.mean(u)) * 100, [ra(A[q]) - ra(Bq[q]) for q in qs]) if qs else None
+
+
 def conformity(dis, blank):
     """Readers correct in round 0 who end the discussion wrong, split by whether their round-0
     answer differed from the same reader's answer on the gray image (image-dependent) or not
@@ -454,6 +462,8 @@ def experiment_B(rows):
                     if not eps:
                         continue
                     ent = {"panel_acc": boot(acc, eps), "reader_acc": boot(reader_acc, eps),
+                           "panel_acc_minus_image": paired_diff(eps, direct) if direct else None,
+                           "reader_acc_minus_image": paired_reader_diff(eps, direct) if direct else None,
                            "phi": boot(lambda x: phi(x, 0), eps, b=500)}
                     if s == "slake":
                         wrong = [(e, i) for e in eps for i, o in enumerate(e["rounds"][0]) if o.get("answer") != e["gold"]]
