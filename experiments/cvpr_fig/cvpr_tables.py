@@ -4,7 +4,7 @@
 
 Reads results/imaging_v2_{A,B,C,M,D}.json (experiments/imaging_v2_analysis.py). CVPR vocabulary
 (agents, Independent / Decentralized MAS, perception and reasoning modules, in-context examples).
-Cells with an interval print the estimate over its item-bootstrap 95% CI. Table S1 (validation)
+Cells print point estimates only (the paper shows no intervals). Table S1 (validation)
 is written by hand in sec/X_suppl.tex, so these tables start at S2.
 """
 import json
@@ -29,7 +29,7 @@ def num(v, nd, sign):
 
 
 def c(ci, nd=1, sign=False):
-    """Estimate over its CI (two lines), or the estimate alone."""
+    """The point estimate (an [est, lo, hi] triple prints its estimate)."""
     if ci is None:
         return "--"
     if isinstance(ci, (int, float)):
@@ -37,7 +37,7 @@ def c(ci, nd=1, sign=False):
     e, lo, hi = ci
     if e == lo == hi == 0:                       # term not identified (design not run on this data set)
         return "--"
-    return "\\makecell{" + num(e, nd, sign) + "\\\\{\\tiny[" + num(lo, nd, sign) + ", " + num(hi, nd, sign) + "]}}"
+    return num(e, nd, sign)                      # point estimate only: the paper shows no intervals
 
 
 TABLES = []
