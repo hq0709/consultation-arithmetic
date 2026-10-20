@@ -66,15 +66,15 @@ for ax in axes:
     for s in SETS[1:]:
         ax.axhline(y_head[s] + 0.75, color=PAL["neutral_light"], lw=0.6, zorder=0)
 
-ax_a.set_xlim(0, 40); ax_a.set_xlabel("Abandoned (%)")
-ax_b.set_xlim(0, 105); ax_b.set_xlabel("Abandoned (%)")
-ax_c.set_xlim(0, 30); ax_c.set_xlabel("In the minority (%)")
+ax_a.set_xlim(0, 40); ax_a.set_xlabel("Changed to wrong (%)")
+ax_b.set_xlim(0, 105); ax_b.set_xlabel("Changed to wrong (%)")
+ax_c.set_xlim(0, 30); ax_c.set_xlabel("In the initial minority (%)")
 hdr = dict(loc="center left", ncol=2, handletextpad=0.0, columnspacing=0.5, borderaxespad=0.0, fontsize=LEGEND_PT)
-fig.legend(handles=[Line2D([], [], marker="o", ms=3.4, lw=0, color=PAL["ink"], label="Differs from gray-image answer"),
-                    Line2D([], [], marker="o", ms=3.4, lw=0, color=PAL["ink"], mfc="white", label="Same as gray-image answer")],
+fig.legend(handles=[Line2D([], [], marker="o", ms=3.4, lw=0, color=PAL["ink"], label="Differs from blank-image answer"),
+                    Line2D([], [], marker="o", ms=3.4, lw=0, color=PAL["ink"], mfc="white", label="Same as blank-image answer")],
            loc="upper left", bbox_to_anchor=(0.2, 1.0), ncol=2, handletextpad=0.1, columnspacing=1.0, fontsize=LEGEND_PT)
-ax_b.legend(handles=[Line2D([], [], marker="o", ms=3.4, lw=0, color=PAL["ink"], label="In minority"),
-                     Line2D([], [], marker="s", ms=3.4, lw=0, color=PAL["ink"], label="In majority")],
+ax_b.legend(handles=[Line2D([], [], marker="o", ms=3.4, lw=0, color=PAL["ink"], label="Minority"),
+                     Line2D([], [], marker="s", ms=3.4, lw=0, color=PAL["ink"], label="Majority")],
             bbox_to_anchor=(-0.02, y_head["vqarad"]), bbox_transform=ax_b.get_yaxis_transform(), **hdr)
 for ax, lab in zip(axes, "abc"):
     add_panel_label(ax, lab, x_offset_pt=-2, y_offset_pt=1)

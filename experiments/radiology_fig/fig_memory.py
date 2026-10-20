@@ -22,7 +22,7 @@ SETS2 = ["vqarad", "slake"]
 # condition -> (marker, filled, vertical offset)
 COND = {"none": ("o", "gray", 0.32), "shared-image": ("o", True, 0.16), "private-image": ("^", True, 0.0),
         "shared-text": ("o", False, -0.16), "private-text": ("^", False, -0.32)}
-LAB = {"none": "No references", "shared-image": "Shared, with images", "private-image": "Private, with images",
+LAB = {"none": "No reference cases", "shared-image": "Shared, with images", "private-image": "Private, with images",
        "shared-text": "Shared, text only", "private-text": "Private, text only"}
 
 GAP = 1.6

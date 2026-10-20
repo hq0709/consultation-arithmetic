@@ -129,11 +129,11 @@ ax_a.set_xlim(-0.55, XC["image"] + 0.55)
 ax_a.set_xticks([XC[c] for c in COLS], [COL_LABEL[c] for c in COLS], fontsize=TICK_PT)
 ax_a.xaxis.tick_top()
 ax_a.tick_params(axis="x", length=0, pad=2)
-ax_a.text(1.0, 1.215, "Reports written by", transform=ax_a.get_xaxis_transform(), ha="center", va="bottom",
+ax_a.text(1.0, 1.215, "Reports by perception module", transform=ax_a.get_xaxis_transform(), ha="center", va="bottom",
           fontsize=LEGEND_PT, color=PAL["neutral_dark"])
 ax_a.plot([-0.45, 2.45], [1.2, 1.2], transform=ax_a.get_xaxis_transform(), color=PAL["neutral_mid"], lw=0.6,
           clip_on=False)
-ax_a.set_xlabel("Reader accuracy (%)")
+ax_a.set_xlabel("Agent accuracy (%)")
 ax_a.set_yticks([ypos[k] for k in ypos], [MODEL[k[1]]["label"] for k in ypos], fontsize=TICK_PT)
 ax_a.tick_params(axis="y", length=0, pad=3)
 for s in SETS:
@@ -159,7 +159,7 @@ ax_b.legend(handles=[Line2D([], [], ls="none", marker=mk, ms=ms(mk, 3.6), color=
             loc="lower left", bbox_to_anchor=(0.0, 1.0), ncol=3, handlelength=0.9, handletextpad=0.35,
             columnspacing=1.2, borderaxespad=0.25, fontsize=LEGEND_PT)
 
-LABEL_DY = 27     # letters level with the "Reports written by" header of a
+LABEL_DY = 27     # letters level with the "Reports by perception module" header of a
 for ax, letter in zip((ax_a, ax_b), "ab"):
     add_panel_label(ax, letter, x_offset_pt=-2, y_offset_pt=LABEL_DY)
 

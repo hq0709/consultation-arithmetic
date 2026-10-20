@@ -120,18 +120,18 @@ ax_a.xaxis.set_major_locator(FixedLocator([0, 50, 100]))
 ax_b.set_xlim(-1.6, 41.6)
 ax_b.xaxis.set_major_locator(FixedLocator([0, 20, 40]))
 fig.text((ax_a.get_position().x0 + ax_b.get_position().x1) / 2, 0.012,
-         "Readers correct in round 0 and\nwrong after discussion (%)", ha="center", va="bottom", fontsize=BASE_PT)
+         "Conformity (%)", ha="center", va="bottom", fontsize=BASE_PT)
 
 # keys above each panel, to the right of its letter
 for ax, entries in ((ax_a, [("Minority", True), ("Majority", False)]),
-                    (ax_b, [("Differs from gray", True), ("Same as gray", False)])):
+                    (ax_b, [("Differs from blank", True), ("Same as blank", False)])):
     ax.legend(handles=[Line2D([], [], ls="none", marker="o", ms=3.6, color=PAL["ink"],
                               mfc=PAL["ink"] if filled else "white", mew=0.9, label=lab)
                        for lab, filled in entries],
-              loc="lower left", bbox_to_anchor=(0.06, 1.0), ncol=1, handlelength=0.9, handletextpad=0.35,
+              loc="lower left", bbox_to_anchor=(0.0, 1.0), ncol=1, handlelength=0.9, handletextpad=0.3,
               labelspacing=0.2, borderaxespad=0.15, borderpad=0.0, fontsize=LEGEND_PT)
 for ax, letter in zip(axes, "ab"):
-    add_panel_label(ax, letter, x_offset_pt=-6, y_offset_pt=12)
+    add_panel_label(ax, letter, x_offset_pt=-11, y_offset_pt=12)
 
 # ── render-time alignment gate, then exports ──
 require_matplotlib_panel_alignment(

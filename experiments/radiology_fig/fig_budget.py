@@ -20,9 +20,9 @@ setup()
 C = json.loads((RESULTS / "imaging_v2_C.json").read_text())
 SET_MARK = {"vqarad": "o", "slake": "s", "mxqa_mm_rad": "^"}
 SET_DY = {"vqarad": 0.22, "slake": 0.0, "mxqa_mm_rad": -0.22}
-ROWS = [("role", "Role"), ("rendering", "Image rendering"), ("reference cases", "Reference cases"),
-        ("report", "Report"), ("perceiver", "Perceiver model"), ("reasoner", "Reasoner model"),
-        ("model", "Model (image readers)")]
+ROWS = [("role", "Role"), ("rendering", "Contrast adjustment"), ("reference cases", "Reference cases"),
+        ("report", "Report"), ("perceiver", "Perception model"), ("reasoner", "Interpretation model"),
+        ("model", "Model")]
 
 fig = plt.figure(figsize=(TEXT_W_MM * MM, 112 * MM))
 outer = fig.add_gridspec(2, 1, height_ratios=[4, 7.6], left=0.24, right=0.972, bottom=0.18, top=0.935, hspace=0.5)
@@ -51,7 +51,7 @@ ax_a.tick_params(axis="y", length=0, pad=3); ax_a.spines["left"].set_visible(Fal
 ax_a.legend(handles=[Line2D([], [], marker=SET_MARK[s], ms=3.6, lw=0, color=PAL["ink"], label=SET_LABEL[s]) for s in SETS],
             loc="lower right", bbox_to_anchor=(1.0, 1.0), ncol=3, handletextpad=0.1, columnspacing=1.2,
             borderaxespad=0.1, fontsize=LEGEND_PT)
-fig.text(0.045, ax_a.get_position().y1 + 0.012, "Two readers that share everything", ha="left", va="bottom", fontsize=BASE_PT)
+fig.text(0.045, ax_a.get_position().y1 + 0.012, "Self-consistency readers", ha="left", va="bottom", fontsize=BASE_PT)
 
 # b: matched within-model contrasts, one panel per data set
 for si, (s, ax) in enumerate(zip(SETS, axb)):

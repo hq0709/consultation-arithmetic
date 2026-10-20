@@ -131,7 +131,7 @@ for ax in (ax_a, ax_b):
     ax.xaxis.set_major_locator(FixedLocator([-5, 0, 5, 10, 15, 20]))
     ax.xaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: signed(v)))
     ax.plot([0, 0], [lo_y, top_line], color=PAL["neutral_mid"], lw=0.7, ls=(0, (3, 2)), zorder=1)
-ax_a.set_xlabel("Panel − single reader (pp)")
+ax_a.set_xlabel("Multi-agent gain (pp)")
 ax_b.set_xlabel("Difference (pp)")
 
 ax_c.set_xlim(0.35, 1.03)
@@ -157,9 +157,9 @@ def key(ax, entries):
               fontsize=LEGEND_PT)
 
 
-key(ax_a, [("Independent", True), ("Discussion", False)])
-key(ax_b, [("Readers", True), ("Majority vote", False)])
-key(ax_c, [("Round 0", True), ("Final", False)])
+key(ax_a, [("Independent", True), ("Decentralized", False)])
+key(ax_b, [("Agents", True), ("Majority vote", False)])
+key(ax_c, [("Initial", True), ("Final", False)])
 
 # letters at one physical offset from each plot area's top-left corner
 for ax, letter in zip(axes, "abc"):

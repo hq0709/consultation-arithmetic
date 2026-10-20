@@ -70,7 +70,7 @@ for s in SETS:
 ax_a.set_xlim(-0.55, XC["image"] + 0.55)
 ax_a.set_xticks([XC[c] for c in COLS], ["GPT-5\nmini", "Gemini\n3.7 Flash", "Claude\nHaiku 4.5", "Image"], fontsize=TICK_PT)
 ax_a.xaxis.tick_top(); ax_a.tick_params(axis="x", length=0, pad=2)
-ax_a.text(1.0, 1.21, "Reports written by", transform=ax_a.get_xaxis_transform(), ha="center", va="bottom",
+ax_a.text(1.0, 1.21, "Reports by perception model", transform=ax_a.get_xaxis_transform(), ha="center", va="bottom",
           fontsize=LEGEND_PT, color=PAL["neutral_dark"])
 ax_a.plot([-0.45, 2.45], [1.195, 1.195], transform=ax_a.get_xaxis_transform(), color=PAL["neutral_mid"], lw=0.6,
           clip_on=False)

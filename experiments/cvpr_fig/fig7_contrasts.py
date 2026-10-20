@@ -79,13 +79,13 @@ height_mm = 78
 
 # ── data (read-only) ──
 C = load("C")
-ROWS = [("role", "Role"), ("rendering", "Rendering"), ("reference cases", "Reference cases"),
-        ("report", "Report"), ("perceiver", "Perceiver"), ("reasoner", "Reasoner"), ("model", "Model")]
+ROWS = [("role", "Role"), ("rendering", "Contrast adjustment"), ("reference cases", "In-context examples"),
+        ("report", "Report"), ("perceiver", "Perception module"), ("reasoner", "Reasoning module"), ("model", "Model")]
 SET_MARK = {"vqarad": "o", "slake": "s", "mxqa_mm_rad": "^"}
 SET_DY = {"vqarad": 0.27, "slake": 0.0, "mxqa_mm_rad": -0.27}
 
 fig = plt.figure(figsize=(width_mm * MM, height_mm * MM))
-ax = fig.add_axes([0.3, 0.13, 0.675, 0.68])
+ax = fig.add_axes([0.355, 0.13, 0.62, 0.68])
 
 for ri, (key, _) in enumerate(ROWS):
     y0 = -ri

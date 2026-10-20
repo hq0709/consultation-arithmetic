@@ -65,6 +65,31 @@ def wrap(h, width=12):
 TABLE_MAP = []                                  # (first, last table number, caption) for numbers.md
 
 
+# CVPR version: the same tables in the vocabulary of Kim et al. (NMI 2026) and Prism (agents,
+# Independent / Decentralized systems, perception and reasoning modules, in-context examples)
+CVPR_TERMS = [
+    ("Reading panels of 9 readers", "Multi-agent systems of 9 agents"),
+    ("Mean panel reader", "Mean agent"), ("its mean reader", "its mean agent"),
+    ("independent panel of 9", "Independent system of 9 agents"),
+    ("Independent panel", "Independent"), ("Discussion panels", "Decentralized systems"),
+    ("Discussion panel", "Decentralized"), ("discussion panel", "Decentralized system"),
+    ("Single-reader", "Single-agent"), ("single-reader", "single-agent"),
+    ("Interpretation model", "Reasoning module"), ("interpretation models", "reasoning modules"),
+    ("interpretation model", "reasoning module"), ("Perception model", "Perception module"),
+    ("perception model", "perception module"), ("Reference cases (retrieved in-context examples)", "In-context examples"),
+    ("no reference cases, shared reference cases, and private reference cases",
+     "no in-context examples, shared in-context examples, and private in-context examples"),
+    ("Reference cases", "In-context examples"), ("reference cases", "in-context examples"),
+    ("readers", "agents"), ("reader", "agent"), ("Readers", "Agents"), ("Reader", "Agent"),
+]
+
+
+def cvpr_terms(text):
+    for a, b in CVPR_TERMS:
+        text = text.replace(a, b)
+    return text
+
+
 def latex_tables(max_cols=6, first=2):
     """One booktabs table per digest table; tables wider than max_cols are split into column groups
     that repeat the two key columns, so no table needs shrinking below the text size. Numbering
@@ -312,4 +337,11 @@ out += [f"Table S{a}{'' if a == b else f'–S{b}'}: {c}" for a, b, c in TABLE_MA
 p = ROOT / "paper" / "radiology" / "numbers.md"
 p.write_text("\n".join(out))
 (ROOT / "paper" / "radiology" / "sections" / "supplement_tables.tex").write_text(tex_tables)
+# the CVPR supplement: same tables and numbering, CVPR vocabulary
+TABLES[:] = [(cvpr_terms(c), [cvpr_terms(h) for h in hd], [[cvpr_terms(x) if i < k else x for i, x in enumerate(r)]
+              for r in rw], k) for c, hd, rw, k in TABLES]
+TABLE_MAP.clear()
+cv = ROOT / "paper" / "cvpr" / "sec"
+cv.mkdir(parents=True, exist_ok=True)
+(cv / "supp_tables.tex").write_text(latex_tables())
 print(p, len(out), "lines;", len(TABLES), "LaTeX tables")

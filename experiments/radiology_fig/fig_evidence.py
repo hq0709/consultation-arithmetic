@@ -16,7 +16,7 @@ from rf_style import (MM, PAL, TEXT_W_MM, ANNOT_PT, LEGEND_PT, MODELS, MODEL, SE
 setup()
 A = json.loads((RESULTS / "imaging_v2_A.json").read_text())
 LEVELS = ["real", "res256", "res128", "blank"]
-TICKS = ["≤1024", "256", "128", "Gray"]
+TICKS = ["≤1024", "256", "128", "Blank"]
 CHANCE = {"vqarad": 50, "slake": 50, "mxqa_mm_rad": 20}
 DX = 0.07
 

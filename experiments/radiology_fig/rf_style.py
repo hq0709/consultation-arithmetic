@@ -7,6 +7,7 @@ Model colours: one categorical set validated with the dataviz skill's palette va
 (--pairs all, light surface): worst CVD dE 9.8, worst normal-vision dE 19.6. Teal and amber sit
 below 3:1 contrast on white, so every model also has its own marker and a legend or label.
 """
+import os
 import pathlib
 import sys
 
@@ -21,9 +22,11 @@ sys.path.insert(0, str(REPO / "experiments" / "nature_fig"))
 from nf_style import (MM, PAL, BASE_PT, TICK_PT, LEGEND_PT, ANNOT_PT, PANEL_LABEL_PT,  # noqa: E402,F401
                       add_panel_label, add_panel_title, minus)
 
-TEXT_W_MM = 137.2
+# RF_TEXT_W_MM / RF_OUT re-render a figure at another print width into another folder (the CVPR
+# supplement uses \textwidth = 174.6 mm); defaults are the radiology manuscript's
+TEXT_W_MM = float(os.environ.get("RF_TEXT_W_MM", "137.2"))
 COL_W_MM = 90.0
-OUT = REPO / "paper" / "radiology" / "figures"
+OUT = pathlib.Path(os.environ["RF_OUT"]) if os.environ.get("RF_OUT") else REPO / "paper" / "radiology" / "figures"
 OUT.mkdir(parents=True, exist_ok=True)
 RESULTS = REPO / "results"
 

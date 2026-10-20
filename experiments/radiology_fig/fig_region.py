@@ -25,7 +25,7 @@ OW = ["medgemma-4b", "qwen3-vl-8b", "qwen2-vl-7b", "huatuogpt-vision-7b", "llava
 OW_LABEL = {"medgemma-4b": "MedGemma 4B", "qwen3-vl-8b": "Qwen3-VL 8B", "qwen2-vl-7b": "Qwen2-VL 7B",
             "huatuogpt-vision-7b": "HuatuoGPT-Vision 7B", "llava-1.5-7b": "LLaVA-1.5 7B"}
 OW_STYLE = {"color": PAL["neutral_dark"], "marker": "o"}
-GROUPS = [("API models", API), ("Open-weight models", OW)]
+GROUPS = [("Proprietary models", API), ("Open-weight models", OW)]
 GAP = 1.6
 ypos, y_head, start = {}, {}, 0.0
 for g, ms in GROUPS:
@@ -88,18 +88,18 @@ for ax in axes:
     ax.spines["left"].set_visible(False)
     ax.axhline(y_head["Open-weight models"] + 0.75, color=PAL["neutral_light"], lw=0.6, zorder=0)
 
-top = y_head["API models"] - 0.55
+top = y_head["Proprietary models"] - 0.55
 ax_a.set_xlim(0, 52); ax_a.set_xlabel("Answers changed\nby occlusion (%)")
 ax_b.plot([0, 0], [lo_y, top], color=PAL["neutral_mid"], lw=0.7, ls=(0, (3, 2)), zorder=1)
-ax_b.set_xlim(-6, 42); ax_b.set_xlabel("Region dependence,\ntarget − control (pp)")
+ax_b.set_xlim(-6, 42); ax_b.set_xlabel("Occlusion sensitivity,\ntarget − control (pp)")
 ax_b.xaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: minus(f"{v:+.0f}") if v else "0"))
-ax_c.set_xlim(0, 100); ax_c.set_xlabel("Same question,\ndifferent image (%)")
+ax_c.set_xlim(0, 100); ax_c.set_xlabel("Paired images (%)")
 for ax, h in ((ax_a, [("Target", True), ("Control", False)]),
               (ax_c, [("Both correct", True), ("Differ", False)])):
     ax.legend(handles=[Line2D([], [], marker="o", ms=3.4, lw=0, color=PAL["ink"], mfc=PAL["ink"] if f else "white",
                               label=l) for l, f in h],
-              loc="center left", bbox_to_anchor=(-0.02, y_head["API models"]), bbox_transform=ax.get_yaxis_transform(),
-              ncol=2, handletextpad=0.0, columnspacing=0.5, borderaxespad=0.0, fontsize=LEGEND_PT)
+              loc="center left", bbox_to_anchor=(-0.02, y_head["Proprietary models"]), bbox_transform=ax.get_yaxis_transform(),
+              ncol=2, handlelength=0.9, handletextpad=0.3, columnspacing=0.8, borderaxespad=0.0, fontsize=LEGEND_PT)
 for ax, lab in zip(axes, "abc"):
     add_panel_label(ax, lab, x_offset_pt=-2, y_offset_pt=1)
 print(save(fig, "fig5_region"))

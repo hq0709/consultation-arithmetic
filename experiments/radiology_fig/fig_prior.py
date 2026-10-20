@@ -68,18 +68,18 @@ ax_a.axvline(0, color=PAL["ink"], lw=0.8, zorder=5)
 ax_a.set_xlim(-102, 112)
 ax_a.set_xticks([-100, -50, 0, 50, 100], ["100", "50", "0", "50", "100"])
 ax_a.set_xlabel("Reader answers (%)")
-ax_a.text(-50, y_head["vqarad"], "Wrong with image", ha="center", va="center", fontsize=LEGEND_PT, color=PAL["ink"])
-ax_a.text(50, y_head["vqarad"], "Right with image", ha="center", va="center", fontsize=LEGEND_PT, color=PAL["ink"])
-fig.legend(handles=[Patch(color=C_WRONG_BOTH, label="Wrong with and without image"),
-                    Patch(color=C_WRONG_IMG, label="Wrong only with image"),
-                    Patch(color=C_RIGHT_IMG, label="Right only with image"),
-                    Patch(color=C_RIGHT_BOTH, label="Right with and without image")],
+ax_a.text(-50, y_head["vqarad"], "Wrong with original", ha="center", va="center", fontsize=LEGEND_PT, color=PAL["ink"])
+ax_a.text(50, y_head["vqarad"], "Right with original", ha="center", va="center", fontsize=LEGEND_PT, color=PAL["ink"])
+fig.legend(handles=[Patch(color=C_WRONG_BOTH, label="Wrong with original and blank images"),
+                    Patch(color=C_WRONG_IMG, label="Wrong only with original image"),
+                    Patch(color=C_RIGHT_IMG, label="Right only with original image"),
+                    Patch(color=C_RIGHT_BOTH, label="Right with original and blank images")],
            loc="lower left", bbox_to_anchor=(0.205, 0.0), ncol=2, handlelength=1.1, handleheight=0.8,
            handletextpad=0.4, columnspacing=1.2, labelspacing=0.3, fontsize=LEGEND_PT)
 
-ax_b.set_xlim(0, 118)
+ax_b.set_xlim(0, 123)
 ax_b.set_xticks([0, 50, 100])
-ax_b.set_xlabel("Same as gray-image\nmajority (%)")
+ax_b.set_xlabel("Matching blank-image\nmajority (%)")
 ax_b.text(103, y_head["vqarad"], "n", ha="left", va="center", fontsize=ANNOT_PT, color=PAL["neutral_dark"])
 ax_b.axvline(50, color=PAL["neutral_light"], lw=0.6, zorder=0)
 

@@ -91,7 +91,7 @@ def rates(m):
     return D[f"{m}|slake_target"]["region_dependence_flip"], D[f"{m}|slake_pairs"]["both_correct"]
 
 
-GROUPS = [("API models", API3), ("Open-weight models", OW)]
+GROUPS = [("Proprietary models", API3), ("Open-weight models", OW)]
 GAP = 1.5
 ypos, y_head, start = {}, {}, 0.0
 for g, ms_ in GROUPS:
@@ -128,15 +128,15 @@ for ax in axes:
 plt.setp(ax_b.get_yticklabels(), visible=False)
 ax_b.tick_params(axis="y", length=0)
 
-ax_a.plot([0, 0], [lo_y, y_head["API models"] - 0.5], color=PAL["neutral_mid"], lw=0.7, ls=(0, (3, 2)), zorder=1)
+ax_a.plot([0, 0], [lo_y, y_head["Proprietary models"] - 0.5], color=PAL["neutral_mid"], lw=0.7, ls=(0, (3, 2)), zorder=1)
 ax_a.set_xlim(-5, 46)
 ax_a.xaxis.set_major_locator(FixedLocator([0, 20, 40]))
 ax_a.xaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: signed(v)))
-ax_a.set_xlabel("Target − control\nflip rate (pp)")
+ax_a.set_xlabel("Occlusion\nsensitivity (pp)")
 
 ax_b.set_xlim(0, 100)
 ax_b.xaxis.set_major_locator(FixedLocator([0, 50, 100]))
-ax_b.set_xlabel("Both answers of a\npair correct (%)")
+ax_b.set_xlabel("Pair accuracy (%)")
 
 for ax, letter in zip(axes, "ab"):
     add_panel_label(ax, letter, x_offset_pt=-2, y_offset_pt=2)

@@ -110,7 +110,7 @@ ax.xaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: f"{v:g}"))
 ax.yaxis.set_major_locator(FixedLocator([0, 5, 10, 15, 20]))
 ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: signed(v)))
 ax.set_xlabel(r"Error correlation, $\phi$")
-ax.set_ylabel("Majority − mean reader (pp)")
+ax.set_ylabel("Majority − mean agent (pp)")
 
 top = ax.secondary_xaxis("top", functions=(lambda p: p, lambda p: p))
 NE = [9, 4, 2, 1.5, 1.2, 1]
@@ -125,12 +125,12 @@ handles = [Line2D([], [], ls="none", marker=MODEL[m]["marker"], ms=ms(MODEL[m]["
                   mfc=MODEL[m]["color"], mec="white", mew=0.35, label=MODEL[m]["label"]) for m in MODELS]
 key = ax.legend(handles=curve_keys, loc="upper left", bbox_to_anchor=(0.075, 1.0), borderaxespad=0.3,
                 ncol=3, handlelength=2.2, handletextpad=0.4, columnspacing=0.9, fontsize=LEGEND_PT,
-                title="Prediction at mean reader accuracy", title_fontsize=LEGEND_PT)
+                title="Prediction at mean agent accuracy", title_fontsize=LEGEND_PT)
 key._legend_box.align = "left"
 ax.add_artist(key)
 leg = ax.legend(handles=handles, loc="upper right", bbox_to_anchor=(1.0, 0.79), borderaxespad=0.3,
                 handletextpad=0.25, labelspacing=0.3, fontsize=LEGEND_PT,
-                title=f"Reading panels of 9 (n = {len(cells)})", title_fontsize=LEGEND_PT)
+                title=f"Systems of 9 agents (n = {len(cells)})", title_fontsize=LEGEND_PT)
 leg._legend_box.align = "left"
 
 # ── render-time alignment gate, then exports ──

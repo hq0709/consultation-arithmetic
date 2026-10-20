@@ -31,7 +31,7 @@ ypos = {(s, m): -(si * (len(OW) + GAP) + mi) for si, s in enumerate(SETS) for mi
 y_head = {s: -(si * (len(OW) + GAP)) + 0.95 for si, s in enumerate(SETS)}
 
 fig = plt.figure(figsize=(TEXT_W_MM * MM, 112 * MM))
-gs = fig.add_gridspec(2, 2, height_ratios=[4.9, 1], left=0.235, right=0.975, bottom=0.085, top=0.955, wspace=0.12,
+gs = fig.add_gridspec(2, 2, height_ratios=[4.9, 1], left=0.235, right=0.975, bottom=0.1, top=0.955, wspace=0.12,
                       hspace=0.36)
 ax_a = fig.add_subplot(gs[0, 0]); ax_b = fig.add_subplot(gs[0, 1], sharey=ax_a); ax_c = fig.add_subplot(gs[1, :])
 
@@ -68,8 +68,8 @@ for ax in (ax_a, ax_b):
     for s in SETS[1:]:
         ax.axhline(y_head[s] + 0.75, color=PAL["neutral_light"], lw=0.6, zorder=0)
 ax_a.set_xlim(10, 100); ax_a.set_xticks([20, 40, 60, 80]); ax_a.set_xlabel("Accuracy (%)")
-ax_a.legend(handles=[Line2D([], [], marker="o", ms=3.4, lw=0, color=INK, label="Image"),
-                     Line2D([], [], marker="o", ms=3.4, lw=0, color=INK, mfc="white", label="Gray image")],
+ax_a.legend(handles=[Line2D([], [], marker="o", ms=3.4, lw=0, color=INK, label="Original image"),
+                     Line2D([], [], marker="o", ms=3.4, lw=0, color=INK, mfc="white", label="Blank image")],
             loc="center left", bbox_to_anchor=(-0.02, y_head["vqarad"]), bbox_transform=ax_a.get_yaxis_transform(),
             ncol=2, handletextpad=0.0, columnspacing=0.6, borderaxespad=0.0, fontsize=LEGEND_PT)
 ax_b.set_xscale("log"); ax_b.set_xlim(0.01, 30)

@@ -158,7 +158,7 @@ ax_c.axvline(0, color=PAL["ink"], lw=0.8, zorder=5)
 ax_c.set_xlim(-104, 112)
 ax_c.xaxis.set_major_locator(FixedLocator([-100, -50, 0, 50, 100]))
 ax_c.xaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: f"{abs(v):g}"))
-ax_c.set_xlabel("Reader answers (%)")
+ax_c.set_xlabel("Agent answers (%)")
 ax_c.text(-52, y_head[SETS[0]], "Wrong", ha="center", va="center", fontsize=LEGEND_PT)
 ax_c.text(52, y_head[SETS[0]], "Right", ha="center", va="center", fontsize=LEGEND_PT)
 # the four answer classes of c, in one row under the whole figure (no panel has room for it)
@@ -172,7 +172,7 @@ fig.legend(handles=[Patch(color=WRONG_BOTH, label="Wrong with both images"),
 ax_d.set_xlim(0, 112)
 ax_d.xaxis.set_major_locator(FixedLocator([0, 50, 100]))
 ax_d.axvline(50, color=PAL["neutral_light"], lw=0.6, zorder=0)
-ax_d.set_xlabel("Same as gray-image\nmajority (%)")
+ax_d.set_xlabel("Matching blank-image\nmajority (%)")
 ax_d.text(1.0, y_head[SETS[0]], "n", transform=ax_d.get_yaxis_transform(), ha="right", va="center",
           fontsize=ANNOT_PT, color=PAL["neutral_dark"])
 
@@ -186,8 +186,8 @@ def key(ax, entries):
               fontsize=LEGEND_PT)
 
 
-key(ax_a, [("Original", True), ("Gray", False)])
-key(ax_b, [("Original", True), ("Gray", False)])
+key(ax_a, [("Original", True), ("Blank", False)])
+key(ax_b, [("Original", True), ("Blank", False)])
 
 for ax, letter in zip(axes, "abcd"):
     add_panel_label(ax, letter, x_offset_pt=-2, y_offset_pt=2)

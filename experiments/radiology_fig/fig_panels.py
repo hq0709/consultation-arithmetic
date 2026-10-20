@@ -72,7 +72,7 @@ for ax in axes:
         ax.axhline(y_head[s] + 0.75, color=PAL["neutral_light"], lw=0.6, zorder=0)
 
 ax_a.plot([0, 0], [lo_y, y_head["vqarad"] - 0.55], color=PAL["neutral_mid"], lw=0.7, ls=(0, (3, 2)), zorder=1)
-ax_a.set_xlabel("Gain over single reader (pp)")
+ax_a.set_xlabel("Gain over the single reader (pp)")
 ax_a.xaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: minus(f"{v:+.0f}") if v else "0"))
 ax_a.legend(handles=[Line2D([], [], marker="o", ms=3.4, lw=0, color=PAL["ink"], label="Independent"),
                      Line2D([], [], marker="o", ms=3.4, lw=0, color=PAL["ink"], mfc="white", label="Discussion")],
@@ -85,13 +85,13 @@ ax_b.xaxis.set_major_locator(FixedLocator([1, 2, 3, 5, 9]))
 ax_b.xaxis.set_minor_locator(NullLocator())
 ax_b.xaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: f"{v:g}"))
 ax_b.plot([9, 9], [lo_y, y_head["vqarad"] - 0.55], color=PAL["neutral_mid"], lw=0.7, ls=(0, (3, 2)), zorder=1)
-ax_b.set_xlabel("Effective readers, $N_{\\mathrm{eff}}$")
+ax_b.set_xlabel("$N_{\\mathrm{eff}}$")
 
 ax_c.set_xlim(0, 1.05)
 ax_c.xaxis.set_major_locator(FixedLocator([0, 0.25, 0.5, 0.75, 1.0]))
 ax_c.xaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: f"{v:g}"))
 ax_c.set_xlabel("Error correlation, $\\phi$")
-ax_c.legend(handles=[Line2D([], [], marker="o", ms=3.4, lw=0, color=PAL["ink"], label="Round 0"),
+ax_c.legend(handles=[Line2D([], [], marker="o", ms=3.4, lw=0, color=PAL["ink"], label="Initial"),
                      Line2D([], [], marker="o", ms=3.4, lw=0, color=PAL["ink"], mfc="white", label="Final")],
             loc="center left", bbox_to_anchor=(-0.02, y_head["vqarad"]), bbox_transform=ax_c.get_yaxis_transform(),
             ncol=2, handletextpad=0.0, columnspacing=0.5, borderaxespad=0.0, fontsize=LEGEND_PT)
