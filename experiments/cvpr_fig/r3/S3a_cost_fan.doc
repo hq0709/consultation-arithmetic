@@ -1,0 +1,13 @@
+"""S3a_cost_fan — candidate for the cost-accuracy slot (NMI economic efficiency), full width (174.6 mm).
+
+Claim: every multi-agent architecture moves a model several-fold to the right in cost per item, but
+rarely upward in accuracy; the single agent lies on or near the cost-accuracy Pareto frontier.
+Panels: one per data set (VQA-RAD, SLAKE, MedXpertQA-MM; original images). x, nominal cost per
+1,000 items (US$, log scale; cached calls priced at list price); y, accuracy (%). Each model is a fan:
+its single-agent system (SAS, filled marker) joined to each of its multi-agent systems of 9 agents
+(open markers; spoke line style = architecture). Grey band, Pareto frontier over every system in the
+panel. Model colours and markers as in the paper; capability-ladder models in their family hue
+(r3_common.py).
+Data: results/cvpr_nmi.json ("cost"), experiments/cvpr_fig/extract_nmi.py.
+Nature-figure skill, Python backend.
+"""

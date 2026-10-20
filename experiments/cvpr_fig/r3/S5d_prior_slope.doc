@@ -1,0 +1,13 @@
+"""S5d_prior_slope -- round-3 candidate for the language-prior slot, one column (83.34 mm).
+
+Claim: a blank image costs single agents far more accuracy on VQA-RAD and SLAKE than on
+MedXpertQA-MM, where three of the four models keep nearly all of their original-image accuracy
+(their answers come from the question and options, not from the image).
+Layout: one axes with three groups (VQA-RAD, SLAKE, MedXpertQA-MM; 250 items each) on the same y
+axis. In each group, one line per model joins single-agent accuracy with the original image
+(filled marker) and with a blank image (uniform gray, same size; open marker); thin bars,
+item-bootstrap 95% CIs (models dodged slightly in x); dotted segment, chance (50% yes/no, 20% five
+options). Colour and marker, model (as in Fig. 1).
+Data: results/imaging_v2_A.json ("real" and "blank" single-agent accuracy).
+Nature-figure skill, Python backend.
+"""

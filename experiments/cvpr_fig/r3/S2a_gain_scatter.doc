@@ -1,0 +1,11 @@
+"""S2a_gain_scatter -- round-3 candidate for the capability slot, one column (83.34 mm).
+
+Question (NMI capability ceiling): does the gain of a multi-agent system over its single-agent
+system (SAS) fall as the SAS gets more accurate? The printed OLS slope (pp of gain per pp of SAS
+accuracy, CI from resampling model x data-set systems) answers it for the systems present.
+Encodings: x, SAS accuracy (%); y, multi-agent gain at N = 9 (MAS minus SAS, pp) with its paired
+item-bootstrap 95% CI; colour, model; marker, architecture (Independent circle, Centralized diamond,
+Decentralized square, Hybrid triangle); dashed line, zero gain; grey line, OLS fit over all points.
+Data: results/cvpr_nmi.json ("arch"), every architecture and model present (runs in progress add
+Centralized, Hybrid and the capability ladder). Nature-figure skill, Python backend.
+"""

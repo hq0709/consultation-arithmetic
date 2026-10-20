@@ -90,6 +90,9 @@ ANTHROPIC_BASE = os.environ.get("ANTHROPIC_BASE_URL", "https://api.anthropic.com
 OPENROUTER_BASE = os.environ.get("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
 OPENROUTER_MAP = {
     "gpt-5-mini": "openai/gpt-5-mini",
+    # capability ladder of the NMI-style imaging grid (2026-10-20): OpenAI nano < mini < 5
+    "gpt-5-nano": "openai/gpt-5-nano",
+    "gpt-5": "openai/gpt-5",
     "gpt-4.1-nano": "openai/gpt-4.1-nano",
     "gemini-3.7-flash": "google/gemini-3.7-flash",
     "gemini-3.5-flash-lite": "google/gemini-3.5-flash-lite",
@@ -102,7 +105,8 @@ OPENROUTER_MAP = {
     "deepseek-v4-flash": "deepseek/deepseek-v4-flash",
     "deepseek-v4-pro": "deepseek/deepseek-v4-pro",
     "qwen3.8-flash": "qwen/qwen3.8-flash",
-    "qwen3.8-max": "qwen/qwen3.8-max",
+    "qwen3.8-max": "qwen/qwen3.8-max",            # no longer listed on OpenRouter (2026-10-20)
+    "qwen3.8-max-0902": "qwen/qwen3.8-max-0902",  # Qwen rung of the imaging capability ladder
     # glm-latest 是浮动别名（当前指向 z-ai/glm-5.3）。论文需要固定的模型身份，
     # 别名随时可能换底座，所以钉死到具体版本。
     "glm-5.3": "z-ai/glm-5.3",
@@ -118,6 +122,9 @@ OPENROUTER_ALWAYS = {"gemini-3.1-pro", "claude-opus-5",
 # 计费必须跟着路由走，否则花费统计会系统性偏低。
 OPENROUTER_PRICING = {
     "gpt-5-mini": (0.25, 2.00),
+    "gpt-5-nano": (0.05, 0.40),
+    "gpt-5": (1.25, 10.00),
+    "qwen3.8-max-0902": (2.00, 6.00),
     "gpt-4.1-nano": (0.10, 0.40),
     "gemini-3.7-flash": (0.75, 3.75),
     "gemini-3.5-flash-lite": (0.30, 2.50),

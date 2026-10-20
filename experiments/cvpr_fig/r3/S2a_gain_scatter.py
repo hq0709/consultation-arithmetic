@@ -1,0 +1,133 @@
+"""S2a_gain_scatter -- round-3 candidate for the capability slot, one column (83.34 mm).
+
+Question (NMI capability ceiling): does the gain of a multi-agent system over its single-agent
+system (SAS) fall as the SAS gets more accurate? The printed OLS slope (pp of gain per pp of SAS
+accuracy, CI from resampling model x data-set systems) answers it for the systems present.
+Encodings: x, SAS accuracy (%); y, multi-agent gain at N = 9 (MAS minus SAS, pp) with its paired
+item-bootstrap 95% CI; colour, model; marker, architecture (Independent circle, Centralized diamond,
+Decentralized square, Hybrid triangle); dashed line, zero gain; grey line, OLS fit over all points.
+Data: results/cvpr_nmi.json ("arch"), every architecture and model present (runs in progress add
+Centralized, Hybrid and the capability ladder). Nature-figure skill, Python backend.
+"""
+import sys
+import pathlib
+
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+
+# ── MANDATORY (nature-figure api.md): sans-serif stack + editable SVG/PDF text ──
+plt.rcParams['font.family'] = 'sans-serif'
+plt.rcParams['font.sans-serif'] = ['Arial', 'Helvetica', 'Liberation Sans', 'DejaVu Sans']
+plt.rcParams['svg.fonttype'] = 'none'
+mpl.rcParams['pdf.fonttype'] = 42
+mpl.rcParams.update({
+    "svg.fonttype": "none",
+    "pdf.fonttype": 42,
+    "font.size": 9,
+    "axes.labelsize": 9,
+    "axes.titlesize": 9,
+    "xtick.labelsize": 8.5,
+    "ytick.labelsize": 8.5,
+    "legend.fontsize": 8,
+    "axes.linewidth": 0.8,
+    "axes.spines.right": False,
+    "axes.spines.top": False,
+    "axes.grid": False,
+    "legend.frameon": False,
+    "xtick.major.width": 0.8,
+    "ytick.major.width": 0.8,
+    "xtick.major.size": 2.5,
+    "ytick.major.size": 2.5,
+    "lines.linewidth": 1.2,
+    "mathtext.fontset": "custom",
+    "mathtext.rm": "Liberation Sans",
+    "mathtext.it": "Liberation Sans:italic",
+    "mathtext.bf": "Liberation Sans:bold",
+    "mathtext.sf": "Liberation Sans",
+    "mathtext.cal": "Liberation Sans",
+    "mathtext.tt": "Liberation Sans",
+    "axes.labelcolor": "#1F1F1F",
+    "xtick.color": "#1F1F1F",
+    "ytick.color": "#1F1F1F",
+    "text.color": "#1F1F1F",
+    "axes.edgecolor": "#1F1F1F",
+})
+
+ALT = pathlib.Path(__file__).resolve().parent
+sys.path.insert(0, str(ALT.parent))
+sys.path.insert(0, str(pathlib.Path.home() / ".claude" / "skills" / "nature-figure" / "scripts"))
+from cf_style import (MM, PAL, BASE_PT, TICK_PT, LEGEND_PT, ANNOT_PT, ms, signed)   # noqa: E402
+from audit_panel_alignment import require_matplotlib_panel_alignment               # noqa: E402
+import s25_common as c                                                               # noqa: E402
+
+import numpy as np                                                                   # noqa: E402
+from matplotlib.lines import Line2D                                                  # noqa: E402
+from matplotlib.patches import Patch                                                 # noqa: E402
+
+REPO = ALT.parents[2]
+OUT = REPO / "paper" / "cvpr" / "figure_candidates" / "round3"
+QA = ALT.parent / "qa" / "r3"
+OUT.mkdir(parents=True, exist_ok=True); QA.mkdir(parents=True, exist_ok=True)
+BASE, QBASE = str(OUT / "S2a_gain_scatter"), str(QA / "S2a_gain_scatter")
+
+width_mm = 83.34            # final printed width: CVPR \columnwidth
+height_mm = 78.0
+
+pts = c.gain_points(n=9)
+fit = c.ols_slope_ci(pts)
+archs = [a for a in c.ARCHS if any(p[2] == a for p in pts)]
+models = c.ordered({p[0] for p in pts})
+DODGE = {a: (i - (len(archs) - 1) / 2) * 0.45 for i, a in enumerate(archs)}   # pp, keeps markers apart
+
+W, H = width_mm, height_mm
+L, B, R, T = 13.0, 10.0, 2.5, 18.0                   # margins in mm (top holds the legends)
+fig = plt.figure(figsize=(W * MM, H * MM))
+ax = fig.add_axes([L / W, B / H, (W - L - R) / W, (H - B - T) / H])
+
+xs = np.array([p[3] for p in pts]); lo = min(p[4][1] for p in pts); hi = max(p[4][2] for p in pts)
+xmin = 10 * np.floor((xs.min() - 4) / 10)
+ax.set_xlim(xmin, 100)
+ax.set_ylim(5 * np.floor((lo - 1) / 5), 5 * np.ceil((hi + 4) / 5))
+ax.axhline(0, color=PAL["neutral_mid"], lw=0.8, ls=(0, (3, 2)), zorder=1)
+if fit:
+    slope, icpt, s_lo, s_hi = fit
+    xx = np.array([xs.min() - 2, xs.max() + 2])
+    ax.plot(xx, icpt + slope * xx, color=PAL["neutral_dark"], lw=1.0, zorder=2)
+    ax.text(0.03, 0.97, f"OLS slope {c.fmt(slope)} pp per pp\n95% CI {c.fmt(s_lo)} to {c.fmt(s_hi)}",
+            transform=ax.transAxes, ha="left", va="top", fontsize=ANNOT_PT, color=PAL["neutral_dark"])
+for m, s, a, x, g in pts:
+    st = c.style(m)
+    xd = x + DODGE[a]
+    ax.plot([xd, xd], [g[1], g[2]], color=st["color"], lw=0.6, alpha=0.5, solid_capstyle="butt", zorder=3)
+    mk = c.ARCH_MARKER[a]
+    ax.plot([xd], [g[0]], ls="none", marker=mk, ms=ms(mk, 4.2), mfc=st["color"], mec="white", mew=0.4, zorder=4)
+ax.set_xticks(np.arange(xmin, 101, 10 if 100 - xmin <= 60 else 20))
+yt = np.arange(ax.get_ylim()[0], ax.get_ylim()[1] + 0.1, 5)
+ax.set_yticks(yt, [signed(v) for v in yt])
+ax.tick_params(labelsize=TICK_PT)
+ax.set_xlabel("SAS accuracy (%)", fontsize=BASE_PT)
+ax.set_ylabel("Multi-agent gain (pp)", fontsize=BASE_PT)
+
+# legends above the axes: architecture (marker, grey) and model (colour swatch)
+h_arch = [Line2D([], [], ls="none", marker=c.ARCH_MARKER[a], ms=ms(c.ARCH_MARKER[a], 4.2), mfc=PAL["neutral_dark"],
+                 mec="white", mew=0.4, label=a) for a in archs]
+h_mod = [Patch(fc=c.style(m)["color"], ec="none", label=c.style(m)["label"]) for m in models]
+top = 1 - 1.0 / H
+leg1 = fig.legend(handles=h_arch, loc="upper left", bbox_to_anchor=(L / W - 0.02, top), ncol=len(archs),
+                  frameon=False, fontsize=LEGEND_PT, handlelength=1.0, handletextpad=0.4, columnspacing=1.0,
+                  borderaxespad=0)
+leg2 = fig.legend(handles=h_mod, loc="upper left", bbox_to_anchor=(L / W - 0.02, top - 5.6 / H), ncol=2,
+                  frameon=False, fontsize=LEGEND_PT, handlelength=1.0, handleheight=0.7, handletextpad=0.4,
+                  columnspacing=1.0, borderaxespad=0)
+
+require_matplotlib_panel_alignment(fig, axes=[ax], json_out=QBASE + ".alignment.json",
+                                   overlay_svg=QBASE + ".alignment.svg", tolerance_pt=1.5, gutter_tolerance_pt=1.5,
+                                   require_panel_labels=False, strict=False)
+fig.savefig(BASE + ".svg")
+fig.savefig(BASE + ".pdf")
+fig.savefig(BASE + ".png", dpi=300)
+fig.savefig(QBASE + ".tiff", dpi=600, pil_kwargs={"compression": "tiff_lzw"})
+plt.close(fig)
+print("written", BASE, "| points", len(pts), "| archs", archs, "| fit", fit)

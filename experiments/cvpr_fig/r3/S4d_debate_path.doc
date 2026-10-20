@@ -1,0 +1,12 @@
+"""S4d_debate_path — candidate for the debate-dynamics slot (NMI error dynamics), one column (83.34 mm).
+
+Claim: debate moves every system along the same path, toward unanimity and an error correlation of 1
+(N_eff = 1), and leaves majority accuracy within a few points of its initial value.
+x, items on which all 9 agents give the same answer (%); y, error correlation phi among the agents
+(right axis, N_eff = 9 / (1 + 8 phi)). Each line is one system (model x data set) of the
+Decentralized MAS of 9 on original images: open marker, initial answers (round 0); small dots,
+rounds 1 and 2; filled marker, round 3. Line style, data set. The note gives the range of majority
+accuracy change from round 0 to round 3 over the systems drawn. Model colours and markers as in the
+paper. Data: results/cvpr_nmi.json ("debate"), experiments/cvpr_fig/extract_nmi.py.
+Nature-figure skill, Python backend.
+"""

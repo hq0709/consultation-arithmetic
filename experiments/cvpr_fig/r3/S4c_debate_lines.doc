@@ -1,0 +1,12 @@
+"""S4c_debate_lines — candidate for the debate-dynamics slot (NMI error dynamics), full width (174.6 mm).
+
+Claim: over three rounds of debate the agents of one model converge on one answer (error correlation
+to 1, unanimity to nearly every item) while majority accuracy moves by a few points at most.
+Panels, against debate round (0 = initial answers of the Decentralized MAS of 9, original images):
+(a) error correlation phi among the 9 agents, right axis N_eff = 9 / (1 + 8 phi); (b) items on which
+all 9 agents give the same answer (%); (c) majority (plurality) accuracy minus its round-0 value (pp).
+A debate that stopped at unanimity keeps its last round. Bold line, mean over the three data sets
+(VQA-RAD, SLAKE, MedXpertQA-MM); thin lines, each data set. Model colours and markers as in the paper.
+Data: results/cvpr_nmi.json ("debate"), experiments/cvpr_fig/extract_nmi.py.
+Nature-figure skill, Python backend.
+"""

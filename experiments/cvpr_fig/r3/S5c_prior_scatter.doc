@@ -1,0 +1,12 @@
+"""S5c_prior_scatter -- round-3 candidate for the language-prior slot, one column (83.34 mm).
+
+Claim: replacing the image with a blank image costs single agents most of their accuracy above
+chance on VQA-RAD and SLAKE, while on MedXpertQA-MM three of the four models stay close to their
+original-image accuracy (points near the diagonal answer without using the image).
+Encodings: x, single-agent accuracy with the original image (%); y, with a blank image (uniform
+gray, same size) (%); crosshairs, item-bootstrap 95% CIs on both axes; colour, model; marker, data
+set (VQA-RAD circle, SLAKE square, MedXpertQA-MM triangle); dashed diagonal, equal accuracy (image
+unused); dotted lines, chance (50% for the yes/no sets, 20% for the five-option set).
+Data: results/imaging_v2_A.json ("real" and "blank" single-agent accuracy, 250 items per set).
+Nature-figure skill, Python backend.
+"""

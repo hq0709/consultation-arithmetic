@@ -1,0 +1,12 @@
+"""S3b_tokens_strip — candidate for the cost-accuracy slot (NMI success per 1K tokens), one column (83.34 mm).
+
+Claim: a multi-agent system of 9 agents returns roughly a tenth of the single agent's correct answers
+per 1,000 tokens, for every model and data set.
+x, architecture (SAS and each multi-agent architecture present); y, correct answers per 1,000 tokens
+(accuracy as a fraction divided by nominal input plus output tokens per item, in thousands; log scale).
+Dots, systems (model x data set; model colour and marker); black bar, geometric mean over systems,
+with its value; text above each multi-agent column, fold reduction from SAS (geometric mean of the per-system
+ratios over the systems run with both).
+Data: results/cvpr_nmi.json ("cost"), experiments/cvpr_fig/extract_nmi.py.
+Nature-figure skill, Python backend.
+"""

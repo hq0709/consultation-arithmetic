@@ -1,0 +1,160 @@
+"""S3a_cost_fan — candidate for the cost-accuracy slot (NMI economic efficiency), full width (174.6 mm).
+
+Claim: every multi-agent architecture moves a model several-fold to the right in cost per item, but
+rarely upward in accuracy; the single agent lies on or near the cost-accuracy Pareto frontier.
+Panels: one per data set (VQA-RAD, SLAKE, MedXpertQA-MM; original images). x, nominal cost per
+1,000 items (US$, log scale; cached calls priced at list price); y, accuracy (%). Each model is a fan:
+its single-agent system (SAS, filled marker) joined to each of its multi-agent systems of 9 agents
+(open markers; spoke line style = architecture). Grey band, Pareto frontier over every system in the
+panel. Model colours and markers as in the paper; capability-ladder models in their family hue
+(r3_common.py).
+Data: results/cvpr_nmi.json ("cost"), experiments/cvpr_fig/extract_nmi.py.
+Nature-figure skill, Python backend.
+"""
+import sys
+import pathlib
+
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+
+# ── MANDATORY (nature-figure api.md): sans-serif stack + editable SVG/PDF text ──
+plt.rcParams['font.family'] = 'sans-serif'
+plt.rcParams['font.sans-serif'] = ['Arial', 'Helvetica', 'Liberation Sans', 'DejaVu Sans']
+plt.rcParams['svg.fonttype'] = 'none'
+mpl.rcParams['pdf.fonttype'] = 42
+mpl.rcParams.update({
+    "svg.fonttype": "none",
+    "pdf.fonttype": 42,
+    "font.size": 9,
+    "axes.labelsize": 9,
+    "axes.titlesize": 9,
+    "xtick.labelsize": 8.5,
+    "ytick.labelsize": 8.5,
+    "legend.fontsize": 8,
+    "axes.linewidth": 0.8,
+    "axes.spines.right": False,
+    "axes.spines.top": False,
+    "axes.grid": False,
+    "legend.frameon": False,
+    "xtick.major.width": 0.8,
+    "ytick.major.width": 0.8,
+    "xtick.major.size": 2.5,
+    "ytick.major.size": 2.5,
+    "lines.linewidth": 1.2,
+    "mathtext.fontset": "custom",
+    "mathtext.rm": "Liberation Sans",
+    "mathtext.it": "Liberation Sans:italic",
+    "mathtext.bf": "Liberation Sans:bold",
+    "mathtext.sf": "Liberation Sans",
+    "mathtext.cal": "Liberation Sans",
+    "mathtext.tt": "Liberation Sans",
+    "axes.labelcolor": "#1F1F1F",
+    "xtick.color": "#1F1F1F",
+    "ytick.color": "#1F1F1F",
+    "text.color": "#1F1F1F",
+    "axes.edgecolor": "#1F1F1F",
+})
+
+ALT = pathlib.Path(__file__).resolve().parent
+sys.path.insert(0, str(ALT.parent))
+sys.path.insert(0, str(pathlib.Path.home() / ".claude" / "skills" / "nature-figure" / "scripts"))
+from cf_style import (MM, PAL, BASE_PT, TICK_PT, LEGEND_PT, ANNOT_PT, ms, header)   # noqa: E402
+from audit_panel_alignment import require_matplotlib_panel_alignment            # noqa: E402
+from r3_common import NMI, STYLE, ARCHS, SETS, SET_LABEL, present                # noqa: E402
+
+import numpy as np                                                                 # noqa: E402
+from matplotlib.lines import Line2D                                                # noqa: E402
+from matplotlib.ticker import FixedLocator, NullLocator                            # noqa: E402
+
+REPO = ALT.parents[2]
+OUT = REPO / "paper" / "cvpr" / "figure_candidates" / "round3"
+QA = ALT.parent / "qa" / "r3"
+BASE, QBASE = str(OUT / "S3a_cost_fan"), str(QA / "S3a_cost_fan")
+
+width_mm = 174.6            # final printed width: CVPR \textwidth
+height_mm = 66
+
+COST = NMI["cost"]
+MODELS_P = present("cost")
+SPOKE = {"Independent": "-", "Centralized": (0, (1, 1.2)), "Decentralized": (0, (3.2, 1.6)),
+         "Hybrid": (0, (4, 1.2, 1, 1.2))}
+ARCH_P = [a for a in ARCHS[1:] if any(a in v for v in COST.values())]
+
+fig, axes = plt.subplots(1, 3, figsize=(width_mm * MM, height_mm * MM),
+                         gridspec_kw=dict(left=0.07, right=0.99, bottom=0.175, top=0.71, wspace=0.24))
+ratios = []
+for ax, s, letter in zip(axes, SETS, "abc"):
+    pts = []
+    for m in MODELS_P:
+        c = COST.get(f"{m}|{s}")
+        if not c or "SAS" not in c:
+            continue
+        st = STYLE[m]
+        x0, y0 = c["SAS"]["usd"] * 1000, c["SAS"]["acc"]
+        pts.append((x0, y0))
+        for a in ARCH_P:
+            if a not in c:
+                continue
+            x1, y1 = c[a]["usd"] * 1000, c[a]["acc"]
+            pts.append((x1, y1))
+            ratios.append((m, s, a, x1 / x0, y1 - y0))
+            ax.plot([x0, x1], [y0, y1], color=st["color"], lw=0.85, ls=SPOKE[a], alpha=0.85, zorder=3,
+                    solid_capstyle="butt", dash_capstyle="butt")
+            ax.plot([x1], [y1], ls="none", marker=st["marker"], ms=ms(st["marker"], 3.8), mfc="white",
+                    mec=st["color"], mew=0.9, zorder=5)
+        ax.plot([x0], [y0], ls="none", marker=st["marker"], ms=ms(st["marker"], 4.3), mfc=st["color"],
+                mec="white", mew=0.5, zorder=6)
+    # Pareto frontier: cheapest system, then every system more accurate than all cheaper ones
+    pts.sort()
+    front, best = [], -np.inf
+    for x, y in pts:
+        if y > best:
+            front.append((x, y)); best = y
+    fx = [p[0] for p in front]; fy = [p[1] for p in front]
+    xmin, xmax = min(p[0] for p in pts) / 1.6, max(p[0] for p in pts) * 1.6
+    ax.step(fx + [xmax], fy + [fy[-1]], where="post", color="#DEE1E6", lw=2.6, zorder=1, solid_capstyle="butt")
+    assert all(p[0] > 0 for p in pts)          # costs are positive: the log axis needs no pseudocount
+    ax.set_xscale("log")
+    ax.set_xlim(xmin, xmax)
+    ticks = [t for t in (0.2, 0.5, 1, 2, 5, 10, 20, 50) if xmin <= t <= xmax]
+    ax.xaxis.set_major_locator(FixedLocator(ticks))
+    ax.xaxis.set_minor_locator(NullLocator())
+    ax.set_xticklabels([f"{t:g}" for t in ticks], fontsize=TICK_PT)
+    ys = [p[1] for p in pts]
+    step = 10 if max(ys) - min(ys) > 20 else 5
+    lo = np.floor((min(ys) - 2) / step) * step
+    top_tick = np.floor((max(ys) + 1) / step) * step
+    ax.set_ylim(lo, max(ys) + 0.06 * (max(ys) - lo) + 1)
+    ax.yaxis.set_major_locator(FixedLocator(np.arange(lo, top_tick + 0.1, step)))
+    ax.tick_params(labelsize=TICK_PT)
+    if letter == "a":
+        ax.set_ylabel("Accuracy (%)", fontsize=BASE_PT)
+    header(ax, letter, SET_LABEL[s], y_offset_pt=6)
+
+fig.supxlabel("Nominal cost per 1,000 items (US$, log scale)", y=0.0, va="bottom", fontsize=BASE_PT)
+# legend strip above the panels: models (filled = SAS), then architectures (open marker + spoke style)
+mh = [Line2D([], [], ls="none", marker=STYLE[m]["marker"], ms=ms(STYLE[m]["marker"], 4.3), mfc=STYLE[m]["color"],
+             mec="white", mew=0.5, label=STYLE[m]["label"]) for m in MODELS_P]
+ah = [Line2D([], [], ls="none", marker="o", ms=4.2, mfc=PAL["neutral_dark"], mec="white", mew=0.5, label="SAS")]
+ah += [Line2D([], [], color=PAL["neutral_dark"], lw=0.9, ls=SPOKE[a], marker="o", ms=3.6, mfc="white",
+              mec=PAL["neutral_dark"], mew=0.9, markevery=[1], label=f"{a} MAS") for a in ARCH_P]
+ah += [Line2D([], [], color="#DEE1E6", lw=2.6, label="Pareto frontier")]
+fig.legend(handles=mh, loc="upper left", bbox_to_anchor=(0.06, 1.0), ncol=len(mh), fontsize=LEGEND_PT,
+           handlelength=1.0, handletextpad=0.4, columnspacing=1.3, borderaxespad=0.3)
+fig.legend(handles=ah, loc="upper left", bbox_to_anchor=(0.06, 0.915), ncol=len(ah), fontsize=LEGEND_PT,
+           handlelength=2.2, handletextpad=0.5, columnspacing=1.3, borderaxespad=0.3)
+
+require_matplotlib_panel_alignment(fig, axes=list(axes), panel_ids=["a", "b", "c"],
+                                   row_groups=[{"id": "sets", "panels": ["a", "b", "c"]}],
+                                   json_out=QBASE + ".alignment.json", overlay_svg=QBASE + ".alignment.svg",
+                                   tolerance_pt=1.5, gutter_tolerance_pt=1.5, strict=True)
+fig.savefig(BASE + ".svg")
+fig.savefig(BASE + ".pdf")
+fig.savefig(BASE + ".png", dpi=300)
+fig.savefig(QBASE + ".tiff", dpi=600, pil_kwargs={"compression": "tiff_lzw"})
+plt.close(fig)
+r = np.array([x[3] for x in ratios]); d = np.array([x[4] for x in ratios])
+print("cost ratio MAS/SAS %.1f-%.1f; accuracy change %.1f to %.1f pp" % (r.min(), r.max(), d.min(), d.max()))
+print("written", BASE)

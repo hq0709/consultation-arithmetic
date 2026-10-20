@@ -1,0 +1,12 @@
+"""S2b_gain_multiples -- round-3 candidate for the capability slot, full width (174.6 mm).
+
+Question (NMI capability ceiling, per architecture): within each multi-agent architecture, does
+the gain over SAS fall as SAS accuracy rises? Each panel prints its own OLS slope (pp of gain per
+pp of SAS accuracy; CI from resampling model x data-set systems).
+Panels a-d: Independent, Centralized, Decentralized, Hybrid at N = 9, same axes; a panel whose
+architecture has not finished running says so instead of showing points.
+Encodings: x, SAS accuracy (%); y, multi-agent gain (MAS minus SAS, pp) with paired item-bootstrap
+95% CI; colour and marker, model (as in Fig. 1; capability-ladder models in their family hue);
+dashed line, zero gain; grey line, OLS fit.
+Data: results/cvpr_nmi.json ("arch"). Nature-figure skill, Python backend.
+"""

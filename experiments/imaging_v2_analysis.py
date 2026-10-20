@@ -12,6 +12,8 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT)
 import numpy as np
 
 MODELS = ["gpt-5-mini", "gemini-3.7-flash", "claude-haiku-4-5-20251001", "qwen3.8-flash"]
+# NMI-style capability ladder (scripts/run_imaging_nmi.sh): within-family rungs added to the four models
+LADDER = ["gpt-5-nano", "gpt-5", "gemini-3.5-flash-lite", "claude-sonnet-5", "qwen3.8-max-0902"]
 SHORT = {"gpt-5-mini": "GPT-5 mini", "gemini-3.7-flash": "Gemini 3.7 Flash",
          "claude-haiku-4-5-20251001": "Claude Haiku 4.5", "qwen3.8-flash": "Qwen 3.8 Flash"}
 SETS = {"vqarad": "VQA-RAD", "slake": "SLAKE", "mxqa_mm_rad": "MedXpertQA-MM",
@@ -32,7 +34,7 @@ def cfg_hash(c):
 
 def planned(m):
     """-> {cfg_hash: label dict} for every configuration scripts/run_imaging_v2_full.sh runs."""
-    base = {"model": m, "seed": 1, "temp": 0.7, "effort": "low" if m == "gpt-5-mini" else None,
+    base = {"model": m, "seed": 1, "temp": 0.7, "effort": "low" if m.startswith("gpt-5") else None,
             "use_router": True, "generic_roles": False}
     out = {}
 
@@ -45,6 +47,9 @@ def planned(m):
             add({"cond": "panel", "roles": "specialty"}, arch="independent", N=n, image_mode=mode)
     for n in (1, 3, 9):
         add({"cond": "discussion", "roles": "specialty"}, arch="discussion", N=n, image_mode="real")
+    for n in (3, 9):            # NMI Centralized (orchestrator audits, star) and Hybrid (tiered referral)
+        add({"cond": "centralized", "roles": "specialty"}, arch="centralized", N=n, image_mode="real")
+        add({"cond": "hybrid", "roles": "specialty"}, arch="tiered", N=n, image_mode="real")
     add({"cond": "generic", "roles": "generic"}, arch="independent", N=9, generic_roles=True, image_mode="real")
     add({"cond": "render", "roles": "generic"}, arch="independent", N=9, generic_roles=True, image_mode="real",
         render=RENDER)
@@ -62,7 +67,7 @@ def planned(m):
     return out
 
 
-LABELS = {h: lab for m in MODELS for h, lab in planned(m).items()}
+LABELS = {h: lab for m in MODELS + LADDER for h, lab in planned(m).items()}
 
 
 PAIR_OPTS = {json.loads(l)["qid"]: json.loads(l)["options"] for l in open(ROOT / "data/slake_pairs_200.jsonl")}
