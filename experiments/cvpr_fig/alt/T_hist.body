@@ -1,0 +1,67 @@
+from cf_style import (MM, PAL, MODELS, MODEL, SETS, SET_LABEL, BASE_PT, TICK_PT, LEGEND_PT, ANNOT_PT,  # noqa: E402
+                      load)
+from audit_panel_alignment import require_matplotlib_panel_alignment                             # noqa: E402
+
+import json                                                                                         # noqa: E402
+import numpy as np                                                                                  # noqa: E402
+from matplotlib.lines import Line2D                                                                 # noqa: E402
+from matplotlib.patches import Patch                                                                # noqa: E402
+from scipy.stats import binom, betabinom                                                            # noqa: E402
+
+REPO = ALT.parents[2]
+OUT = REPO / "paper" / "cvpr" / "figure_candidates" / "alt"
+QA = ALT.parent / "qa" / "alt"
+BASE, QBASE = str(OUT / "T_hist"), str(QA / "T_hist")
+
+width_mm = 174.6            # final printed width: CVPR \textwidth
+height_mm = 96
+
+# ── data (read-only): number of correct agents per item (initial answers, Independent MAS of 9) ──
+H = json.loads((REPO / "results" / "cvpr_items.json").read_text())["hist"]
+A = load("A")
+k = np.arange(10)
+
+fig, axes = plt.subplots(3, 4, figsize=(width_mm * MM, height_mm * MM), sharex=True, sharey=True,
+                         gridspec_kw=dict(left=0.14, right=0.99, bottom=0.17, top=0.92, wspace=0.12, hspace=0.32))
+for i, s in enumerate(SETS):
+    for j, m in enumerate(MODELS):
+        ax = axes[i, j]
+        c = np.array(H[f"{m}|{s}"])
+        assert len(c) == 250
+        obs = np.bincount(c, minlength=10) / len(c) * 100
+        pbar = c.mean() / 9
+        phi = A[f"{m}|{s}"]["real"]["phi"][0]
+        a_, b_ = pbar * (1 - phi) / phi, (1 - pbar) * (1 - phi) / phi
+        ax.bar(k, obs, width=0.78, color=MODEL[m]["color"], alpha=0.9, lw=0, zorder=2)
+        ax.plot(k, binom.pmf(k, 9, pbar) * 100, color=PAL["neutral_dark"], lw=0.9, ls=(0, (3, 1.6)),
+                marker="o", ms=2.2, zorder=4)
+        ax.plot(k, betabinom.pmf(k, 9, a_, b_) * 100, color=PAL["ink"], lw=1.0, zorder=5)
+        ax.text(0.5, 0.97, rf"$\phi$ = {phi:.2f}, $N_{{\mathrm{{eff}}}}$ = {9 / (1 + 8 * phi):.2f}",
+                transform=ax.transAxes, ha="center", va="top", fontsize=ANNOT_PT, color=PAL["ink"])
+        ax.set_ylim(0, 100)
+        ax.set_xlim(-0.6, 9.6)
+        ax.set_xticks([0, 3, 6, 9])
+        ax.set_yticks([0, 50, 100])
+        if i == 0:
+            ax.set_title(MODEL[m]["label"], fontsize=BASE_PT, pad=4)
+        if j == 0:
+            ax.set_ylabel("Items (%)", fontsize=BASE_PT)
+            ax.text(-0.5, 0.5, SET_LABEL[s], transform=ax.transAxes, rotation=90, ha="center", va="center",
+                    fontsize=BASE_PT, fontweight="bold")
+fig.supxlabel("Correct agents per item (of 9)", y=0.085, fontsize=BASE_PT)
+fig.legend(handles=[Patch(color=PAL["neutral_mid"], label="Observed"),
+                    Line2D([], [], color=PAL["neutral_dark"], lw=0.9, ls=(0, (3, 1.6)), marker="o", ms=2.2,
+                           label="Independent agents (binomial)"),
+                    Line2D([], [], color=PAL["ink"], lw=1.0, label=r"Beta-binomial, observed $\phi$")],
+           loc="lower center", ncol=3, bbox_to_anchor=(0.53, 0.0), handlelength=1.8, columnspacing=1.4,
+           fontsize=LEGEND_PT, borderaxespad=0.2)
+
+# ── render-time alignment gate (small multiples; no panel letters), then exports ──
+require_matplotlib_panel_alignment(fig, json_out=QBASE + ".alignment.json", overlay_svg=QBASE + ".alignment.svg",
+                                   tolerance_pt=1.5, gutter_tolerance_pt=1.5, require_panel_labels=False, strict=True)
+fig.savefig(BASE + ".svg")
+fig.savefig(BASE + ".pdf")
+fig.savefig(BASE + ".png", dpi=300)
+fig.savefig(QBASE + ".tiff", dpi=600, pil_kwargs={"compression": "tiff_lzw"})
+plt.close(fig)
+print("written", BASE)

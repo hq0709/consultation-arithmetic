@@ -1,0 +1,11 @@
+"""A6_example — candidate for Fig. 6 (qualitative), full width (174.6 mm).
+
+Claim: the perception module decides what the reasoning modules can know: with the Gemini 3.7 Flash
+report every reasoning module answers correctly, with the other two reports none does.
+Item vqarad/test-261 ("is there biliary duct dilation?", reference Yes). Left: the image (bottom caption strip of the MedPix file cropped); below it,
+agents of each model reading the image (self-consistency, 9 agents) who answered correctly. Right:
+slot-0 query-agnostic reports of the three perception modules (verbatim excerpts) and, for each, the
+agents of each reasoning module (9 per model, own-report condition) who answered correctly.
+Data: results/cvpr_items.json (reports and per-item accuracy).
+Nature-figure skill, Python backend.
+"""

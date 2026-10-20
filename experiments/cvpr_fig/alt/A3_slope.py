@@ -1,0 +1,116 @@
+"""A3_slope — candidate for Fig. 3, full width (174.6 mm): slope charts.
+
+Claim: going from one agent to nine (Independent) and to debate (Decentralized) leaves accuracy
+flat for three models; only Qwen 3.8 Flash rises.
+Each facet: accuracy of the single agent, the Independent MAS of 9 and the Decentralized MAS of 9
+(item bootstrap 95% CI), one line per model; 250 items per data set.
+Data: results/imaging_v2_A.json.
+Nature-figure skill, Python backend.
+"""
+import sys
+import pathlib
+
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+
+# ── MANDATORY (nature-figure api.md): sans-serif stack + editable SVG/PDF text ──
+plt.rcParams['font.family'] = 'sans-serif'
+plt.rcParams['font.sans-serif'] = ['Arial', 'Helvetica', 'Liberation Sans', 'DejaVu Sans']
+plt.rcParams['svg.fonttype'] = 'none'
+mpl.rcParams['pdf.fonttype'] = 42
+mpl.rcParams.update({
+    "svg.fonttype": "none",
+    "pdf.fonttype": 42,
+    "font.size": 9,
+    "axes.labelsize": 9,
+    "axes.titlesize": 9,
+    "xtick.labelsize": 8.5,
+    "ytick.labelsize": 8.5,
+    "legend.fontsize": 8,
+    "axes.linewidth": 0.8,
+    "axes.spines.right": False,
+    "axes.spines.top": False,
+    "axes.grid": False,
+    "legend.frameon": False,
+    "xtick.major.width": 0.8,
+    "ytick.major.width": 0.8,
+    "xtick.major.size": 2.5,
+    "ytick.major.size": 2.5,
+    "lines.linewidth": 1.2,
+    "mathtext.fontset": "custom",
+    "mathtext.rm": "Liberation Sans",
+    "mathtext.it": "Liberation Sans:italic",
+    "mathtext.bf": "Liberation Sans:bold",
+    "mathtext.sf": "Liberation Sans",
+    "mathtext.cal": "Liberation Sans",
+    "mathtext.tt": "Liberation Sans",
+    "axes.labelcolor": "#1F1F1F",
+    "xtick.color": "#1F1F1F",
+    "ytick.color": "#1F1F1F",
+    "text.color": "#1F1F1F",
+    "axes.edgecolor": "#1F1F1F",
+})
+
+ALT = pathlib.Path(__file__).resolve().parent
+sys.path.insert(0, str(ALT.parent))
+sys.path.insert(0, str(pathlib.Path.home() / ".claude" / "skills" / "nature-figure" / "scripts"))
+from cf_style import (MM, PAL, MODELS, MODEL, SETS, SET_LABEL, BASE_PT, LEGEND_PT, ANNOT_PT, load, ms,  # noqa: E402
+                      add_panel_label)
+from audit_panel_alignment import require_matplotlib_panel_alignment                                  # noqa: E402
+
+from matplotlib.lines import Line2D                                                                    # noqa: E402
+
+REPO = ALT.parents[2]
+OUT = REPO / "paper" / "cvpr" / "figure_candidates" / "alt"
+QA = ALT.parent / "qa" / "alt"
+BASE, QBASE = str(OUT / "A3_slope"), str(QA / "A3_slope")
+
+width_mm = 174.6            # final printed width: CVPR \textwidth
+height_mm = 62
+
+A = load("A")
+XS = [0, 1, 2]
+XL = ["Single\nagent", "Independent\n(9 agents)", "Decentralized\n(9 agents)"]
+OFF = {m: (i - 1.5) * 0.06 for i, m in enumerate(MODELS)}       # small horizontal dodge per model
+
+fig, axes = plt.subplots(1, 3, figsize=(width_mm * MM, height_mm * MM), sharey=True,
+                         gridspec_kw=dict(left=0.075, right=0.985, bottom=0.25, top=0.86, wspace=0.12))
+for ax, s, letter in zip(axes, SETS, "abc"):
+    for m in MODELS:
+        d = A[f"{m}|{s}"]
+        vals = [d["real"]["single"], d["real"]["panel9"], d["discussion"]["acc9"]]
+        st = MODEL[m]
+        xs = [x + OFF[m] for x in XS]
+        ax.plot(xs, [v[0] for v in vals], color=st["color"], lw=1.2, zorder=2)
+        for x, v in zip(xs, vals):
+            ax.plot([x, x], [v[1], v[2]], color=st["color"], lw=0.8, solid_capstyle="butt", zorder=3)
+            ax.plot([x], [v[0]], ls="none", marker=st["marker"], ms=ms(st["marker"], 4.0), mfc=st["color"],
+                    mec="white", mew=0.4, zorder=4)
+    if s == "mxqa_mm_rad":
+        ax.axhline(20, color=PAL["neutral_mid"], lw=0.7, ls=(0, (3, 2)), zorder=0)
+        ax.text(-0.3, 20.8, "chance", ha="left", va="bottom", fontsize=ANNOT_PT, color=PAL["neutral_dark"])
+    else:
+        ax.axhline(50, color=PAL["neutral_mid"], lw=0.7, ls=(0, (3, 2)), zorder=0)
+        ax.text(-0.3, 49.2, "chance", ha="left", va="top", fontsize=ANNOT_PT, color=PAL["neutral_dark"])
+    ax.set_xticks(XS, XL, fontsize=8)
+    ax.set_xlim(-0.35, 2.35)
+    ax.set_title(SET_LABEL[s], fontsize=BASE_PT, pad=4)
+    add_panel_label(ax, letter, x_offset_pt=-2, y_offset_pt=4)
+axes[0].set_ylim(15, 100)
+axes[0].set_yticks([20, 40, 60, 80, 100])
+axes[0].set_ylabel("Accuracy (%)")
+fig.legend(handles=[Line2D([], [], color=MODEL[m]["color"], lw=1.2, marker=MODEL[m]["marker"],
+                           ms=ms(MODEL[m]["marker"], 4.0), mfc=MODEL[m]["color"], mec="white", label=MODEL[m]["label"])
+                    for m in MODELS], loc="lower center", ncol=4, bbox_to_anchor=(0.53, 0.0), handlelength=1.6,
+           columnspacing=1.5, fontsize=LEGEND_PT, borderaxespad=0.2)
+
+require_matplotlib_panel_alignment(fig, json_out=QBASE + ".alignment.json", overlay_svg=QBASE + ".alignment.svg",
+                                   tolerance_pt=1.5, gutter_tolerance_pt=1.5, require_panel_labels=True, strict=True)
+fig.savefig(BASE + ".svg")
+fig.savefig(BASE + ".pdf")
+fig.savefig(BASE + ".png", dpi=300)
+fig.savefig(QBASE + ".tiff", dpi=600, pil_kwargs={"compression": "tiff_lzw"})
+plt.close(fig)
+print("written", BASE)

@@ -1,0 +1,8 @@
+"""T_hist — candidate (teaser alternative or Fig. 3 companion), full width (174.6 mm).
+
+Claim: the agents of one VLM are right or wrong together: most items have 0 or 9 correct agents,
+where independent agents of the same accuracy would rarely give either; the beta-binomial with the
+observed error correlation reproduces the U shape.
+Data: results/cvpr_items.json (experiments/cvpr_fig/extract_items.py) and results/imaging_v2_A.json.
+Nature-figure skill, Python backend.
+"""

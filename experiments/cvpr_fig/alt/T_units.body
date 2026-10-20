@@ -1,0 +1,61 @@
+from cf_style import (MM, PAL, MODELS, MODEL, SETS, SET_LABEL, BASE_PT, TICK_PT, ANNOT_PT, load,  # noqa: E402
+                      neff)
+from audit_panel_alignment import require_matplotlib_panel_alignment                          # noqa: E402
+
+from matplotlib.patches import Circle, Wedge                                                 # noqa: E402
+
+REPO = ALT.parents[2]
+OUT = REPO / "paper" / "cvpr" / "figure_candidates" / "alt"
+QA = ALT.parent / "qa" / "alt"
+BASE, QBASE = str(OUT / "T_units"), str(QA / "T_units")
+
+width_mm = 83.34            # final printed width: CVPR \columnwidth
+height_mm = 72
+
+A = load("A")
+GAP = 1.4
+ypos, y_head, y = {}, {}, 0.0
+for s in SETS:
+    y_head[s] = y
+    y -= 1.0
+    for m in MODELS:
+        ypos[(s, m)] = y
+        y -= 1.0
+    y -= GAP - 1.0
+R = 0.36                                    # circle radius in row units
+
+fig = plt.figure(figsize=(width_mm * MM, height_mm * MM))
+ax = fig.add_axes([0.30, 0.02, 0.56, 0.93])
+for (s, m), yy in ypos.items():
+    ne = float(neff(A[f"{m}|{s}"]["real"]["phi"][0]))
+    col = MODEL[m]["color"]
+    for i in range(9):
+        x = float(i)
+        ax.add_patch(Circle((x, yy), R, facecolor="white", edgecolor=PAL["neutral_light"], lw=0.7, zorder=2))
+        share = min(max(ne - i, 0.0), 1.0)
+        if share >= 1:
+            ax.add_patch(Circle((x, yy), R, facecolor=col, edgecolor=col, lw=0.7, zorder=3))
+        elif share > 0:                     # wedge from 12 o'clock, clockwise: area share = fraction
+            ax.add_patch(Wedge((x, yy), R, 90 - 360 * share, 90, facecolor=col, edgecolor="none", zorder=3))
+    ax.text(9.0, yy, f"{ne:.2f}", ha="left", va="center", fontsize=TICK_PT, color=PAL["ink"])
+    ax.text(-0.9, yy, MODEL[m]["label"], ha="right", va="center", fontsize=TICK_PT, color=PAL["ink"])
+for s in SETS:
+    ax.text(-0.9, y_head[s], SET_LABEL[s], ha="right", va="center", fontsize=BASE_PT, fontweight="bold")
+top = max(y_head.values())
+ax.text(4.0, top + 0.95, "9 agents; filled area, effective number of independent agents", ha="center",
+        va="bottom", fontsize=ANNOT_PT, color=PAL["neutral_dark"])
+ax.text(9.0, top, r"$N_{\mathrm{eff}}$", ha="left", va="center", fontsize=BASE_PT)
+ax.set_xlim(-0.6, 9.6)
+ax.set_ylim(min(ypos.values()) - 0.6, top + 1.6)
+ax.set_aspect("equal", adjustable="box")
+ax.axis("off")
+
+require_matplotlib_panel_alignment(fig, axes=[ax], json_out=QBASE + ".alignment.json",
+                                   overlay_svg=QBASE + ".alignment.svg", tolerance_pt=1.5, gutter_tolerance_pt=1.5,
+                                   require_panel_labels=False, strict=False)
+fig.savefig(BASE + ".svg")
+fig.savefig(BASE + ".pdf")
+fig.savefig(BASE + ".png", dpi=300)
+fig.savefig(QBASE + ".tiff", dpi=600, pil_kwargs={"compression": "tiff_lzw"})
+plt.close(fig)
+print("written", BASE)

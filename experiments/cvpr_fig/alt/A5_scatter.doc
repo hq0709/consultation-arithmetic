@@ -1,0 +1,8 @@
+"""A5_scatter — candidate for Fig. 5, one column (83.34 mm): scatter with 95% CI crosshairs.
+
+Claim: models whose answers follow the queried region also answer paired images correctly more
+often among the proprietary models; open-weight models spread along both axes.
+x: occlusion sensitivity on SLAKE-target (pp); y: pair accuracy on SLAKE-pairs (%).
+Data: results/imaging_v2_A.json, results/imaging_v2_D.json.
+Nature-figure skill, Python backend.
+"""

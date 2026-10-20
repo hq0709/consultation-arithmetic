@@ -1,0 +1,9 @@
+"""A7_bump — candidate for Fig. 7, one column (83.34 mm): bump chart of the matched contrasts.
+
+Claim: the ordering of shared components by how much they correlate two agents is stable across data
+sets (model, then perception module, then report); only the reasoning module moves up on
+MedXpertQA-MM. Rank 1 = largest reduction in error correlation; numbers, mean change over models.
+In-context examples were run on VQA-RAD and SLAKE only.
+Data: results/imaging_v2_C.json.
+Nature-figure skill, Python backend.
+"""

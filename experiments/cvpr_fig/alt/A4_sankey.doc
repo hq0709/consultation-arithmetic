@@ -1,0 +1,9 @@
+"""A4_sankey — candidate for Fig. 4 (c), full width (174.6 mm): alluvial plots.
+
+Claim: on MedXpertQA-MM most agent answers have the same correctness with the original and with the
+blank image; on VQA-RAD and SLAKE the image changes the correctness of a third to a half of them.
+Each panel: every initial answer of the Independent MAS of 9 (250 items), right or wrong with the
+original image (left) and with the blank image (right). Dark ribbons: correctness changed.
+Data: results/imaging_v2_A.json, key prior_decomposition.
+Nature-figure skill, Python backend.
+"""

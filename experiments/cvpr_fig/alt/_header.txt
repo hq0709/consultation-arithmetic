@@ -1,0 +1,49 @@
+import sys
+import pathlib
+
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+
+# ── MANDATORY (nature-figure api.md): sans-serif stack + editable SVG/PDF text ──
+plt.rcParams['font.family'] = 'sans-serif'
+plt.rcParams['font.sans-serif'] = ['Arial', 'Helvetica', 'Liberation Sans', 'DejaVu Sans']
+plt.rcParams['svg.fonttype'] = 'none'
+mpl.rcParams['pdf.fonttype'] = 42
+mpl.rcParams.update({
+    "svg.fonttype": "none",
+    "pdf.fonttype": 42,
+    "font.size": 9,
+    "axes.labelsize": 9,
+    "axes.titlesize": 9,
+    "xtick.labelsize": 8.5,
+    "ytick.labelsize": 8.5,
+    "legend.fontsize": 8,
+    "axes.linewidth": 0.8,
+    "axes.spines.right": False,
+    "axes.spines.top": False,
+    "axes.grid": False,
+    "legend.frameon": False,
+    "xtick.major.width": 0.8,
+    "ytick.major.width": 0.8,
+    "xtick.major.size": 2.5,
+    "ytick.major.size": 2.5,
+    "lines.linewidth": 1.2,
+    "mathtext.fontset": "custom",
+    "mathtext.rm": "Liberation Sans",
+    "mathtext.it": "Liberation Sans:italic",
+    "mathtext.bf": "Liberation Sans:bold",
+    "mathtext.sf": "Liberation Sans",
+    "mathtext.cal": "Liberation Sans",
+    "mathtext.tt": "Liberation Sans",
+    "axes.labelcolor": "#1F1F1F",
+    "xtick.color": "#1F1F1F",
+    "ytick.color": "#1F1F1F",
+    "text.color": "#1F1F1F",
+    "axes.edgecolor": "#1F1F1F",
+})
+
+ALT = pathlib.Path(__file__).resolve().parent
+sys.path.insert(0, str(ALT.parent))
+sys.path.insert(0, str(pathlib.Path.home() / ".claude" / "skills" / "nature-figure" / "scripts"))

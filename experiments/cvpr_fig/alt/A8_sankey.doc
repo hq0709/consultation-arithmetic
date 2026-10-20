@@ -1,0 +1,9 @@
+"""A8_sankey — candidate for Fig. 8, full width (174.6 mm): alluvial plots of debate.
+
+Claim: debate keeps correct majority answers and turns most correct minority answers wrong.
+Each panel: every agent answer of the Decentralized MAS of 9 (4 models x 250 items x 9 agents),
+from its initial state (correct and in the initial majority, correct and in the minority, wrong) to
+its final state. Counts summed over the four models; the annotation gives the per-model range.
+Data: results/imaging_v2_A.json, key discussion.conformity.
+Nature-figure skill, Python backend.
+"""

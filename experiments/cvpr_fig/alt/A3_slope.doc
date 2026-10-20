@@ -1,0 +1,9 @@
+"""A3_slope — candidate for Fig. 3, full width (174.6 mm): slope charts.
+
+Claim: going from one agent to nine (Independent) and to debate (Decentralized) leaves accuracy
+flat for three models; only Qwen 3.8 Flash rises.
+Each facet: accuracy of the single agent, the Independent MAS of 9 and the Decentralized MAS of 9
+(item bootstrap 95% CI), one line per model; 250 items per data set.
+Data: results/imaging_v2_A.json.
+Nature-figure skill, Python backend.
+"""

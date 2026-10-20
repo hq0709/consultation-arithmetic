@@ -1,0 +1,8 @@
+"""T_phase — candidate teaser, one column (83.34 mm).
+
+Claim: majority voting gains only where error correlation is low; every observed system of 9 agents
+sits in the high-correlation band where the predicted gain is near zero.
+Colour: beta-binomial gain of a majority of 9 over its mean agent (pp), diverging at 0.
+Data: results/imaging_v2_A.json, key panel_arithmetic.
+Nature-figure skill, Python backend.
+"""

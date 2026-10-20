@@ -1,0 +1,8 @@
+"""T_units — candidate teaser, one column (83.34 mm): unit chart.
+
+Claim: a system of 9 agents from one VLM carries the information of 1.17 to 1.99 independent agents.
+Each row: 9 circles, one per agent; the filled area equals N_eff = 9 / (1 + 8 phi) (Independent MAS,
+initial answers, original images).
+Data: results/imaging_v2_A.json.
+Nature-figure skill, Python backend.
+"""

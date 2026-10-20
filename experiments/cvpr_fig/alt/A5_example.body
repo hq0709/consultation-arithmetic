@@ -1,0 +1,114 @@
+from cf_style import (MM, PAL, MODEL, BASE_PT, LEGEND_PT, ANNOT_PT, ms)    # noqa: E402
+from audit_panel_alignment import require_matplotlib_panel_alignment       # noqa: E402
+
+import json                                                                   # noqa: E402
+import numpy as np                                                            # noqa: E402
+from PIL import Image                                                         # noqa: E402
+from matplotlib.patches import Rectangle                                      # noqa: E402
+
+REPO = ALT.parents[2]
+sys.path.insert(0, str(REPO))
+from common.llm import _render                                                # noqa: E402
+
+OUT = REPO / "paper" / "cvpr" / "figure_candidates" / "alt"
+QA = ALT.parent / "qa" / "alt"
+BASE, QBASE = str(OUT / "A5_example"), str(QA / "A5_example")
+
+width_mm = 174.6            # final printed width: CVPR \textwidth
+height_mm = 64
+
+D = json.loads((REPO / "results" / "cvpr_items.json").read_text())
+occ = D["occlusion"]["slakeT/test-12078"]
+pair = D["pairs"]["slakeP/005"]
+ORDER = ["gemini-3.7-flash", "gpt-5-mini", "claude-haiku-4-5-20251001"]
+W, H = width_mm, height_mm
+SIDE, GAP, BGAP, X0, Y0 = 28.5, 3.0, 10.0, 9.0, 18.0          # mm
+xs_a = [X0 + i * (SIDE + GAP) for i in range(3)]
+xs_b = [xs_a[2] + SIDE + BGAP + i * (SIDE + GAP) for i in range(2)]
+assert xs_b[1] + SIDE <= W - 2
+
+
+def img(path, ops=()):
+    with Image.open(REPO / path) as im:
+        return np.asarray(_render(im.convert("RGB"), list(ops)))
+
+
+fig = plt.figure(figsize=(W * MM, H * MM))
+over = fig.add_axes([0, 0, 1, 1])          # millimetre layer for text and model markers
+over.set_xlim(0, W); over.set_ylim(0, H); over.axis("off")
+
+
+def picture(x, im, title):
+    ax = fig.add_axes([x / W, Y0 / H, SIDE / W, SIDE / H])
+    ax.imshow(im, interpolation="lanczos")
+    ax.set_xticks([]); ax.set_yticks([])
+    for sp in ax.spines.values():
+        sp.set_visible(True); sp.set_linewidth(0.5); sp.set_color(PAL["neutral_mid"])
+    over.text(x + SIDE / 2, Y0 + SIDE + 1.2, title, ha="center", va="bottom", fontsize=LEGEND_PT)
+    return ax
+
+
+def marker(x, y, m):
+    st = MODEL[m]
+    over.plot([x], [y], ls="none", marker=st["marker"], ms=ms(st["marker"], 3.6), mfc=st["color"], mec="white",
+              mew=0.4, zorder=5)
+
+
+def check(x, y, s, color):
+    over.plot([x - s, x - 0.3 * s, x + s], [y, y - 0.7 * s, y + 0.9 * s], color=color, lw=1.0, solid_capstyle="round")
+
+
+def cross(x, y, s, color):
+    over.plot([x - s, x + s], [y - s, y + s], color=color, lw=1.0, solid_capstyle="round")
+    over.plot([x - s, x + s], [y + s, y - s], color=color, lw=1.0, solid_capstyle="round")
+
+
+tb, cb = occ["target_box"], occ["control_box"]
+ims = [img(occ["image"]), img(occ["image"], [f"occ={','.join(f'{v:.0f}' for v in tb)}"]),
+       img(occ["image"], [f"occ={','.join(f'{v:.0f}' for v in cb)}"])]
+axes = [picture(x, im, t) for x, im, t in zip(xs_a, ims, ["Original", "Target occluded", "Control occluded"])]
+for bx, col in ((tb, PAL["neg_dark"]), (cb, PAL["pos_dark"])):
+    axes[0].add_patch(Rectangle((bx[0], bx[1]), bx[2] - bx[0], bx[3] - bx[1], fill=False, ec=col, lw=0.9, ls=(0, (3, 1.5))))
+for k, m in enumerate(ORDER):
+    yy = Y0 - 3.4 - k * 4.0
+    for x, key in zip(xs_a, (None, "target", "control")):
+        n = round(occ["models"][m]["correct_real"] * 9) if key is None else round(occ["models"][m][key] * 9)
+        marker(x + 1.6, yy, m)
+        over.text(x + 3.6, yy, f"{n}/9 answer Yes" if key is None else f"{n}/9 changed", ha="left", va="center",
+                  fontsize=ANNOT_PT)
+pax = [picture(x, img(pair[k]["image"]), t) for x, k, t in
+       zip(xs_b, ("a", "b"), ("Image 1 (reference: Yes)", "Image 2 (reference: No)"))]
+for x, key in zip(xs_b, ("a", "b")):
+    for k, m in enumerate(ORDER):
+        yy = Y0 - 3.4 - k * 4.0
+        ans = pair["models"][m][key]
+        ok = ans == pair[key]["gold"]
+        marker(x + 1.6, yy, m)
+        over.text(x + 3.6, yy, f"answers {ans}", ha="left", va="center", fontsize=ANNOT_PT,
+                  color=PAL["ink"] if ok else PAL["neg_dark"])
+        (check if ok else cross)(x + 23.0, yy, 0.9, PAL["ink"] if ok else PAL["neg_dark"])
+over.text(xs_a[0] - 7.5, H - 1.0, "a", ha="left", va="top", fontsize=10, fontweight="bold")
+over.text(xs_a[0], H - 1.3, "Region occlusion (SLAKE-target)", ha="left", va="top", fontsize=BASE_PT)
+over.text(xs_a[0], H - 5.6, "\u201cDoes the picture contain liver?\u201d  Reference: Yes", ha="left", va="top",
+          fontsize=LEGEND_PT, style="italic", color=PAL["neutral_dark"])
+over.text(xs_b[0] - 6.5, H - 1.0, "b", ha="left", va="top", fontsize=10, fontweight="bold")
+over.text(xs_b[0], H - 1.3, "Paired images (SLAKE-pairs)", ha="left", va="top", fontsize=BASE_PT)
+over.text(xs_b[0], H - 5.6, "\u201c" + pair["stem"] + "\u201d  on both images", ha="left", va="top",
+          fontsize=LEGEND_PT, style="italic", color=PAL["neutral_dark"])
+# model key
+kx = xs_a[0]
+for m in ORDER:
+    marker(kx + 1.6, 2.4, m)
+    over.text(kx + 3.6, 2.4, MODEL[m]["label"], ha="left", va="center", fontsize=ANNOT_PT, color=PAL["neutral_dark"])
+    kx += 31
+
+require_matplotlib_panel_alignment(fig, axes=axes + pax, panel_ids=["a1", "a2", "a3", "b1", "b2"],
+                                   row_groups=[{"id": "a-images", "panels": ["a1", "a2", "a3"]}, {"id": "b-images", "panels": ["b1", "b2"]}],
+                                   json_out=QBASE + ".alignment.json", overlay_svg=QBASE + ".alignment.svg",
+                                   tolerance_pt=1.5, gutter_tolerance_pt=1.5, require_panel_labels=False, strict=False)
+fig.savefig(BASE + ".svg", dpi=600)
+fig.savefig(BASE + ".pdf", dpi=600)
+fig.savefig(BASE + ".png", dpi=300)
+fig.savefig(QBASE + ".tiff", dpi=600, pil_kwargs={"compression": "tiff_lzw"})
+plt.close(fig)
+print("written", BASE)

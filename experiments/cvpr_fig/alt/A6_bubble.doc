@@ -1,0 +1,10 @@
+"""A6_bubble — candidate for Fig. 6 (a), full width (174.6 mm): bubble matrices.
+
+Claim: reports from the Gemini 3.7 Flash perception module raise every reasoning module above its own
+image reading, and Claude Haiku 4.5 reports lower them.
+Each facet: reasoning module (rows) by perception module (columns); bubble area and colour, mean agent
+accuracy reading that perception module own reports minus the same model reading the image (pp);
+numbers, the estimate; outlined, 95% CI excludes zero.
+Data: results/imaging_v2_B.json.
+Nature-figure skill, Python backend.
+"""
