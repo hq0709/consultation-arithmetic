@@ -1,11 +1,13 @@
-"""A6_example — candidate for Fig. 6 (qualitative), full width (174.6 mm).
+"""A6_example — Fig. 8 of the CVPR paper (qualitative), full width (174.6 mm).
 
 Claim: the perception module decides what the reasoning modules can know: with the Gemini 3.7 Flash
 report every reasoning module answers correctly, with the other two reports none does.
-Item vqarad/test-261 ("is there biliary duct dilation?", reference Yes). Left: the image (bottom caption strip of the MedPix file cropped); below it,
-agents of each model reading the image (self-consistency, 9 agents) who answered correctly. Right:
-slot-0 query-agnostic reports of the three perception modules (verbatim excerpts) and, for each, the
-agents of each reasoning module (9 per model, own-report condition) who answered correctly.
-Data: results/cvpr_items.json (reports and per-item accuracy).
-Nature-figure skill, Python backend.
+Layout: a table. Columns are the inputs: the image (VQA-RAD vqarad/test-261, "is there biliary duct
+dilation?", reference Yes; bottom caption strip of the MedPix file cropped) and the slot-0
+query-agnostic report of each perception module (verbatim excerpts; the finding that answers the
+question highlighted). Rows are the reasoning modules (logo and name); each cell shows the 9 agents,
+filled = correct, open = wrong: self-consistency agents reading the image, or agents each reading its
+own report from that perception module.
+Data: results/cvpr_items.json (reports and every agent's answer). Logos: experiments/cvpr_fig/logos.py
+(lobe-icons, MIT). Font: Comic Sans MS 2.10 (experiments/cvpr_fig/fonts). Nature-figure skill, Python backend.
 """

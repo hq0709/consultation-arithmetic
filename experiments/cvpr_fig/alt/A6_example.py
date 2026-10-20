@@ -1,13 +1,15 @@
-"""A6_example — candidate for Fig. 6 (qualitative), full width (174.6 mm).
+"""A6_example — Fig. 8 of the CVPR paper (qualitative), full width (174.6 mm).
 
 Claim: the perception module decides what the reasoning modules can know: with the Gemini 3.7 Flash
 report every reasoning module answers correctly, with the other two reports none does.
-Item vqarad/test-261 ("is there biliary duct dilation?", reference Yes). Left: the image (bottom caption strip of the MedPix file cropped); below it,
-agents of each model reading the image (self-consistency, 9 agents) who answered correctly. Right:
-slot-0 query-agnostic reports of the three perception modules (verbatim excerpts) and, for each, the
-agents of each reasoning module (9 per model, own-report condition) who answered correctly.
-Data: results/cvpr_items.json (reports and per-item accuracy).
-Nature-figure skill, Python backend.
+Layout: a table. Columns are the inputs: the image (VQA-RAD vqarad/test-261, "is there biliary duct
+dilation?", reference Yes; bottom caption strip of the MedPix file cropped) and the slot-0
+query-agnostic report of each perception module (verbatim excerpts; the finding that answers the
+question highlighted). Rows are the reasoning modules (logo and name); each cell shows the 9 agents,
+filled = correct, open = wrong: self-consistency agents reading the image, or agents each reading its
+own report from that perception module.
+Data: results/cvpr_items.json (reports and every agent's answer). Logos: experiments/cvpr_fig/logos.py
+(lobe-icons, MIT). Font: Comic Sans MS 2.10 (experiments/cvpr_fig/fonts). Nature-figure skill, Python backend.
 """
 import sys
 import pathlib
@@ -58,92 +60,115 @@ mpl.rcParams.update({
 ALT = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(ALT.parent))
 sys.path.insert(0, str(pathlib.Path.home() / ".claude" / "skills" / "nature-figure" / "scripts"))
-from cf_style import (MM, PAL, MODEL, BASE_PT, LEGEND_PT, ANNOT_PT, ms)    # noqa: E402
-from audit_panel_alignment import require_matplotlib_panel_alignment       # noqa: E402
+from cf_style import (MM, MODEL, LEGEND_PT, ANNOT_PT)                            # noqa: E402
+from audit_panel_alignment import require_matplotlib_panel_alignment           # noqa: E402
+from example_kit import (STYLE as K, use_comic, runs, pill, agents, picture, paragraph, square, tw, avatar, qtag,
+                         hline)                                                    # noqa: E402
 
-import json                                                                   # noqa: E402
-import textwrap                                                               # noqa: E402
-import numpy as np                                                            # noqa: E402
-from PIL import Image                                                         # noqa: E402
-from matplotlib.patches import FancyBboxPatch                                 # noqa: E402
+import json                                                                       # noqa: E402
+import numpy as np                                                                # noqa: E402
+from PIL import Image                                                             # noqa: E402
 
+use_comic()                 # the qualitative figures are set in Comic Sans MS (author's choice)
 REPO = ALT.parents[2]
 OUT = REPO / "paper" / "cvpr" / "figure_candidates" / "alt"
 QA = ALT.parent / "qa" / "alt"
 BASE, QBASE = str(OUT / "A6_example"), str(QA / "A6_example")
 
 width_mm = 174.6            # final printed width: CVPR \textwidth
-height_mm = 66
+height_mm = 61.8
 
 Q = "vqarad/test-261"
 v = json.loads((REPO / "results" / "cvpr_items.json").read_text())["reports"][Q]
 REASON = ["gemini-3.7-flash", "gpt-5-mini", "claude-haiku-4-5-20251001"]
 PERC = ["gemini-3.7-flash", "gpt-5-mini", "claude-haiku-4-5-20251001"]
-# verbatim excerpts of the slot-0 reports (ellipses mark omitted text)
-EXC = {"gemini-3.7-flash": ("Axial contrast-enhanced computed tomography (CT) of the abdomen. Findings: Evaluation of the upper abdomen "
-                            "reveals diffuse, multifocal, saccular and cystic dilatation of the intrahepatic bile ducts "
-                            "throughout the hepatic parenchyma. …"),
-       "gpt-5-mini": ("Contrast-enhanced CT abdomen, axial image. … Findings: Large gas- and fluid-filled gastric and "
-                      "adjacent colonic loops in the left upper quadrant. Both kidneys demonstrate symmetric cortical "
-                      "enhancement without hydronephrosis. …"),
-       "claude-haiku-4-5-20251001": ("Contrast-enhanced CT abdomen, axial plane. … Large low-attenuation collection in the "
-                                     "right upper quadrant, predominantly anterior to the right kidney … consistent with "
-                                     "ascites or loculated fluid …")}
+# verbatim excerpts of the slot-0 reports (ellipses mark omitted text); True marks the finding that answers the question
+EXC = {"gemini-3.7-flash": [("… Findings: … diffuse, multifocal, saccular and cystic", False),
+                            ("dilatation of the intrahepatic bile ducts", True),
+                            ("throughout the hepatic parenchyma. …", False)],
+       "gpt-5-mini": [("… Findings: Large gas- and fluid-filled gastric and adjacent colonic loops in the left upper "
+                       "quadrant. Both kidneys demonstrate symmetric cortical enhancement …", False)],
+       "claude-haiku-4-5-20251001": [("… Large low-attenuation collection in the right upper quadrant, predominantly "
+                                      "anterior to the right kidney … consistent with ascites or loculated fluid …", False)]}
 for p in PERC:                               # every excerpt must be a sequence of verbatim pieces of the report
     flat = " ".join(v["report"][p].replace("*", "").replace("#", "").split())
-    for piece in EXC[p].replace("…", "|").split("|"):
+    for piece in " ".join(s for s, _ in EXC[p]).replace("…", "|").split("|"):
         piece = " ".join(piece.split()).strip(" .")
         assert not piece or piece in flat, (p, piece)
+gold = v["gold_letter"]
 W, H = width_mm, height_mm
+LX = 1.5                                             # left margin; the label column runs to x = 28.5
+SI, CW, CG = 31.0, 35.0, 2.2                         # image side, card width, gutter (mm)
+XI = 30.0
+XC = [XI + SI + CG + i * (CW + CG) for i in range(3)]
+assert XC[-1] + CW <= W - 1.5
+CENTRES = [XI + SI / 2] + [x + CW / 2 for x in XC]
+IMG_TOP = H - 9.6
+IMG_BOT = IMG_TOP - SI
+TAB_TOP, PITCH = IMG_BOT - 4.0, 5.4
+ROWS = [TAB_TOP - PITCH * (k + 0.5) for k in range(3)]
+assert ROWS[-1] - PITCH / 2 > 0.8
+
 fig = plt.figure(figsize=(W * MM, H * MM))
 over = fig.add_axes([0, 0, 1, 1])
 over.set_xlim(0, W); over.set_ylim(0, H); over.axis("off")
 
+# column heads: the image, then the three reports under one head
+L, R = XC[0], XC[-1] + CW
+over.text((L + R) / 2, H - 2.6, "Query-agnostic report written by each perception module", ha="center", va="center",
+          fontsize=ANNOT_PT, fontweight="medium", color=K["text2"])
+over.plot([L + 0.3, L + 0.3, R - 0.3, R - 0.3], [H - 5.2, H - 4.5, H - 4.5, H - 5.2], color=K["rule_strong"], lw=0.5,
+          solid_joinstyle="miter")
+over.text(XI + SI / 2, IMG_TOP + 2.2, "Image", ha="center", va="center", fontsize=ANNOT_PT, fontweight="medium",
+          color=K["ink"])
+for x, p in zip(XC, PERC):
+    w = 3.6 + 1.3 + tw(MODEL[p]["label"], ANNOT_PT, "medium")
+    x0 = x + CW / 2 - w / 2
+    avatar(over, p, x0 + 1.8, IMG_TOP + 2.2, d=3.6)
+    over.text(x0 + 4.9, IMG_TOP + 2.2, MODEL[p]["label"], ha="left", va="center", fontsize=ANNOT_PT, fontweight="medium",
+              color=K["ink"])
 
-def marker(x, y, m, size=3.4):
-    st = MODEL[m]
-    over.plot([x], [y], ls="none", marker=st["marker"], ms=ms(st["marker"], size), mfc=st["color"], mec="white",
-              mew=0.4, zorder=5)
+# label column: question, reference answer, data set, dot key and row head
+qtag(over, LX + 1.7, IMG_TOP - 1.75)
+for k, line in enumerate(("Is there biliary", "duct dilation?")):
+    over.text(LX + 4.6, IMG_TOP - 1.75 - 3.5 * k, line, ha="left", va="center", fontsize=LEGEND_PT, fontweight="medium",
+              color=K["ink"])
+runs(over, LX + 4.6, IMG_TOP - 9.3, [("Reference  ", {"size": ANNOT_PT, "color": K["muted"]}),
+                                     ("Yes", {"size": LEGEND_PT, "weight": "semibold", "color": K["ink"]})])
+over.text(LX + 4.6, IMG_TOP - 12.6, "VQA-RAD · CT", ha="left", va="center", fontsize=ANNOT_PT, color=K["muted"])
+over.text(LX, IMG_BOT - 2.1, "Reasoning module", ha="left", va="center", fontsize=ANNOT_PT, fontweight="medium",
+          color=K["text2"])
+# dot key, right-aligned on the same head line as the row head
+note = "one dot per agent"
+x = XC[-1] + CW - tw(note, ANNOT_PT)
+over.text(x, IMG_BOT - 2.1, note, ha="left", va="center", fontsize=ANNOT_PT, color=K["muted"])
+for f, lab in ((False, "wrong"), (True, "correct")):
+    x -= 3.4 + tw(lab, ANNOT_PT)
+    agents(over, x, IMG_BOT - 2.1, [f], K["text2"], d=1.7)
+    over.text(x + 1.9, IMG_BOT - 2.1, lab, ha="left", va="center", fontsize=ANNOT_PT, color=K["text2"])
+    x -= 1.6
 
-
-def counts(x, y, key):
-    for r in REASON:
-        n = round(v["acc"][f"{r}|{key}"] * 9)
-        marker(x, y, r)
-        over.text(x + 1.8, y, f"{n}/9", ha="left", va="center", fontsize=ANNOT_PT,
-                  color=PAL["ink"] if n >= 5 else PAL["neg_dark"])
-        x += 11.5
-
-
-SIDE, IX, IY = 40.0, 3.0, 13.0
-ax_img = fig.add_axes([IX / W, IY / H, SIDE / W, SIDE / H])
+# the image and the three report cards
 with Image.open(REPO / v["image"]) as im:
     arr = np.asarray(im.convert("RGB"))
-    ax_img.imshow(arr[: int(arr.shape[0] * 0.955)], interpolation="lanczos")   # crop the uploader caption strip
-ax_img.set_xticks([]); ax_img.set_yticks([])
-for sp in ax_img.spines.values():
-    sp.set_visible(True); sp.set_linewidth(0.5); sp.set_color(PAL["neutral_mid"])
-over.text(IX, H - 1.3, "“Is there biliary duct dilation?”", ha="left", va="top", fontsize=BASE_PT, style="italic")
-over.text(IX, H - 5.4, "Reference: Yes  (VQA-RAD, CT)", ha="left", va="top", fontsize=LEGEND_PT, color=PAL["neutral_dark"])
-over.text(IX, IY - 3.2, "Agents reading the image, correct:", ha="left", va="center", fontsize=ANNOT_PT)
-counts(IX + 1.2, IY - 7.4, "image")
+arr, _ = square(arr[: int(arr.shape[0] * 0.955)])           # crop the uploader caption strip, pad to a square
+ax_img = picture(fig, W, H, XI, IMG_BOT, SI, arr, edge="none", radius=0.042)
+for x, p in zip(XC, PERC):
+    pill(over, x, IMG_BOT, CW, SI, fc=K["card"], r=1.3, zorder=2)
+    over.plot([x + 1.3, x + CW - 1.3], [IMG_TOP - 0.25, IMG_TOP - 0.25], color=MODEL[p]["color"], lw=1.6,
+              solid_capstyle="round", zorder=3)
+    last = paragraph(over, x + 1.8, IMG_TOP - 2.4, CW - 3.6, EXC[p], size=7.3, color="#1F2937", hl_color=K["hl"])
+    assert last > IMG_BOT + 1.4, (p, last)
 
-BX, BW, BH, BG = IX + SIDE + 6.0, W - (IX + SIDE + 6.0) - 2.0, 17.0, 3.0
-for k, p in enumerate(PERC):
-    y1 = H - 2.0 - k * (BH + BG)
-    y0 = y1 - BH
-    over.add_patch(FancyBboxPatch((BX, y0), BW, BH, boxstyle="round,pad=0,rounding_size=1.2", fc="#FAFAFA",
-                                  ec=MODEL[p]["color"], lw=0.8, zorder=1))
-    marker(BX + 2.0, y1 - 2.6, p, size=3.8)
-    over.text(BX + 4.0, y1 - 2.6, f"Report by {MODEL[p]['label']}", ha="left", va="center", fontsize=LEGEND_PT,
-              fontweight="bold", color=PAL["ink"])
-    over.text(BX + BW - 39.0, y1 - 2.6, "Reasoning modules correct:", ha="right", va="center", fontsize=ANNOT_PT,
-              color=PAL["neutral_dark"])
-    counts(BX + BW - 36.5, y1 - 2.6, p)
-    over.text(BX + 2.0, y1 - 5.6, textwrap.fill(EXC[p], 96), ha="left", va="top", fontsize=6.8, color=PAL["ink"],
-              linespacing=1.25)
-over.text(BX, 1.5, "Markers: Gemini 3.7 Flash (square), GPT-5 mini (circle), Claude Haiku 4.5 (diamond); 9 agents each.",
-          ha="left", va="bottom", fontsize=ANNOT_PT, color=PAL["neutral_dark"])
+# reasoning modules: one row each, 9 agents per cell
+for k in range(4):
+    hline(over, LX, XC[-1] + CW, TAB_TOP - k * PITCH, color=K["rule_strong"] if k in (0, 3) else K["rule"])
+for r, y in zip(REASON, ROWS):
+    avatar(over, r, LX + 2.1, y)
+    over.text(LX + 5.2, y, MODEL[r]["label"], ha="left", va="center", fontsize=ANNOT_PT, fontweight="medium",
+              color=K["ink"])
+    for cx, key in zip(CENTRES, ["image"] + PERC):
+        agents(over, cx, y, [a == gold for a in v["answers"][f"{r}|{key}"]], MODEL[r]["color"], pitch=2.3, d=1.7)
 
 require_matplotlib_panel_alignment(fig, axes=[ax_img], json_out=QBASE + ".alignment.json",
                                    overlay_svg=QBASE + ".alignment.svg", tolerance_pt=1.5, gutter_tolerance_pt=1.5,

@@ -6,10 +6,12 @@ From the raw episodes (results/IMG2_*.jsonl, read through experiments/imaging_v2
 - hist: for every model and data set, the number of correct agents (0-9) on each item in the
   independent panel of 9 with original images (initial answers)
 - occlusion: SLAKE-target, per item and proprietary model, the share of agents whose answer changed
-  under target and under control occlusion (independent panel of 9)
+  under target and under control occlusion (independent panel of 9), and every agent's answer letter
+  in the three image conditions
 - pairs: SLAKE-pairs, per pair and proprietary model, the single agent's answers on the two images
 - reports: SLAKE and VQA-RAD, per item, slot-0 reports of the three perception models and the mean
-  agent accuracy of each reasoning model with each perception model's reports and with the image
+  agent accuracy of each reasoning model with each perception model's reports and with the image,
+  with every agent's answer letter
 """
 import collections
 import json
@@ -49,10 +51,13 @@ for m in API:
         r0 = [o.get("answer") for o in R[q]["rounds"][0]]
         ch = lambda E: sum(a != b for a, b in zip(r0, [o.get("answer") for o in E[q]["rounds"][0]])) / len(r0)
         d = out["occlusion"].setdefault(q, {"stem": items[q]["stem"], "gold": items[q]["options"][items[q]["answer"]],
+                                            "gold_letter": R[q]["gold"], "options": items[q]["options"],
                                             "image": items[q]["images"][0], "target_box": items[q]["target_box"],
                                             "control_box": items[q]["control_box"], "meta": items[q]["meta"], "models": {}})
         d["models"][m] = {"target": ch(T), "control": ch(K),
-                          "correct_real": sum(a == R[q]["gold"] for a in r0) / len(r0)}
+                          "correct_real": sum(a == R[q]["gold"] for a in r0) / len(r0),
+                          "answers": {k: [o.get("answer") for o in E[q]["rounds"][0]]
+                                      for k, E in (("real", R), ("occ_target", T), ("occ_control", K))}}
 
 for m in API:
     S = g(m, "slake_pairs", "single", "cot", 1, "real")
@@ -73,13 +78,16 @@ for s in ("vqarad", "slake"):
             E = g(r, s, "report", "report", 9, "real", per=p, sh=False)
             for q, e in E.items():
                 d = out["reports"].setdefault(q, {"set": s, "stem": items[q]["stem"], "gold": items[q]["options"][items[q]["answer"]],
-                                                  "image": items[q]["images"][0], "report": {}, "acc": {}})
+                                                  "gold_letter": e["gold"], "image": items[q]["images"][0], "report": {},
+                                                  "acc": {}, "answers": {}})
                 if e.get("reports"):
                     d["report"][p] = e["reports"][0]
                 d["acc"][f"{r}|{p}"] = sum(o.get("answer") == e["gold"] for o in e["rounds"][0]) / len(e["rounds"][0])
+                d["answers"][f"{r}|{p}"] = [o.get("answer") for o in e["rounds"][0]]
         for q, e in D[r].items():
             if q in out["reports"]:
                 out["reports"][q]["acc"][f"{r}|image"] = sum(o.get("answer") == e["gold"] for o in e["rounds"][0]) / len(e["rounds"][0])
+                out["reports"][q]["answers"][f"{r}|image"] = [o.get("answer") for o in e["rounds"][0]]
 
 p = ROOT / "results" / "cvpr_items.json"
 p.write_text(json.dumps(out))

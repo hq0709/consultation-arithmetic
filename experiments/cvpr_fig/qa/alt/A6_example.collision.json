@@ -1,17 +1,17 @@
 {
   "pdf": "../../../paper/cvpr/figure_candidates/alt/A6_example.pdf",
   "auditable": true,
-  "verdict": "PASS",
+  "verdict": "REVIEW REQUIRED",
   "page_count": 1,
-  "visible_text_box_count": 31,
-  "text_trace_count": 31,
-  "stroke_path_count": 22,
-  "filled_region_count": 20,
-  "image_region_count": 1,
+  "visible_text_box_count": 37,
+  "text_trace_count": 39,
+  "stroke_path_count": 124,
+  "filled_region_count": 130,
+  "image_region_count": 3,
   "summary": {
     "fail": 0,
-    "warn": 0,
-    "contained_fill_overlays": 24,
+    "warn": 1,
+    "contained_fill_overlays": 22,
     "contained_image_overlays": 0
   },
   "thresholds": {
@@ -19,5 +19,30 @@
     "min_overlap_ratio": 0.05,
     "clipping_tolerance_pt": 0.5
   },
-  "findings": []
+  "findings": [
+    {
+      "severity": "WARN",
+      "kind": "text-fill-edge",
+      "page": 1,
+      "message": "Text partially overlaps the edge of 1 filled region(s)",
+      "text": "cystic dilatation of the",
+      "text_bbox": [
+        184.25196838378906,
+        52.62577819824219,
+        265.4235534667969,
+        59.92578125
+      ],
+      "other_text": null,
+      "other_bbox": [
+        206.20782470703125,
+        52.41175079345703,
+        266.6131286621094,
+        60.58775329589844
+      ],
+      "object_count": 1,
+      "object_indexes": [
+        18000
+      ]
+    }
+  ]
 }
