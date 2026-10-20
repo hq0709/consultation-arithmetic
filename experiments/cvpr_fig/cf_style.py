@@ -1,7 +1,9 @@
 """Shared vocabulary for the CVPR-format figure candidates (nature-figure skill, Python backend).
 
 Every figure script still carries the skill's mandatory rcParams lines and its own explicit
-SVG/PDF/TIFF exports, because validate_figure.py audits each source file on its own. This
+SVG/PDF/TIFF exports, because validate_figure.py audits each source file on its own. Importing this
+module then sets the face of the CVPR figures: Times New Roman, as the body text (author's choice,
+2026-10-20); the two qualitative figures switch to Comic Sans MS in their own scripts. This
 module holds only what the figures share: final widths, font sizes, palette, model encodings,
 data loading, panel-letter placement and number formatting.
 
@@ -62,6 +64,26 @@ SETS = ["vqarad", "slake", "mxqa_mm_rad"]
 SET_LABEL = {"vqarad": "VQA-RAD", "slake": "SLAKE", "mxqa_mm_rad": "MedXpertQA-MM"}
 # markers marshal the matplotlib size so a diamond and a triangle read as large as a circle
 MS_SCALE = {"o": 1.0, "s": 0.88, "D": 0.8, "^": 1.05, "v": 1.05}
+
+
+FONT_DIR = CF / "fonts"
+
+
+def use_times():
+    """Times New Roman 2.82 (Microsoft core fonts; fonts/TimesNewRoman-*.ttf, fetched by fonts/fetch_fonts.sh),
+    the face of the CVPR body text. Mathtext uses STIX, the matching Times-style math face."""
+    from matplotlib import font_manager, rcParams
+    files = sorted(FONT_DIR.glob("TimesNewRoman-*.ttf"))
+    if not files:
+        raise SystemExit("Times New Roman not found: run experiments/cvpr_fig/fonts/fetch_fonts.sh")
+    for f in files:
+        font_manager.fontManager.addfont(str(f))
+    rcParams["font.family"] = "serif"
+    rcParams["font.serif"] = ["Times New Roman", "STIXGeneral", "DejaVu Serif"]
+    rcParams.update({"mathtext.fontset": "stix"})   # Times-style math; Greek letters italic as in the text
+
+
+use_times()                        # applied on import, after each script's own rcParams block
 
 
 def load(name):

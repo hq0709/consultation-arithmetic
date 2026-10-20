@@ -23,7 +23,8 @@ from nf_style import (MM, PAL, BASE_PT, TICK_PT, LEGEND_PT, ANNOT_PT, PANEL_LABE
                       add_panel_label, add_panel_title, minus)
 
 # RF_TEXT_W_MM / RF_OUT re-render a figure at another print width into another folder (the CVPR
-# supplement uses \textwidth = 174.6 mm); defaults are the radiology manuscript's
+# supplement uses \textwidth = 174.6 mm), RF_FONT=times in Times New Roman; defaults are the radiology
+# manuscript's
 TEXT_W_MM = float(os.environ.get("RF_TEXT_W_MM", "137.2"))
 COL_W_MM = 90.0
 OUT = pathlib.Path(os.environ["RF_OUT"]) if os.environ.get("RF_OUT") else REPO / "paper" / "radiology" / "figures"
@@ -45,6 +46,13 @@ def setup():
         "lines.linewidth": 1.2, "axes.edgecolor": PAL["ink"], "text.color": PAL["ink"],
         "axes.labelcolor": PAL["ink"], "xtick.color": PAL["ink"], "ytick.color": PAL["ink"],
     })
+    if os.environ.get("RF_FONT") == "times":       # CVPR supplement re-renders: Times New Roman, as cf_style
+        from matplotlib import font_manager
+        for f in sorted((REPO / "experiments" / "cvpr_fig" / "fonts").glob("TimesNewRoman-*.ttf")):
+            font_manager.fontManager.addfont(str(f))
+        plt.rcParams["font.family"] = "serif"
+        plt.rcParams["font.serif"] = ["Times New Roman", "STIXGeneral", "DejaVu Serif"]
+        mpl.rcParams.update({"mathtext.fontset": "stix"})   # Times-style math; Greek letters italic as in the text
 
 
 MODELS = ["gpt-5-mini", "gemini-3.7-flash", "claude-haiku-4-5-20251001", "qwen3.8-flash"]
