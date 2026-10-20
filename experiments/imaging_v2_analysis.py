@@ -47,9 +47,10 @@ def planned(m):
             add({"cond": "panel", "roles": "specialty"}, arch="independent", N=n, image_mode=mode)
     for n in (1, 3, 9):
         add({"cond": "discussion", "roles": "specialty"}, arch="discussion", N=n, image_mode="real")
-    for n in (3, 9):            # NMI Centralized (orchestrator audits, star) and Hybrid (tiered referral)
+    for n in (3, 9):            # NMI Centralized (orchestrator audits, star), Hybrid (debate, then audit); tiered unused
         add({"cond": "centralized", "roles": "specialty"}, arch="centralized", N=n, image_mode="real")
-        add({"cond": "hybrid", "roles": "specialty"}, arch="tiered", N=n, image_mode="real")
+        add({"cond": "tiered", "roles": "specialty"}, arch="tiered", N=n, image_mode="real")
+        add({"cond": "hybrid", "roles": "specialty"}, arch="hybrid", N=n, image_mode="real")
     add({"cond": "generic", "roles": "generic"}, arch="independent", N=9, generic_roles=True, image_mode="real")
     add({"cond": "render", "roles": "generic"}, arch="independent", N=9, generic_roles=True, image_mode="real",
         render=RENDER)

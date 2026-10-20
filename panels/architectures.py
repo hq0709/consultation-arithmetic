@@ -375,6 +375,34 @@ def arch_centralized(item, cfg, meter, roster=None, rounds=MAX_ORCH_ROUNDS):
             "roster": roster[:N], "orchestrator": verdict.__dict__ if verdict else None}
 
 
+# ---------------------------------------------------------------- (H) Hybrid MAS
+# NMI 2026 (arXiv:2512.08296): A = {a_orch, a_1..a_n}, C = star + peer edges, Omega = hierarchical + lateral.
+# The sub-agents first debate with each other (the Decentralized rounds, cache-shared with arch_discussion);
+# the orchestrator then audits their post-debate opinions and commits to the answer in one turn. No
+# self-reported confidence enters the decision (the orchestrator is not asked for one).
+def arch_hybrid(item, cfg, meter, roster=None):
+    valid = list(item["options"])
+    N = cfg["N"]
+    roster = roster or route(item, cfg.get("use_router", True))
+    d = arch_discussion(item, cfg, meter, roster=roster)
+    final = [Opinion(**o) for o in d["rounds"][-1]]
+    order = _peer_order(item["qid"], 70, len(final))
+    review = _ask(meter, orch_model(cfg), ORCH_SYS,
+                  f"{render_question(item)}\n\nYour specialists discussed the case with each other and "
+                  f"reported:\n{_peer_block(final, order)}\n\n"
+                  "Audit these opinions BEFORE aggregating: name the opinion most likely to be wrong and why, "
+                  "then commit to the answer.\n\n"
+                  'Reply with JSON only: {"answer": "<option letter>", "reason": "<at most 45 words>"}',
+                  cfg["seed"] * 100 + 70, 0.3, cfg.get("effort"),
+                  tag=f"horch n{N}" + ("" if orch_model(cfg) == cfg["model"] else f"|{orch_model(cfg)}"),
+                  max_tokens=round_budget(cfg["model"]), sbase=cfg["seed"])
+    verdict = parse_opinion(review, valid, agent="orchestrator", rnd=len(d["rounds"]))
+    d["rounds"] = d["rounds"] + [[verdict.__dict__]]
+    d.update({"pred": verdict.answer, "pred_cw": verdict.answer, "tie": False, "n_rounds": len(d["rounds"]),
+              "orch_turns": 1, "orchestrator": verdict.__dict__, "debate_pred": d.get("pred")})
+    return d
+
+
 # ---------------------------------------------------------------- (4) Debate
 DISSENT_SYS_SUFFIX = (" You are the panel's assigned devil's advocate: your duty is to build the "
                       "strongest possible case for the most defensible ALTERNATIVE to the "
@@ -550,12 +578,14 @@ def arch_report(item, cfg, meter):
 ARCHES = {"independent": arch_independent,      # NMI Independent   (C = empty set)
           "centralized": arch_centralized,      # NMI Centralized   (star, attending physician)
           "discussion": arch_discussion,        # NMI Decentralized (fully connected, consensus)
-          "tiered": arch_tiered,                # NMI Hybrid        (star + peer edges)
+          "tiered": arch_tiered,                # tiered referral (text grid; uses self-reported confidence)
+          "hybrid": arch_hybrid,                # NMI Hybrid        (peer debate, then orchestrator audit)
           "debate": arch_debate,                # medicine-specific extra
           "report": arch_report}                # imaging: seeing and judging split
 NMI_CLASS = {"zeroshot": "SAS", "cot": "SAS", "sc": "SAS-repeated",
              "independent": "Independent", "centralized": "Centralized",
-             "discussion": "Decentralized", "tiered": "Hybrid", "debate": "Decentralized+mod"}
+             "discussion": "Decentralized", "tiered": "Hybrid", "debate": "Decentralized+mod",
+             "hybrid": "Hybrid"}
 
 
 def run_episode(item, cfg):

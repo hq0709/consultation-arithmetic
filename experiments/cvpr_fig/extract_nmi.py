@@ -7,8 +7,8 @@ Architectures follow Kim et al. (NMI 2026): SAS (cot), Independent, Centralized,
 Models: the four models of the study plus the within-family capability ladder
 (imaging_v2_analysis.LADDER). Cells with fewer than MIN_ITEMS items are left out (runs in progress).
 
-- arch:    accuracy with item-bootstrap 95% CI for each architecture at N = 3 and 9, and the paired
-           gain over SAS (pp)
+- arch:    accuracy for each architecture at N = 3 and 9, and the gain over SAS on the same items (pp);
+           point estimates only (the paper reports no intervals)
 - scaling: majority accuracy of the first k agents of the Independent MAS of 9 (k = 1, 3, 5, 7, 9);
            on yes/no sets also the binomial (independent agents) and beta-binomial (observed phi)
            predictions and N_eff(k) = k / (1 + (k - 1) phi)
@@ -44,6 +44,13 @@ def plurality(answers, rank):
     return next(a for a in rank if a and c[a] == top)
 
 
+def gain(eps, ref):
+    """Accuracy of eps minus accuracy of ref on the items both answered (pp)."""
+    a, b = ia.by_qid(eps), ia.by_qid(ref)
+    qs = sorted(set(a) & set(b))
+    return float(np.mean([a[q]["correct"] - b[q]["correct"] for q in qs])) * 100 if qs else None
+
+
 def main():
     rows = ia.load()
     C = ia.cells(rows)
@@ -55,7 +62,7 @@ def main():
             if len(sas) < MIN_ITEMS:
                 continue
             key = f"{m}|{s}"
-            A = out["arch"][key] = {"n_items": len(sas), "SAS": ia.boot(ia.acc, sas)}
+            A = out["arch"][key] = {"n_items": len(sas), "SAS": ia.acc(sas)}
             for name, (cond, arch, _) in ARCH.items():
                 if name == "SAS":
                     continue
@@ -63,8 +70,8 @@ def main():
                     eps = get(m, s, cond, arch, n)
                     if len(eps) < MIN_ITEMS:
                         continue
-                    A[f"{name}|{n}"] = ia.boot(ia.acc, eps)
-                    A[f"{name}|{n}|gain"] = ia.paired_diff(eps, sas)
+                    A[f"{name}|{n}"] = ia.acc(eps)
+                    A[f"{name}|{n}|gain"] = gain(eps, sas)
             # cost per item (nominal) for every architecture at N = 9 and SAS
             Cst = out["cost"][key] = {}
             for name, (cond, arch, n0) in ARCH.items():
