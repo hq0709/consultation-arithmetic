@@ -1048,18 +1048,33 @@
  "api_link": {
   "vqarad": {
    "spearman_consensus_vs_reliance": -0.0476,
+   "spearman_ci": [
+    -0.0476,
+    -0.1646,
+    0.0675
+   ],
    "n_items": 250,
    "reliance_on_consensus_error_items": 2.4498016145454846,
    "reliance_on_other_items": 2.4500000358001386
   },
   "slake": {
    "spearman_consensus_vs_reliance": -0.4014,
+   "spearman_ci": [
+    -0.4014,
+    -0.5019,
+    -0.2954
+   ],
    "n_items": 250,
    "reliance_on_consensus_error_items": 3.537802593717542,
    "reliance_on_other_items": 6.258836510176884
   },
   "mxqa_mm_rad": {
    "spearman_consensus_vs_reliance": 0.0057,
+   "spearman_ci": [
+    0.0057,
+    -0.128,
+    0.1359
+   ],
    "n_items": 250,
    "reliance_on_consensus_error_items": 0.15605771262862922,
    "reliance_on_other_items": 0.0851208823706015

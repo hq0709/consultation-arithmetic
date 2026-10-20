@@ -875,7 +875,14 @@ def experiment_D(rows=None):
             cfrac = [float(np.mean(cons[q])) for q in qs]
             rho = spearmanr(cfrac, [vr[q] for q in qs]).statistic
             e_, n_ = [vr[q] for q in qs if np.mean(cons[q]) > 0], [vr[q] for q in qs if np.mean(cons[q]) == 0]
-            link[s] = {"spearman_consensus_vs_reliance": round(float(rho), 4), "n_items": len(qs),
+
+            def rho_of(u):
+                x, y = [a for a, _ in u], [b_ for _, b_ in u]
+                if len(set(x)) < 2 or len(set(y)) < 2:
+                    return None
+                return float(spearmanr(x, y).statistic)
+            link[s] = {"spearman_consensus_vs_reliance": round(float(rho), 4),
+                       "spearman_ci": boot(rho_of, list(zip(cfrac, [vr[q] for q in qs]))), "n_items": len(qs),
                        "reliance_on_consensus_error_items": float(np.median(e_)) if e_ else None,
                        "reliance_on_other_items": float(np.median(n_)) if n_ else None}
         out["api_link"] = link
